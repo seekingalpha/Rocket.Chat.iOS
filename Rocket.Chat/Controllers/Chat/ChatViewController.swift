@@ -247,6 +247,7 @@ final class ChatViewController: SLKTextViewController {
 
         rightButton.isEnabled = false
 
+        let messageIdentifier = String.random(18)
         var message: Message?
         Realm.executeOnMainThread({ (realm) in
             message = Message()
@@ -254,7 +255,7 @@ final class ChatViewController: SLKTextViewController {
             message?.createdAt = Date()
             message?.text = messageText
             message?.subscription = self.subscription
-            message?.identifier = String.random(18)
+            message?.identifier = messageIdentifier
             message?.temporary = true
             message?.user = AuthManager.currentUser()
 

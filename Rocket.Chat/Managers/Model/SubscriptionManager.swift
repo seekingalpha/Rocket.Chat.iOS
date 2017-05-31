@@ -299,6 +299,18 @@ struct SubscriptionManager {
             guard !response.isError() else { return Log.debug(response.result.string) }
             completion(response)
         }
+
+        // Check if message was sent, if not, try to send it again
+        let deadlineTime = DispatchTime.now() + .seconds(5)
+        DispatchQueue.main.asyncAfter(deadline: deadlineTime) {
+            Realm.executeOnMainThread({ (realm) in
+                if let message = realm.object(ofType: Message.self, forPrimaryKey: message.identifier) {
+                    if message.temporary {
+                        self.sendTextMessage(message, completion: completion)
+                    }
+                }
+            })
+        }
     }
 
     static func toggleFavorite(_ subscription: Subscription, completion: @escaping MessageCompletion) {
