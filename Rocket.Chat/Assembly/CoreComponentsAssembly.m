@@ -1,13 +1,12 @@
 //
-//  CoreComponents.swift
+//  CoreComponentsAssembly.m
 //  Rocket.Chat
 //
 //  Created by Alexander Bugara on 7/19/17.
 //  Copyright © 2017 Rocket.Chat. All rights reserved.
 //
 
-import Foundation
-import Typhoon
+#import "CoreComponentsAssembly.h"
 
-public class CoreComponentsAssembly: TyphoonAssembly {
-}
+@implementation CoreComponentsAssembly
+@end

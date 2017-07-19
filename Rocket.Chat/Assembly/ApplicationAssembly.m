@@ -1,13 +1,12 @@
 //
-//  ApplicationAssembly.swift
+//  ApplicationAssembly.m
 //  Rocket.Chat
 //
 //  Created by Alexander Bugara on 7/19/17.
 //  Copyright © 2017 Rocket.Chat. All rights reserved.
 //
 
-import Foundation
-import Typhoon
+#import "ApplicationAssembly.h"
 
-class ApplicationAssembly: TyphoonAssembly {
-}
+@implementation ApplicationAssembly
+@end

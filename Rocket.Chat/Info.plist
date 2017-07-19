@@ -5,7 +5,7 @@
 	<key>TyphoonInitialAssemblies</key>
 	<array>
 		<string>ApplicationAssembly</string>
-		<string>CoreComponents</string>
+		<string>CoreComponentsAssembly</string>
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
