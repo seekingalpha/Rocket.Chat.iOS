@@ -7,6 +7,20 @@
 //
 
 #import "ApplicationAssembly.h"
+#import "Rocket_Chat-Swift.h"
 
 @implementation ApplicationAssembly
+
+- (ConnectServerViewController *)connectServerViewController {
+    return [TyphoonDefinition
+            withClass:[ConnectServerViewController class]
+            configuration:^(TyphoonDefinition *definition) {
+                //[definition injectProperty:@selector(<#selector#>) with:TyphoonConfig(@"serverURL")]
+            }];
+}
+
+- (id)config {
+    return [TyphoonDefinition withConfigName:@"Configuration.plist"];
+}
+
 @end

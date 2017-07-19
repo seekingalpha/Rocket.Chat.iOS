@@ -144,6 +144,7 @@
 		597ECBA41E3708B10041C5C5 /* PushManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597ECBA31E3708B10041C5C5 /* PushManager.swift */; };
 		68D186DF1ED9714F0030EE8C /* MessageURLSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D186DE1ED9714F0030EE8C /* MessageURLSpec.swift */; };
 		73904E721F1FAD8D00FBDB7B /* CoreComponentsAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */; };
+		73904E791F1FBF0500FBDB7B /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 73904E781F1FBF0500FBDB7B /* Configuration.plist */; };
 		73DD56371F1FAB3100821775 /* ApplicationAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DD56361F1FAB3100821775 /* ApplicationAssembly.m */; };
 		7DE1B07114BBD1D46E9CC71B /* Pods_Rocket_Chat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F5191CD6C53AEA006C82524 /* Pods_Rocket_Chat.framework */; };
 		925FF74E1E8EFB3E00982043 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925FF74D1E8EFB3E00982043 /* SettingsViewModel.swift */; };
@@ -325,6 +326,7 @@
 		68D870A8D54F5431A14607AE /* Pods_Rocket_ChatTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Rocket_ChatTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		73904E701F1FAD8D00FBDB7B /* CoreComponentsAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreComponentsAssembly.h; path = Assembly/CoreComponentsAssembly.h; sourceTree = "<group>"; };
 		73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreComponentsAssembly.m; path = Assembly/CoreComponentsAssembly.m; sourceTree = "<group>"; };
+		73904E781F1FBF0500FBDB7B /* Configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Configuration.plist; path = Assembly/Configuration.plist; sourceTree = "<group>"; };
 		73DD56351F1FAB3100821775 /* ApplicationAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationAssembly.h; path = Assembly/ApplicationAssembly.h; sourceTree = "<group>"; };
 		73DD56361F1FAB3100821775 /* ApplicationAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationAssembly.m; path = Assembly/ApplicationAssembly.m; sourceTree = "<group>"; };
 		925FF74D1E8EFB3E00982043 /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
@@ -856,6 +858,7 @@
 				73DD56361F1FAB3100821775 /* ApplicationAssembly.m */,
 				73904E701F1FAD8D00FBDB7B /* CoreComponentsAssembly.h */,
 				73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */,
+				73904E781F1FBF0500FBDB7B /* Configuration.plist */,
 			);
 			name = Assembly;
 			sourceTree = "<group>";
@@ -1054,6 +1057,7 @@
 				41E2FA011D414EA100238DFD /* Subscriptions.storyboard in Resources */,
 				41EB22361E5F056600AA3AE7 /* Localizable.strings in Resources */,
 				41E2F9FF1D414DE800238DFD /* Chat.storyboard in Resources */,
+				73904E791F1FBF0500FBDB7B /* Configuration.plist in Resources */,
 				41DF76E81D2C50710028DBF8 /* Main.storyboard in Resources */,
 				41F167EB1DAC4D5500775CCA /* ChatTitleView.xib in Resources */,
 				41FF36071DBEC0BA0074E20A /* ChatMessageVideoView.xib in Resources */,
