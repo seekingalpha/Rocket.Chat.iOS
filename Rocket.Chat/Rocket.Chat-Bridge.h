@@ -18,5 +18,4 @@
 #import <Google/SignIn.h>
 
 #import <Typhoon/Typhoon.h>
-
 #endif /* Rocket_Chat_Bridge_h */

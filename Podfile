@@ -38,6 +38,8 @@ end
 target 'Rocket.Chat' do
   # Shared pods
   shared_pods
+  pod 'RxSwift',    '~> 3.0'
+  pod 'RxCocoa',    '~> 3.0'
 end
 
 target 'Rocket.ChatTests' do
