@@ -10,12 +10,17 @@ import Foundation
 import UIKit
 import SafariServices
 import OnePasswordExtension
+import RxSwift
+import RxCocoa
 
 final class AuthViewController: BaseViewController {
-
+    var interactor: AuthInteractor?
     internal var connecting = false
-    var serverURL: URL!
+    var serverURL: URL?
     var serverPublicSettings: AuthSettings?
+    let disposeBag = DisposeBag()
+    var login: String?
+    var password: String?
 
     @IBOutlet weak var viewFields: UIView! {
         didSet {
@@ -34,20 +39,49 @@ final class AuthViewController: BaseViewController {
     @IBOutlet weak var textFieldUsername: UITextField!
     @IBOutlet weak var textFieldPassword: UITextField!
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
-
-    @IBOutlet weak var buttonAuthenticateGoogle: UIButton! {
-        didSet {
-            buttonAuthenticateGoogle.layer.cornerRadius = 3
-        }
-    }
-
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = serverURL.host
+        title = serverURL?.host
+        AuthManager.recoverAuthIfNeeded()
+        
+        self.textFieldUsername.text = self.login
+        self.textFieldPassword.text = self.password
+        
+        self.startLoading()
+        let authSharedObservable = self.interactor?.checkAuth()?.shareReplay(1)
 
-        self.updateAuthenticationMethods()
+        _ = authSharedObservable?.filter { value in
+                return value == false
+            }.flatMap { _ -> Observable<Result<URL>> in
+                return  (self.interactor?.validate(URL: self.serverURL))!
+            }.flatMap {result -> Observable<Result<AuthSettings>> in
+                var result1: Observable<Result<AuthSettings>>?
+                switch result {
+                case .success(let socketURL):
+                    result1 = (self.interactor?.connect(socketURL: socketURL))!
+                default:
+                    break
+                }
+                return result1!
+            }.subscribe( onNext: {result in
+                switch result {
+                case .success(let serverSettings):
+                    self.serverPublicSettings = serverSettings
+                default:
+                    break
+                }
+
+                self.stopLoading()
+            }).disposed(by: disposeBag)
+
+        _ = authSharedObservable?.filter {value in
+                return value == true
+            }.subscribe( onNext: {_ in
+                self.stopLoading()
+                self.showChat()
+            }).disposed(by: disposeBag)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -95,12 +129,6 @@ final class AuthViewController: BaseViewController {
 
     override func keyboardWillHide(_ notification: Notification) {
         visibleViewBottomConstraint.constant = 0
-    }
-
-    // MARK: Authentication methods
-    fileprivate func updateAuthenticationMethods() {
-        guard let settings = self.serverPublicSettings else { return }
-        self.buttonAuthenticateGoogle.isHidden = !settings.isGoogleAuthenticationEnabled
     }
 
     internal func handleAuthenticationResponse(_ response: SocketResponse) {
@@ -179,7 +207,7 @@ final class AuthViewController: BaseViewController {
     @IBAction func buttonTermsDidPressed(_ sender: Any) {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = self.serverURL.host
+        components.host = self.serverURL?.host
 
         if var newURL = components.url {
             newURL = newURL.appendingPathComponent("terms-of-service")
@@ -192,7 +220,7 @@ final class AuthViewController: BaseViewController {
     @IBAction func buttonPolicyDidPressed(_ sender: Any) {
         var components = URLComponents()
         components.scheme = "https"
-        components.host = self.serverURL.host
+        components.host = self.serverURL?.host
 
         if var newURL = components.url {
             newURL = newURL.appendingPathComponent("privacy-policy")
@@ -213,6 +241,42 @@ final class AuthViewController: BaseViewController {
             self?.textFieldPassword.text = login?[AppExtensionPasswordKey] as? String
             self?.authenticateWithUsernameOrEmail()
         }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+    }
+
+    func showChat() {
+        // Open chat
+        let storyboardChat = UIStoryboard(name: "Chat", bundle: Bundle.main)
+        let controller = storyboardChat.instantiateInitialViewController()
+        let application = UIApplication.shared
+        if let window = application.keyWindow {
+            window.rootViewController = controller
+        }
+    }
+
+    func alertInvalidURL() {
+        let alert = UIAlertController(
+            title: localized("alert.connection.invalid_url.title"),
+            message: localized("alert.connection.invalid_url.message"),
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
+        present(alert, animated: true, completion: nil)
+    }
+    func alertWrongServerVersion(version: String, minVersion: String) {
+        let alert = UIAlertController(
+            title: localized("alert.connection.invalid_version.title"),
+            message: String(format: localized("alert.connection.invalid_version.message"), version, minVersion),
+            preferredStyle: .alert
+        )
+
+        alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
+        self.present(alert, animated: true, completion: nil)
     }
 }
 

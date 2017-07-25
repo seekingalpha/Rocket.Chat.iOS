@@ -11,11 +11,14 @@
 
 @implementation ApplicationAssembly
 
-- (ConnectServerViewController *)connectServerViewController {
+- (AuthViewController *)connectServerViewController {
     return [TyphoonDefinition
-            withClass:[ConnectServerViewController class]
+            withClass:[AuthViewController class]
             configuration:^(TyphoonDefinition *definition) {
-                //[definition injectProperty:@selector(<#selector#>) with:TyphoonConfig(@"serverURL")]
+                [definition injectProperty:@selector(serverURL) with:TyphoonConfig(@"serverURL")];
+                [definition injectProperty:@selector(login) with:TyphoonConfig(@"login")];
+                [definition injectProperty:@selector(password) with:TyphoonConfig(@"password")];
+                [definition injectProperty:@selector(interactor) with:[AuthInteractor new]];
             }];
 }
 

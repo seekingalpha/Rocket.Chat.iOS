@@ -44,6 +44,9 @@ PODS:
   - Realm/Headers (2.8.3)
   - RealmSwift (2.8.3):
     - Realm (= 2.8.3)
+  - RxCocoa (3.5.0):
+    - RxSwift (~> 3.4)
+  - RxSwift (3.5.0)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
@@ -70,6 +73,8 @@ DEPENDENCIES:
   - Google/SignIn
   - MobilePlayer
   - RealmSwift
+  - RxCocoa (~> 3.0)
+  - RxSwift (~> 3.0)
   - SDWebImage (~> 3.8)
   - semver
   - SideMenuController (from `https://github.com/rafaelks/SideMenuController.git`)
@@ -104,6 +109,8 @@ SPEC CHECKSUMS:
   MobilePlayer: 069b13482499f14c25b6ce53f63a91e17975b073
   Realm: 3601ef091c8c499a31101d8563b991e75546cdce
   RealmSwift: 8183818515471b01a99abdd2970f8e4fd52b6f4a
+  RxCocoa: a0a09f45d0e5b48ecb6a4a7b4b4c89c88d3f633f
+  RxSwift: 18ee9d78b45edb3b0b7e79916b47a116e6dbc842
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
   semver: efe6bf4af25bffab18d442592771be392210b5ce
   SideMenuController: 44670bc1e1c58d9460fc028e246926227edefec0
@@ -114,6 +121,6 @@ SPEC CHECKSUMS:
   Typhoon: 05db9d33d798b90c202bf3f754275c03efe93297
   URBMediaFocusViewController: 26779e301fe75ec0152fbe8b476bd06ccee9f9b3
 
-PODFILE CHECKSUM: 367cdf6c1b34ebd11a427476f3df1e1f904922ba
+PODFILE CHECKSUM: 0b756566c757d2d43d81c2d09a05911b0e44e656
 
 COCOAPODS: 1.2.1
