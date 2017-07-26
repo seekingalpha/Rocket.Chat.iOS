@@ -10,18 +10,16 @@ import Foundation
 import UIKit
 import SafariServices
 import OnePasswordExtension
-import RxSwift
-import RxCocoa
 
 final class AuthViewController: BaseViewController {
     var interactor: AuthInteractor?
     internal var connecting = false
     var serverURL: URL?
     var serverPublicSettings: AuthSettings?
-    let disposeBag = DisposeBag()
     var login: String?
     var password: String?
-
+    var stateMachine: AuthStateMachine?
+    @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView! {
         didSet {
             viewFields.layer.cornerRadius = 4
@@ -40,48 +38,26 @@ final class AuthViewController: BaseViewController {
     @IBOutlet weak var textFieldPassword: UITextField!
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    var customActivityIndicator: LoaderView!
 
+    @IBOutlet weak var activityIndicatorContainer: UIView! {
+        didSet {
+            let width = activityIndicatorContainer.bounds.width
+            let height = activityIndicatorContainer.bounds.height
+            let frame = CGRect(x: 0, y: 0, width: width, height: height)
+            let activityIndicator = LoaderView(frame: frame)
+            activityIndicatorContainer.addSubview(activityIndicator)
+            self.customActivityIndicator = activityIndicator
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         title = serverURL?.host
         AuthManager.recoverAuthIfNeeded()
-        
         self.textFieldUsername.text = self.login
         self.textFieldPassword.text = self.password
-        
-        self.startLoading()
-        let authSharedObservable = self.interactor?.checkAuth()?.shareReplay(1)
-
-        _ = authSharedObservable?.filter { value in
-                return value == false
-            }.flatMap { _ -> Observable<Result<URL>> in
-                return  (self.interactor?.validate(URL: self.serverURL))!
-            }.flatMap {result -> Observable<Result<AuthSettings>> in
-                var result1: Observable<Result<AuthSettings>>?
-                switch result {
-                case .success(let socketURL):
-                    result1 = (self.interactor?.connect(socketURL: socketURL))!
-                default:
-                    break
-                }
-                return result1!
-            }.subscribe( onNext: {result in
-                switch result {
-                case .success(let serverSettings):
-                    self.serverPublicSettings = serverSettings
-                default:
-                    break
-                }
-
-                self.stopLoading()
-            }).disposed(by: disposeBag)
-
-        _ = authSharedObservable?.filter {value in
-                return value == true
-            }.subscribe( onNext: {_ in
-                self.stopLoading()
-                self.showChat()
-            }).disposed(by: disposeBag)
+        self.stateMachine?.switchState(state: FirstLoadingState(authViewController: self))
+        self.stateMachine?.execute()
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -100,10 +76,6 @@ final class AuthViewController: BaseViewController {
             name: NSNotification.Name.UIKeyboardWillHide,
             object: nil
         )
-
-        if !connecting {
-            textFieldUsername.becomeFirstResponder()
-        }
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -152,13 +124,7 @@ final class AuthViewController: BaseViewController {
                 present(alert, animated: true, completion: nil)
             }
         } else {
-            if let user = AuthManager.currentUser() {
-                if user.username != nil {
-                    dismiss(animated: true, completion: nil)
-                } else {
-                    performSegue(withIdentifier: "RequestUsername", sender: nil)
-                }
-            }
+            self.stateMachine?.success()
         }
     }
 
@@ -278,14 +244,16 @@ final class AuthViewController: BaseViewController {
         alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
+    func finishExecution(nextState: AuthState?) {
+        self.stateMachine?.switchState(state: nextState)
+        self.stateMachine?.execute()
+    }
 }
 
 extension AuthViewController: UITextFieldDelegate {
-
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         return !connecting
     }
-
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if connecting {
             return false
@@ -296,9 +264,8 @@ extension AuthViewController: UITextFieldDelegate {
         }
 
         if textField == textFieldPassword {
-            authenticateWithUsernameOrEmail()
+            self.stateMachine?.success()
         }
-
         return true
     }
 }

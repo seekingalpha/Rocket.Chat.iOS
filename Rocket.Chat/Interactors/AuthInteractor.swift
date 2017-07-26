@@ -30,7 +30,7 @@ class AuthInteractor: NSObject {
             if let auth = AuthManager.isAuthenticated() {
                 AuthManager.persistAuthInformation(auth)
                 AuthManager.resume(auth, completion: { response in
-                    guard !response.isError(), response is Error else {
+                    guard !response.isError(), !(response is Error) else {
                         return observer.onNext(false)
                     }
                     SubscriptionManager.updateSubscriptions(auth, completion: { _ in
