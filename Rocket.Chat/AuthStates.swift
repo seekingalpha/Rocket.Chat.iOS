@@ -32,7 +32,7 @@ struct FirstLoadingState: AuthState {
         self.authViewController.customActivityIndicator.startAnimating()
         self.authViewController.textFieldUsername.resignFirstResponder()
         self.authViewController.textFieldPassword.resignFirstResponder()
-        
+
         let authSharedObservable = self.authViewController.interactor?.checkAuth()?.shareReplay(1)
         _ = authSharedObservable?.filter { value in
             return value == false
@@ -56,7 +56,7 @@ struct FirstLoadingState: AuthState {
                     break
                 }
             }).disposed(by: disposeBag)
-        
+
         _ = authSharedObservable?.filter {value in
             return value == true
             }.subscribe( onNext: {_ in
@@ -81,7 +81,7 @@ struct ShowLoginState: AuthState, TransitionState {
     func failure() -> AuthState? {
         return nil
     }
-    
+
 }
 
 struct ShowChatState: AuthState {
@@ -120,11 +120,13 @@ struct LoginSuccessState: AuthState {
     }
     let disposeBag = DisposeBag()
     func execute() {
+        self.authViewController.startLoading()
         _ = self.authViewController.interactor?.checkAuth()?.filter {value in
             return value == true
             }.subscribe( onNext: {_ in
                 if let user = AuthManager.currentUser() {
                     if user.username != nil {
+                        self.authViewController.stopLoading()
                         self.authViewController.showChat()
                     }
                 }

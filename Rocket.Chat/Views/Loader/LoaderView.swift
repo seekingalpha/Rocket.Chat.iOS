@@ -11,7 +11,7 @@ import UIKit
 class LoaderView: UIView {
 
     var isAnimating = false
-
+    var color: UIColor?
     public final func startAnimating() {
         isHidden = false
         isAnimating = true
@@ -31,7 +31,10 @@ class LoaderView: UIView {
         let circleSpacing: CGFloat = 4
         let circleSize: CGFloat = 10
         let circleRadius = circleSize / 2
-        let fillColor = UIColor.RCDarkBlue().cgColor
+        var fillColor = self.color?.cgColor
+        if fillColor == nil {
+            fillColor =  UIColor.RCDarkBlue().cgColor
+        }
         let x: CGFloat = (layer.bounds.size.width - size.width) / 2
         let y: CGFloat = (layer.bounds.size.height - circleSize) / 2
         let duration: CFTimeInterval = 1.4

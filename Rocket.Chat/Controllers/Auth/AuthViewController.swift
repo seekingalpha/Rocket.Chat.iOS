@@ -20,14 +20,7 @@ final class AuthViewController: BaseViewController {
     var password: String?
     var stateMachine: AuthStateMachine?
     @IBOutlet weak var contentContainer: UIView!
-    @IBOutlet weak var viewFields: UIView! {
-        didSet {
-            viewFields.layer.cornerRadius = 4
-            viewFields.layer.borderColor = UIColor.RCLightGray().cgColor
-            viewFields.layer.borderWidth = 0.5
-        }
-    }
-
+    @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
         didSet {
             onePasswordButton.isHidden = !OnePasswordExtension.shared().isAppExtensionAvailable()
@@ -38,6 +31,8 @@ final class AuthViewController: BaseViewController {
     @IBOutlet weak var textFieldPassword: UITextField!
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var textInfoLabel: UILabel!
+
     var customActivityIndicator: LoaderView!
 
     @IBOutlet weak var activityIndicatorContainer: UIView! {
@@ -46,6 +41,7 @@ final class AuthViewController: BaseViewController {
             let height = activityIndicatorContainer.bounds.height
             let frame = CGRect(x: 0, y: 0, width: width, height: height)
             let activityIndicator = LoaderView(frame: frame)
+            activityIndicator.color = .white
             activityIndicatorContainer.addSubview(activityIndicator)
             self.customActivityIndicator = activityIndicator
         }
@@ -211,7 +207,7 @@ final class AuthViewController: BaseViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-
+         UIApplication.shared.statusBarStyle = .lightContent
     }
 
     func showChat() {
@@ -247,6 +243,9 @@ final class AuthViewController: BaseViewController {
     func finishExecution(nextState: AuthState?) {
         self.stateMachine?.switchState(state: nextState)
         self.stateMachine?.execute()
+    }
+    @IBAction func signIn() {
+        self.stateMachine?.success()
     }
 }
 
