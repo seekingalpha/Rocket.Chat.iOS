@@ -34,7 +34,7 @@
 "subscriptions.search.load_more_results" = "Mehr Ergebnisse...";
 "subscriptions.unreads" = "Ungelesen";
 "subscriptions.favorites" = "Favoriten";
-"subscriptions.channels" = "Kanäle";
+"subscriptions.channels" = "Abonnements";
 "subscriptions.direct_messages" = "Direktnachrichten";
 
 // User Menu

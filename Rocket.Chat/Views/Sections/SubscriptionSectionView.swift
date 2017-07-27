@@ -17,6 +17,7 @@ final class SubscriptionSectionView: UIView {
     @IBOutlet fileprivate weak var iconWidthConstraint: NSLayoutConstraint!
     @IBOutlet fileprivate weak var labelTitle: UILabel!
     @IBOutlet fileprivate weak var labelTitleLeftSpacingConstraint: NSLayoutConstraint!
+    @IBOutlet fileprivate weak var subView: UIView!
 
     func setIconName(_ iconName: String?) {
         if let iconName = iconName {
@@ -34,4 +35,9 @@ final class SubscriptionSectionView: UIView {
         labelTitle.text = title?.uppercased()
     }
 
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.subView.backgroundColor = UIColor(red: 51/255, green: 51/255, blue: 51/255, alpha: 1)
+        self.labelTitle.textColor = UIColor(red: 153/255, green: 153/255, blue: 153/255, alpha: 1)
+    }
 }

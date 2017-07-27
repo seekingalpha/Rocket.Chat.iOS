@@ -101,6 +101,14 @@ final class SubscriptionsViewController: BaseViewController {
         super.viewDidAppear(animated)
         registerKeyboardHandlers(tableView)
     }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        //self.setS
+    }
+    override var prefersStatusBarHidden: Bool {
+        return false
+    }
 }
 
 extension SubscriptionsViewController {
@@ -351,7 +359,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
 extension SubscriptionsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == 0 ? 50 : 60
+        return section == 0 ? 21 : 60
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -473,13 +481,13 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
     }
 
     func viewUserDidTap(sender: Any) {
-        textFieldSearch.resignFirstResponder()
-
-        if viewUserMenu != nil {
-            dismissUserMenu()
-        } else {
-            presentUserMenu()
-        }
+//        textFieldSearch.resignFirstResponder()
+//
+//        if viewUserMenu != nil {
+//            dismissUserMenu()
+//        } else {
+//            presentUserMenu()
+//        }
     }
 
     func userDidPressedOption() {

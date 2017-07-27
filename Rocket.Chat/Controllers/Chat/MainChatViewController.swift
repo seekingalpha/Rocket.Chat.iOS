@@ -54,23 +54,23 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
 
     func sideMenuControllerWillHide(_ sideMenuController: SideMenuController) {
         ChatViewController.sharedInstance()?.textView.resignFirstResponder()
-        SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
+        //SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
     }
 
     func sideMenuControllerDidHide(_ sideMenuController: SideMenuController) {
         ChatViewController.sharedInstance()?.textView.resignFirstResponder()
-        SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
+        //SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
     }
 
     func sideMenuControllerDidReveal(_ sideMenuController: SideMenuController) {
         ChatViewController.sharedInstance()?.textView.resignFirstResponder()
-        SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
+        //SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
     }
 
     func sideMenuControllerWillReveal(_ sideMenuController: SideMenuController) {
         ChatViewController.sharedInstance()?.textView.resignFirstResponder()
 
-        SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
+        //SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
         SubscriptionsViewController.sharedInstance()?.updateData()
     }
 
