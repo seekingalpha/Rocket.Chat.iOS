@@ -48,7 +48,12 @@ final class AuthViewController: BaseViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = serverURL?.host
+        if let navigationBar = navigationController?.navigationBar {
+            navigationBar.setBackgroundImage(UIImage(), for: .default)
+            navigationBar.shadowImage = UIImage()
+            navigationBar.isTranslucent = true
+            navigationController?.view?.backgroundColor = .clear
+        }
         AuthManager.recoverAuthIfNeeded()
         self.textFieldUsername.text = self.login
         self.textFieldPassword.text = self.password
@@ -79,15 +84,6 @@ final class AuthViewController: BaseViewController {
         NotificationCenter.default.removeObserver(self)
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if segue.identifier == "TwoFactor" {
-            if let controller = segue.destination as? TwoFactorAuthenticationViewController {
-                controller.username = textFieldUsername.text ?? ""
-                controller.password = textFieldPassword.text ?? ""
-            }
-        }
-    }
-
     // MARK: Keyboard Handlers
     override func keyboardWillShow(_ notification: Notification) {
         if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
@@ -104,20 +100,19 @@ final class AuthViewController: BaseViewController {
 
         if response.isError() {
             if let error = response.result["error"].dictionary {
-                // User is using 2FA
-                if error["error"]?.string == "totp-required" {
-                    performSegue(withIdentifier: "TwoFactor", sender: nil)
-                    return
+                let code = error["error"]?.int
+                if code != nil && code == 403 {
+                    performSegue(withIdentifier: "403", sender: nil)
+                } else {
+                    let alert = UIAlertController(
+                        title: localized("error.socket.default_error_title"),
+                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
+                        preferredStyle: .alert
+                    )
+
+                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                    present(alert, animated: true, completion: nil)
                 }
-
-                let alert = UIAlertController(
-                    title: localized("error.socket.default_error_title"),
-                    message: error["message"]?.string ?? localized("error.socket.default_error_message"),
-                    preferredStyle: .alert
-                )
-
-                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                present(alert, animated: true, completion: nil)
             }
         } else {
             self.stateMachine?.success()
