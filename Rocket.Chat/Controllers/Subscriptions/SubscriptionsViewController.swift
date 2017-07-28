@@ -13,7 +13,9 @@ final class SubscriptionsViewController: BaseViewController {
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityViewSearching: UIActivityIndicatorView!
-
+    @IBOutlet weak var userName: UILabel!
+    @IBOutlet weak var userIcon: UIImageView!
+    
     let defaultButtonCancelSearchWidth = CGFloat(65)
     @IBOutlet weak var buttonCancelSearch: UIButton! {
         didSet {
@@ -104,7 +106,7 @@ final class SubscriptionsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        //self.setS
+        self.userName.text = AuthManager.currentUser()?.username
     }
     override var prefersStatusBarHidden: Bool {
         return false
