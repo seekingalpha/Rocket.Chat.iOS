@@ -26,8 +26,9 @@ final class SubscriptionCell: UITableViewCell {
         }
     }
 
-    @IBOutlet weak var imageViewIcon: UIImageView!
     @IBOutlet weak var labelName: UILabel!
+    @IBOutlet weak var userAvatar: AvatarView!
+
     @IBOutlet weak var labelUnread: UILabel! {
         didSet {
             labelUnread.layer.cornerRadius = 2
@@ -37,7 +38,7 @@ final class SubscriptionCell: UITableViewCell {
     func updateSubscriptionInformatin() {
         updateIconImage()
 
-        labelName.text = subscription.name
+        labelName.text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
 
         if subscription.unread > 0 || subscription.alert {
             labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
@@ -52,30 +53,30 @@ final class SubscriptionCell: UITableViewCell {
     }
 
     func updateIconImage() {
-        switch subscription.type {
-        case .channel:
-            imageViewIcon.image = UIImage(named: "Hashtag")?.imageWithTint(.RCInvisible())
-            break
-        case .directMessage:
-            var color: UIColor = .RCInvisible()
-
-            if let user = subscription.directMessageUser {
-                color = { _ -> UIColor in
-                    switch user.status {
-                    case .online: return .RCOnline()
-                    case .offline: return .RCInvisible()
-                    case .away: return .RCAway()
-                    case .busy: return .RCBusy()
-                    }
-                }()
-            }
-
-            imageViewIcon.image = UIImage(named: "Mention")?.imageWithTint(color)
-            break
-        case .group:
-            imageViewIcon.image = UIImage(named: "Lock")?.imageWithTint(.RCInvisible())
-            break
-        }
+//        switch subscription.type {
+//        case .channel:
+//            imageViewIcon.image = UIImage(named: "Hashtag")?.imageWithTint(.RCInvisible())
+//            break
+//        case .directMessage:
+//            var color: UIColor = .RCInvisible()
+//
+//            if let user = subscription.directMessageUser {
+//                color = { _ -> UIColor in
+//                    switch user.status {
+//                    case .online: return .RCOnline()
+//                    case .offline: return .RCInvisible()
+//                    case .away: return .RCAway()
+//                    case .busy: return .RCBusy()
+//                    }
+//                }()
+//            }
+//
+//            imageViewIcon.image = UIImage(named: "Mention")?.imageWithTint(color)
+//            break
+//        case .group:
+//            imageViewIcon.image = UIImage(named: "Lock")?.imageWithTint(.RCInvisible())
+//            break
+//        }
     }
 
 }

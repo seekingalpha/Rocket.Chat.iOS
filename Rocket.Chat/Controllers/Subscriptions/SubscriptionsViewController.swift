@@ -15,7 +15,7 @@ final class SubscriptionsViewController: BaseViewController {
     @IBOutlet weak var activityViewSearching: UIActivityIndicatorView!
     @IBOutlet weak var userName: UILabel!
     @IBOutlet weak var userIcon: UIImageView!
-    
+
     let defaultButtonCancelSearchWidth = CGFloat(65)
     @IBOutlet weak var buttonCancelSearch: UIButton! {
         didSet {
@@ -59,6 +59,15 @@ final class SubscriptionsViewController: BaseViewController {
     @IBOutlet weak var imageViewArrowDown: UIImageView! {
         didSet {
             imageViewArrowDown.image = imageViewArrowDown.image?.imageWithTint(.RCLightBlue())
+        }
+    }
+
+   // @IBOutlet weak var userAvatar: AvatarView!
+    @IBOutlet weak var userAvatar: AvatarView! {
+        didSet {
+            userAvatar.layer.cornerRadius = userAvatar.frame.size.width / 2
+            userAvatar.layer.masksToBounds = true
+            userAvatar.labelInitialsFontSize = 15
         }
     }
 
@@ -107,6 +116,10 @@ final class SubscriptionsViewController: BaseViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.userName.text = AuthManager.currentUser()?.username
+        self.userAvatar.user = AuthManager.currentUser()
+//        UserManager.getUserAvatar { (response) in
+//            print(response)
+//        }
     }
     override var prefersStatusBarHidden: Bool {
         return false
@@ -313,7 +326,7 @@ extension SubscriptionsViewController {
                 groupInfomation?.append([
                     "name": String(format: "%@ (%d)", localized("subscriptions.channels"), channelGroup.count)
                 ])
-
+                print(channelGroup)
                 groupSubscriptions?.append(channelGroup)
             }
 
@@ -352,6 +365,8 @@ extension SubscriptionsViewController: UITableViewDataSource {
 
         if let subscription = subscription(for: indexPath) {
             cell.subscription = subscription
+            print(">>>>>    ")
+            print(subscription)
         }
 
         return cell
@@ -384,8 +399,8 @@ extension SubscriptionsViewController: UITableViewDelegate {
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //let user = AuthManager.currentUser()
         guard let subscription = subscription(for: indexPath) else { return }
-
         let controller = ChatViewController.sharedInstance()
         controller?.closeSidebarAfterSubscriptionUpdate = true
         controller?.subscription = subscription

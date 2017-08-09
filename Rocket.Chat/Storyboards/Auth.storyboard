@@ -15,7 +15,7 @@
             <objects>
                 <navigationController id="eFO-g0-vxH" customClass="BaseNavigationController" customModule="Rocket_Chat" customModuleProvider="target" sceneMemberID="viewController">
                     <simulatedStatusBarMetrics key="simulatedStatusBarMetrics" statusBarStyle="lightContent"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="F7W-s9-wXu">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="F7W-s9-wXu">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -167,7 +167,7 @@
                                                                     <action selector="signIn" destination="hgH-Tx-WGh" eventType="touchUpInside" id="yOb-DP-Gsk"/>
                                                                 </connections>
                                                             </button>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nDU-fe-lJN">
+                                                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nDU-fe-lJN">
                                                                 <rect key="frame" x="0.0" y="2" width="102" height="28"/>
                                                                 <constraints>
                                                                     <constraint firstAttribute="height" constant="28" id="M65-L5-oAL"/>
@@ -243,6 +243,7 @@
                         <outlet property="activityIndicator" destination="EG7-WS-QYQ" id="RjP-38-HEH"/>
                         <outlet property="activityIndicatorContainer" destination="pfN-EU-Zyt" id="2eq-XY-7vl"/>
                         <outlet property="contentContainer" destination="2nm-iJ-O4P" id="ZZD-3r-OWH"/>
+                        <outlet property="signInButton" destination="aCz-l6-i3F" id="EDK-qy-gvX"/>
                         <outlet property="textFieldPassword" destination="hQO-cK-ld9" id="45A-kP-Dcb"/>
                         <outlet property="textFieldUsername" destination="cUy-ER-O7f" id="meP-OD-sDC"/>
                         <outlet property="visibleViewBottomConstraint" destination="lUZ-pb-lT4" id="duq-Zd-6bF"/>

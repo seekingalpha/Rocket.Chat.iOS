@@ -56,4 +56,13 @@ struct UserManager {
         }
     }
 
+//    static func getUserAvatar(completion: @escaping MessageCompletion) {
+//        let user = AuthManager.currentUser()
+//        let object = [
+//            "msg": "method",
+//            "method": "users.getAvatar",
+//            "params": ["userId": user?.identifier]
+//            ] as [String : Any]
+//        SocketManager.send(object, completion: completion)
+//    }
 }

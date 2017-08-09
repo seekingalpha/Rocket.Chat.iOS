@@ -32,6 +32,7 @@ final class AuthViewController: BaseViewController {
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var textInfoLabel: UILabel!
+    @IBOutlet weak var signInButton: UIButton!
 
     var customActivityIndicator: LoaderView!
 
