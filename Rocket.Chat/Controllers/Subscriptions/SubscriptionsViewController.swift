@@ -91,6 +91,7 @@ final class SubscriptionsViewController: BaseViewController {
 
     var groupInfomation: [[String: String]]?
     var groupSubscriptions: [[Subscription]]?
+    var directMessages: [Subscription]?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -336,6 +337,7 @@ extension SubscriptionsViewController {
                 ])
 
                 groupSubscriptions?.append(directMessageGroup)
+                self.directMessages = directMessageGroup
             }
         }
     }
@@ -359,24 +361,40 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.identifier) as? SubscriptionCell else {
-            return UITableViewCell()
+
+        if (groupSubscriptions?[indexPath.section])! == self.directMessages! {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.directMessageIdentifier) as? SubscriptionCell else {
+                return UITableViewCell()
+            }
+
+            if let subscription = subscription(for: indexPath) {
+                cell.subscription = subscription
+                cell.userName = subscription.name
+                print(">>>>>    ")
+                print(subscription)
+            }
+            return cell
+        } else {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.identifier) as? SubscriptionCell else {
+                return UITableViewCell()
+            }
+
+            if let subscription = subscription(for: indexPath) {
+                cell.subscription = subscription
+                print(">>>>>    ")
+                print(subscription)
+            }
+            return cell
         }
 
-        if let subscription = subscription(for: indexPath) {
-            cell.subscription = subscription
-            print(">>>>>    ")
-            print(subscription)
-        }
-
-        return cell
+        return UITableViewCell()
     }
 }
 
 extension SubscriptionsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == 0 ? 21 : 60
+        return 21
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {

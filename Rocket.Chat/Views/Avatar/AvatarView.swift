@@ -27,6 +27,12 @@ final class AvatarView: UIView {
             updateAvatar()
         }
     }
+    
+    var userName: String? {
+        didSet {
+            updateAvatar()
+        }
+    }
 
     @IBOutlet weak var labelInitials: UILabel!
     var labelInitialsFontSize: CGFloat? {
@@ -38,10 +44,15 @@ final class AvatarView: UIView {
     @IBOutlet weak var imageView: UIImageView!
 
     private func userAvatarURL() -> URL? {
-        guard let username = user?.username else { return nil }
+        var userName = user?.username
+        if userName == nil {
+            userName = self.userName
+        }
+        if (userName == nil) {return nil}
+        //guard let username = user?.username else { return nil }
         guard let auth = AuthManager.isAuthenticated() else { return nil }
         guard let baseURL = auth.baseURL() else { return nil }
-        guard let encodedUsername = username.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else { return nil }
+        guard let encodedUsername = userName?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed) else { return nil }
         return URL(string: "\(baseURL)/avatar/\(encodedUsername)")
     }
 

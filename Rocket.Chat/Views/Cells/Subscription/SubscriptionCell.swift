@@ -11,6 +11,7 @@ import UIKit
 final class SubscriptionCell: UITableViewCell {
 
     static let identifier = "CellSubscription"
+    static let directMessageIdentifier = "DirectMessage"
 
     internal let labelSelectedTextColor = UIColor(rgb: 0xFFFFFF, alphaVal: 1)
     internal let labelReadTextColor = UIColor(rgb: 0xFFFFFFF, alphaVal: 1)
@@ -26,18 +27,26 @@ final class SubscriptionCell: UITableViewCell {
         }
     }
 
+    var userName: String! {
+        didSet {
+            self.userAvatar.userName = userName
+            self.userAvatar.layer.cornerRadius = self.userAvatar.frame.size.width / 2
+            self.userAvatar.layer.masksToBounds = true
+        }
+    }
+
     @IBOutlet weak var labelName: UILabel!
     @IBOutlet weak var userAvatar: AvatarView!
 
     @IBOutlet weak var labelUnread: UILabel! {
         didSet {
-            labelUnread.layer.cornerRadius = 2
+            labelUnread.layer.cornerRadius = 11
         }
     }
 
     func updateSubscriptionInformatin() {
         updateIconImage()
-
+        //self.userAvatar.user =
         labelName.text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
 
         if subscription.unread > 0 || subscription.alert {
@@ -53,30 +62,30 @@ final class SubscriptionCell: UITableViewCell {
     }
 
     func updateIconImage() {
-//        switch subscription.type {
-//        case .channel:
-//            imageViewIcon.image = UIImage(named: "Hashtag")?.imageWithTint(.RCInvisible())
-//            break
-//        case .directMessage:
-//            var color: UIColor = .RCInvisible()
-//
-//            if let user = subscription.directMessageUser {
-//                color = { _ -> UIColor in
-//                    switch user.status {
-//                    case .online: return .RCOnline()
-//                    case .offline: return .RCInvisible()
-//                    case .away: return .RCAway()
-//                    case .busy: return .RCBusy()
-//                    }
-//                }()
-//            }
-//
-//            imageViewIcon.image = UIImage(named: "Mention")?.imageWithTint(color)
-//            break
-//        case .group:
-//            imageViewIcon.image = UIImage(named: "Lock")?.imageWithTint(.RCInvisible())
-//            break
-//        }
+        switch subscription.type {
+        case .channel:
+            // imageViewIcon.image = UIImage(named: "Hashtag")?.imageWithTint(.RCInvisible())
+            break
+        case .directMessage:
+            /*var color: UIColor = .RCInvisible()
+
+            if let user = subscription.directMessageUser {
+                color = { _ -> UIColor in
+                    switch user.status {
+                    case .online: return .RCOnline()
+                    case .offline: return .RCInvisible()
+                    case .away: return .RCAway()
+                    case .busy: return .RCBusy()
+                    }
+                }()
+            }*/
+
+            // imageViewIcon.image = UIImage(named: "Mention")?.imageWithTint(color)
+            break
+        case .group:
+            // imageViewIcon.image = UIImage(named: "Lock")?.imageWithTint(.RCInvisible())
+            break
+        }
     }
 
 }

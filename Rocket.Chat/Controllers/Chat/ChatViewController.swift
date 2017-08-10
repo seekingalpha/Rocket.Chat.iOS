@@ -520,6 +520,7 @@ extension ChatViewController {
         guard let obj = dataController.itemAt(indexPath) else { return UICollectionViewCell() }
 
         if obj.type == .message {
+            print(obj)
             return cellForMessage(obj, at: indexPath)
         }
 
