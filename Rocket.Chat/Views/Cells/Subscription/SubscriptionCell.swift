@@ -46,8 +46,11 @@ final class SubscriptionCell: UITableViewCell {
 
     func updateSubscriptionInformatin() {
         updateIconImage()
-        //self.userAvatar.user =
-        labelName.text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
+
+        let text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
+
+        let titleFormatter = TitleFormatter()
+        labelName.text = titleFormatter.replaceDotWithSpace(string: text)
 
         if subscription.unread > 0 || subscription.alert {
             labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)

@@ -147,6 +147,7 @@
 		73904E721F1FAD8D00FBDB7B /* CoreComponentsAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */; };
 		73904E791F1FBF0500FBDB7B /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 73904E781F1FBF0500FBDB7B /* Configuration.plist */; };
 		73DD56371F1FAB3100821775 /* ApplicationAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DD56361F1FAB3100821775 /* ApplicationAssembly.m */; };
+		73FBA8931F3DE5CC00DE7692 /* TitleFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73FBA8921F3DE5CC00DE7692 /* TitleFormatter.swift */; };
 		7DE1B07114BBD1D46E9CC71B /* Pods_Rocket_Chat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F5191CD6C53AEA006C82524 /* Pods_Rocket_Chat.framework */; };
 		925FF74E1E8EFB3E00982043 /* SettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925FF74D1E8EFB3E00982043 /* SettingsViewModel.swift */; };
 		925FF7511E8EFCAD00982043 /* SettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 925FF7501E8EFCAD00982043 /* SettingsViewModelTests.swift */; };
@@ -331,6 +332,7 @@
 		73904E781F1FBF0500FBDB7B /* Configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Configuration.plist; path = Assembly/Configuration.plist; sourceTree = "<group>"; };
 		73DD56351F1FAB3100821775 /* ApplicationAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationAssembly.h; path = Assembly/ApplicationAssembly.h; sourceTree = "<group>"; };
 		73DD56361F1FAB3100821775 /* ApplicationAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationAssembly.m; path = Assembly/ApplicationAssembly.m; sourceTree = "<group>"; };
+		73FBA8921F3DE5CC00DE7692 /* TitleFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TitleFormatter.swift; path = Helpers/TitleFormatter.swift; sourceTree = "<group>"; };
 		925FF74D1E8EFB3E00982043 /* SettingsViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModel.swift; sourceTree = "<group>"; };
 		925FF7501E8EFCAD00982043 /* SettingsViewModelTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewModelTests.swift; sourceTree = "<group>"; };
 		A0FFC1601E8A9D8D00A1B5EA /* TintedTextField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TintedTextField.swift; path = Views/Subscriptions/TintedTextField.swift; sourceTree = "<group>"; };
@@ -728,6 +730,7 @@
 			isa = PBXGroup;
 			children = (
 				41D701D51E67111E00FED2EE /* MessageTextFontAttributes.swift */,
+				73FBA8921F3DE5CC00DE7692 /* TitleFormatter.swift */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
@@ -1365,6 +1368,7 @@
 				41A91AF11E51CD41005C94B1 /* SubscriptionUserStatusView.swift in Sources */,
 				412731D71DE0A89B00FC45A0 /* ChatPreviewModeView.swift in Sources */,
 				4180204F1E718E370012A092 /* ChannelInfoViewController.swift in Sources */,
+				73FBA8931F3DE5CC00DE7692 /* TitleFormatter.swift in Sources */,
 				41C45AEF1DFAD42800D9969C /* ChatDataController.swift in Sources */,
 				41EE157E1E05BED600754D45 /* ChatControllerAutocomplete.swift in Sources */,
 				4162E1531D651A8800AAAE49 /* UserManager.swift in Sources */,

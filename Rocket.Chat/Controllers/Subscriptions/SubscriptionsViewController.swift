@@ -116,11 +116,9 @@ final class SubscriptionsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.userName.text = AuthManager.currentUser()?.username
+        let titleFormatter = TitleFormatter()
+        self.userName.text = titleFormatter.replaceDotWithSpace(string: AuthManager.currentUser()?.username)
         self.userAvatar.user = AuthManager.currentUser()
-//        UserManager.getUserAvatar { (response) in
-//            print(response)
-//        }
     }
     override var prefersStatusBarHidden: Bool {
         return false
@@ -361,7 +359,6 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
         if (groupSubscriptions?[indexPath.section])! == self.directMessages! {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.directMessageIdentifier) as? SubscriptionCell else {
                 return UITableViewCell()
@@ -370,8 +367,6 @@ extension SubscriptionsViewController: UITableViewDataSource {
             if let subscription = subscription(for: indexPath) {
                 cell.subscription = subscription
                 cell.userName = subscription.name
-                print(">>>>>    ")
-                print(subscription)
             }
             return cell
         } else {
@@ -381,13 +376,9 @@ extension SubscriptionsViewController: UITableViewDataSource {
 
             if let subscription = subscription(for: indexPath) {
                 cell.subscription = subscription
-                print(">>>>>    ")
-                print(subscription)
             }
             return cell
         }
-
-        return UITableViewCell()
     }
 }
 
