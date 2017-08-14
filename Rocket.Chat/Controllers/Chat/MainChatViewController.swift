@@ -24,7 +24,7 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        SideMenuController.preferences.drawing.menuButtonImage = UIImage(named: "Menu")
+        SideMenuController.preferences.drawing.menuButtonImage = UIImage(named: "MenuMod")
         SideMenuController.preferences.drawing.sidePanelPosition = .underCenterPanelLeft
 
         if UIDevice.current.userInterfaceIdiom == .pad {

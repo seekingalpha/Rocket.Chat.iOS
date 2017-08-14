@@ -9,9 +9,15 @@
 import Foundation
 
 class TitleFormatter {
-    private func stringFromHtml(string: String?) -> NSAttributedString? {
+    private func stringFromHtml(string: String?, color: UIColor = .black) -> NSAttributedString? {
         do {
-            let data = string?.data(using: String.Encoding.utf8, allowLossyConversion: true)
+            guard let string = string else {
+                return nil
+            }
+
+            let modString = "<font color=\"white\" family=\"arial\" size=\"5\" >" + string + "</font>"// face=\"arial\" size=\"8\"size=\"8\"
+            
+            let data = modString.data(using: String.Encoding.utf8, allowLossyConversion: true)
             if let d = data {
                 let str = try NSAttributedString(data: d,
                                                  options: [NSDocumentTypeDocumentAttribute: NSHTMLTextDocumentType],
@@ -30,7 +36,8 @@ class TitleFormatter {
         return string.replacingOccurrences(of: ".", with: " ", options: .literal, range: nil)
     }
 
-    func title(string: String?) -> NSAttributedString? {
-        return self.stringFromHtml(string: self.replaceDotWithSpace(string: string))
+    func title(string: String?, color: UIColor = .black) -> NSAttributedString? {
+        return self.stringFromHtml(string: self.replaceDotWithSpace(string: string), color: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
     }
+
 }

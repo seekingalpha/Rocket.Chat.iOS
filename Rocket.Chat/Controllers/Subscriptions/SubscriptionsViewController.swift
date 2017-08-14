@@ -116,6 +116,11 @@ final class SubscriptionsViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        /*
+         [self.navigationController.navigationBar setBarTintColor:[UIColor greenColor]];
+         [self.navigationController.navigationBar setTranslucent:NO];
+         */
+        self.navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.2605174184, green: 0.2605243921, blue: 0.260520637, alpha: 1)
         let titleFormatter = TitleFormatter()
         self.userName.text = titleFormatter.replaceDotWithSpace(string: AuthManager.currentUser()?.username)
         self.userAvatar.user = AuthManager.currentUser()

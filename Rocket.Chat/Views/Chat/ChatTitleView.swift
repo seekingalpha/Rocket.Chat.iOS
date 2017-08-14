@@ -10,10 +10,9 @@ import UIKit
 
 final class ChatTitleView: UIView {
 
-    @IBOutlet weak var icon: UIImageView!
     @IBOutlet weak var labelTitle: UILabel! {
         didSet {
-            labelTitle.textColor = .RCDarkGray()
+            labelTitle.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         }
     }
 
@@ -25,11 +24,12 @@ final class ChatTitleView: UIView {
 
     var subscription: Subscription! {
         didSet {
-            labelTitle.text = subscription.name
+            let text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
+            let titleFormatter = TitleFormatter()
+            labelTitle.attributedText = titleFormatter.title(string: text, color: UIColor.white)
 
             switch subscription.type {
             case .channel:
-                icon.image = UIImage(named: "Hashtag")?.imageWithTint(.RCGray())
                 break
             case .directMessage:
                 var color = UIColor.RCGray()
@@ -45,10 +45,8 @@ final class ChatTitleView: UIView {
                     }()
                 }
 
-                icon.image = UIImage(named: "Mention")?.imageWithTint(color)
                 break
             case .group:
-                icon.image = UIImage(named: "Lock")?.imageWithTint(.RCGray())
                 break
             }
         }

@@ -75,8 +75,8 @@ final class ChatViewController: SLKTextViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationController?.navigationBar.isTranslucent = false
-        navigationController?.navigationBar.barTintColor = UIColor.white
-        navigationController?.navigationBar.tintColor = UIColor(rgb: 0x5B5B5B, alphaVal: 1)
+        navigationController?.navigationBar.barTintColor = #colorLiteral(red: 0.1333333333, green: 0.1333333333, blue: 0.1333333333, alpha: 1)
+        navigationController?.navigationBar.tintColor = #colorLiteral(red: 0.1333333333, green: 0.1333333333, blue: 0.1333333333, alpha: 1)//UIColor(rgb: 0x5B5B5B, alphaVal: 1)
 
         mediaFocusViewController.shouldDismissOnTap = true
         mediaFocusViewController.shouldShowPhotoActions = true
@@ -87,7 +87,8 @@ final class ChatViewController: SLKTextViewController {
         isKeyboardPanningEnabled = true
         shouldScrollToBottomAfterKeyboardShows = false
 
-        leftButton.setImage(UIImage(named: "Upload"), for: .normal)
+        leftButton.setImage(UIImage(named: "Upload")?.withRenderingMode(.alwaysTemplate), for: .normal)
+        leftButton.tintColor = UIColor.init(colorLiteralRed: 248/255, green: 139/255, blue: 47/255, alpha: 1.0)
 
         rightButton.isEnabled = false
 
@@ -138,16 +139,6 @@ final class ChatViewController: SLKTextViewController {
         })
     }
 
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let nav = segue.destination as? UINavigationController, segue.identifier == "Channel Info" {
-            if let controller = nav.viewControllers.first as? ChannelInfoViewController {
-                if let subscription = self.subscription {
-                    controller.subscription = subscription
-                }
-            }
-        }
-    }
-
     fileprivate func setupTextViewSettings() {
         textInputbar.autoHideRightButton = true
 
@@ -165,9 +156,6 @@ final class ChatViewController: SLKTextViewController {
         let view = ChatTitleView.instantiateFromNib()
         self.navigationItem.titleView = view
         chatTitleView = view
-
-        let gesture = UITapGestureRecognizer(target: self, action: #selector(chatTitleViewDidPressed))
-        chatTitleView?.addGestureRecognizer(gesture)
     }
 
     fileprivate func setupScrollToBottomButton() {
