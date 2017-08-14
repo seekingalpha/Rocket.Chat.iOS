@@ -359,7 +359,19 @@ extension SubscriptionsViewController: UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if (groupSubscriptions?[indexPath.section])! == self.directMessages! {
+        guard let group = groupSubscriptions?[indexPath.section] else {
+            return UITableViewCell()
+        }
+        if self.directMessages == nil || group != self.directMessages!  {
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.identifier) as? SubscriptionCell else {
+                return UITableViewCell()
+            }
+
+            if let subscription = subscription(for: indexPath) {
+                cell.subscription = subscription
+            }
+            return cell
+        } else if group == self.directMessages! {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.directMessageIdentifier) as? SubscriptionCell else {
                 return UITableViewCell()
             }
@@ -369,16 +381,8 @@ extension SubscriptionsViewController: UITableViewDataSource {
                 cell.userName = subscription.name
             }
             return cell
-        } else {
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: SubscriptionCell.identifier) as? SubscriptionCell else {
-                return UITableViewCell()
-            }
-
-            if let subscription = subscription(for: indexPath) {
-                cell.subscription = subscription
-            }
-            return cell
         }
+        return UITableViewCell()
     }
 }
 

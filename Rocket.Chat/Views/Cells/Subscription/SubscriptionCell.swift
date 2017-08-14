@@ -50,7 +50,7 @@ final class SubscriptionCell: UITableViewCell {
         let text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
 
         let titleFormatter = TitleFormatter()
-        labelName.text = titleFormatter.replaceDotWithSpace(string: text)
+        labelName.attributedText = titleFormatter.title(string: text)
 
         if subscription.unread > 0 || subscription.alert {
             labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
