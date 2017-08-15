@@ -193,14 +193,18 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uka-U8-0fA">
-                                        <rect key="frame" x="324" y="76" width="46" height="29"/>
+                                        <rect key="frame" x="324" y="75.5" width="46" height="31"/>
                                         <constraints>
+                                            <constraint firstAttribute="height" constant="31" id="HXq-Io-zLK"/>
                                             <constraint firstAttribute="width" constant="46" id="Jlf-xQ-rE8"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                         <state key="normal" title="Logout">
                                             <color key="titleColor" red="0.60392156862745094" green="0.60392156862745094" blue="0.60392156862745094" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <action selector="buttonLogoutDidPressed:" destination="pre-Wt-UOv" eventType="touchUpInside" id="f5u-Gl-POP"/>
+                                        </connections>
                                     </button>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="n3b-dT-vFh" customClass="AvatarView" customModule="Rocket_Chat" customModuleProvider="target">
                                         <rect key="frame" x="10" y="63" width="44" height="44"/>
@@ -236,7 +240,6 @@
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstItem="uka-U8-0fA" firstAttribute="baseline" secondItem="EqR-JP-m3w" secondAttribute="baseline" id="60h-tY-q2k"/>
                                     <constraint firstItem="ArO-ez-uRr" firstAttribute="leading" secondItem="5g6-R1-nTb" secondAttribute="leading" id="7ET-xR-4Fq"/>
                                     <constraint firstItem="ArO-ez-uRr" firstAttribute="top" secondItem="5g6-R1-nTb" secondAttribute="top" id="AZK-JU-dXH"/>
                                     <constraint firstItem="n3b-dT-vFh" firstAttribute="top" secondItem="5g6-R1-nTb" secondAttribute="top" constant="63" id="MI6-ce-o62"/>
@@ -244,6 +247,7 @@
                                     <constraint firstAttribute="bottom" secondItem="n3b-dT-vFh" secondAttribute="bottom" constant="9" id="NwY-xV-aor"/>
                                     <constraint firstAttribute="bottom" secondItem="qXs-8m-HXb" secondAttribute="bottom" constant="9" id="Tsc-4a-eHh"/>
                                     <constraint firstItem="n3b-dT-vFh" firstAttribute="leading" secondItem="5g6-R1-nTb" secondAttribute="leading" constant="10" id="XHo-oD-v7l"/>
+                                    <constraint firstItem="uka-U8-0fA" firstAttribute="baseline" secondItem="EqR-JP-m3w" secondAttribute="baseline" id="Y8y-zj-9eD"/>
                                     <constraint firstAttribute="trailing" secondItem="uka-U8-0fA" secondAttribute="trailing" constant="5" id="YCG-jF-90n"/>
                                     <constraint firstItem="qXs-8m-HXb" firstAttribute="leading" secondItem="5g6-R1-nTb" secondAttribute="leading" constant="10" id="e94-RB-YEu"/>
                                     <constraint firstAttribute="height" constant="116" id="ja2-wl-yeX"/>
