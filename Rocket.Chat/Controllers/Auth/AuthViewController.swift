@@ -113,6 +113,7 @@ final class AuthViewController: BaseViewController {
                     alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
                     present(alert, animated: true, completion: nil)
                 }
+                self.stateMachine?.error()
             }
         } else {
             self.stateMachine?.success()

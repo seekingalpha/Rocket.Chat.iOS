@@ -109,7 +109,7 @@ struct LoginInProgressState: AuthState, TransitionState {
         return LoginSuccessState(authViewController: self.authViewController)
     }
     func failure() -> AuthState? {
-        return nil
+        return ShowLoginState(authViewController: self.authViewController)
     }
 }
 
@@ -149,4 +149,11 @@ class AuthStateMachine: NSObject {
         self.currentState = transitinableState.success()
         self.execute()
     }
+    func error() {
+        guard let transitinableState = self.currentState as? TransitionState else {
+            return
+        }
+        self.currentState = transitinableState.failure()
+    }
+
 }
