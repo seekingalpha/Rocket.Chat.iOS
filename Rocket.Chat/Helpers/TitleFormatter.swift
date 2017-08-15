@@ -15,8 +15,8 @@ class TitleFormatter {
                 return nil
             }
 
-            let modString = "<font color=\"white\" family=\"arial\" size=\"5\" >" + string + "</font>"// face=\"arial\" size=\"8\"size=\"8\"
-            
+            let modString = "<font color=\"white\" family=\"Helvetica Neue\" size=\"5\" >" + string + "</font>"
+
             let data = modString.data(using: String.Encoding.utf8, allowLossyConversion: true)
             if let d = data {
                 let str = try NSAttributedString(data: d,
