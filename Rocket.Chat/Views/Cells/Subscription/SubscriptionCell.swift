@@ -53,10 +53,10 @@ final class SubscriptionCell: UITableViewCell {
         labelName.attributedText = titleFormatter.title(string: text)
 
         if subscription.unread > 0 || subscription.alert {
-            labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
+           // labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
             labelName.textColor = labelUnreadTextColor
         } else {
-            labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
+          //  labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
             labelName.textColor = labelReadTextColor
         }
 

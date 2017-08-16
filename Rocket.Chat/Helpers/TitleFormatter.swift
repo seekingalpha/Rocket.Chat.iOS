@@ -9,13 +9,13 @@
 import Foundation
 
 class TitleFormatter {
-    private func stringFromHtml(string: String?, color: UIColor = .black) -> NSAttributedString? {
+    private func stringFromHtml(string: String?, color: UIColor = .black, size: NSInteger = 4) -> NSAttributedString? {
         do {
             guard let string = string else {
                 return nil
             }
-
-            let modString = "<font color=\"white\" family=\"Helvetica Neue\" size=\"5\" >" + string + "</font>"
+            let stringSize = String(size)
+            let modString = "<font color=\"white\" face=\"Helvetica Neue\" size=\"" + stringSize + "\" >" + string + "</font>"
 
             let data = modString.data(using: String.Encoding.utf8, allowLossyConversion: true)
             if let d = data {
@@ -39,5 +39,7 @@ class TitleFormatter {
     func title(string: String?, color: UIColor = .black) -> NSAttributedString? {
         return self.stringFromHtml(string: self.replaceDotWithSpace(string: string), color: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0))
     }
-
+    func navigationTitle(string: String?, color: UIColor = .black) -> NSAttributedString? {
+        return self.stringFromHtml(string: self.replaceDotWithSpace(string: string), color: #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), size: 5)
+    }
 }

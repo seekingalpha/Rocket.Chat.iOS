@@ -26,7 +26,7 @@ final class ChatTitleView: UIView {
         didSet {
             let text = (subscription.roomDescription == "") ? subscription.name : subscription.roomDescription
             let titleFormatter = TitleFormatter()
-            labelTitle.attributedText = titleFormatter.title(string: text, color: UIColor.white)
+            labelTitle.attributedText = titleFormatter.navigationTitle(string: text, color: UIColor.white)
             switch subscription.type {
             case .channel:
                 break

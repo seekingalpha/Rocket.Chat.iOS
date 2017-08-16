@@ -16,8 +16,8 @@
             withClass:[AuthViewController class]
             configuration:^(TyphoonDefinition *definition) {
                 [definition injectProperty:@selector(serverURL) with:TyphoonConfig(@"serverURL")];
-//                [definition injectProperty:@selector(login) with:TyphoonConfig(@"login")];
-//                [definition injectProperty:@selector(password) with:TyphoonConfig(@"password")];
+                [definition injectProperty:@selector(login) with:TyphoonConfig(@"login")];
+                [definition injectProperty:@selector(password) with:TyphoonConfig(@"password")];
                 [definition injectProperty:@selector(interactor) with:[AuthInteractor new]];
                 [definition injectProperty:@selector(stateMachine) with:[AuthStateMachine new]];
             }];
