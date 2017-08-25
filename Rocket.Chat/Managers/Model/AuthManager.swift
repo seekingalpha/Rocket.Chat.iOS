@@ -16,7 +16,7 @@ struct AuthManagerPersistKeys {
 }
 
 struct AuthManager {
-
+    
     /**
         - returns: Last auth object (sorted by lastAccess), if exists.
     */
@@ -33,7 +33,7 @@ struct AuthManager {
         guard let user = try? Realm().object(ofType: User.self, forPrimaryKey: auth.userId) else { return nil }
         return user
     }
-
+    
     /**
         This method is going to persist the authentication informations
         that was latest used in NSUserDefaults to keep it safe if something
@@ -125,35 +125,73 @@ extension AuthManager {
         Method that creates an User account.
      */
     static func signup(with name: String, _ email: String, _ password: String, completion: @escaping MessageCompletion) {
-        let object = [
-            "msg": "method",
-            "method": "registerUser",
-            "params": [[
-                "email": email,
-                "pass": password,
-                "name": name
-            ]]
-        ] as [String : Any]
-
-        SocketManager.send(object) { (response) in
-            guard !response.isError() else {
-                completion(response)
-                return
-            }
-
-            self.auth(email, password: password, completion: completion)
-        }
+//        let object = [
+//            "msg": "method",
+//            "method": "registerUser",
+//            "params": [[
+//                "email": email,
+//                "pass": password,
+//                "name": name
+//            ]]
+//        ] as [String : Any]
+//
+//        SocketManager.send(object) { (response) in
+//            guard !response.isError() else {
+//                completion(response)
+//                return
+//            }
+//            let params = [
+//                            "email": email,
+//                            "password": password
+//                        ]
+//            self.auth(params: params, completion: completion)
+//        }
     }
 
     /**
         Generic method that authenticates the user.
     */
+    static func auth(params: [String: Any], completion: @escaping HTTPComplition) {
+        self.post(params : params, url : "https://staging.seekingalpha.com/authentication/rc_mobile_login", complition : { result in
+
+            var httpResponse = HTTPResponse()
+            guard let rc_token = result?["rc_token"] as? String else {
+                httpResponse.isError = true
+                completion(httpResponse)
+                return
+            }
+            guard let user_id = result?["user_id"] as? String else {
+                httpResponse.isError = true
+                completion(httpResponse)
+                return
+            }
+
+            Realm.execute({ (realm) in
+                // Delete all the Auth objects, since we don't
+                // support multiple-server authentication yet
+                realm.delete(realm.objects(Auth.self))
+
+                let auth = Auth()
+                auth.lastSubscriptionFetch = nil
+                auth.lastAccess = Date()
+                auth.serverURL = "wss://rc.staging.seekingalpha.com/websocket"
+                auth.token = rc_token
+                auth.userId = user_id
+                PushManager.updatePushToken()
+
+                realm.add(auth)
+            }, completion: {
+                completion(httpResponse)
+            })
+        })
+    }
+
     static func auth(params: [String: Any], completion: @escaping MessageCompletion) {
         let object = [
             "msg": "method",
             "method": "login",
             "params": [params]
-        ] as [String : Any]
+            ] as [String : Any]
 
         SocketManager.send(object) { (response) in
             guard !response.isError() else {
@@ -183,7 +221,6 @@ extension AuthManager {
 
                 realm.add(auth)
             }, completion: {
-                ServerManager.timestampSync()
                 completion(response)
             })
         }
@@ -197,37 +234,34 @@ extension AuthManager {
         - parameter completion: The completion block that'll be called in case
             of success or error.
     */
-    static func auth(_ username: String, password: String, code: String? = nil, completion: @escaping MessageCompletion) {
-        let usernameType = username.contains("@") ? "email" : "username"
-        var params: [String: Any]?
-
-        if let code = code {
-            params = [
-                "totp": [
-                    "login": [
-                        "user": [usernameType: username],
-                        "password": [
-                            "digest": password.sha256(),
-                            "algorithm": "sha-256"
-                        ]
-                    ],
-                    "code": code
-                ]
-            ]
-        } else {
-            params = [
-                "user": [usernameType: username],
-                "password": [
-                    "digest": password.sha256(),
-                    "algorithm": "sha-256"
-                ]
-            ]
-        }
-
-        if let params = params {
-            self.auth(params: params, completion: completion)
-        }
-    }
+//    static func auth(_ username: String, password: String, code: String? = nil, completion: @escaping MessageCompletion) {
+//        let usernameType = username.contains("@") ? "email" : "username"
+//        var params: [String: Any]?
+//
+//        if let code = code {
+//            params = [
+//                "totp": [
+//                    "login": [
+//                        "user": [usernameType: username],
+//                        "password": [
+//                            "digest": password.sha256(),
+//                            "algorithm": "sha-256"
+//                        ]
+//                    ],
+//                    "code": code
+//                ]
+//            ]
+//        } else {
+//            params = [
+//                "email": username,
+//                "password": password
+//            ]
+//        }
+//
+//        if let params = params {
+//            self.auth(params: params, completion: completion)
+//        }
+//    }
 
     /**
         Returns the username suggestion for the logged in user.
@@ -276,4 +310,67 @@ extension AuthManager {
         }
     }
 
+    static func updatePublicSettings(_ auth: Auth?, completion: @escaping MessageCompletionObject<AuthSettings?>) {
+        let object = [
+            "msg": "method",
+            "method": "public-settings/get"
+        ] as [String : Any]
+
+        SocketManager.send(object) { (response) in
+            guard !response.isError() else {
+                completion(nil)
+                return
+            }
+
+            Realm.executeOnMainThread({ realm in
+                let settings = AuthManager.isAuthenticated()?.settings ?? AuthSettings()
+                settings.map(response.result["result"], realm: realm)
+                realm.add(settings, update: true)
+
+                if let auth = AuthManager.isAuthenticated() {
+                    auth.settings = settings
+                    realm.add(auth, update: true)
+                }
+
+                let unmanagedSettings = AuthSettings(value: settings)
+                completion(unmanagedSettings)
+            })
+        }
+    }
+
+    static func post(params: [String: Any], url: String, complition: @escaping (_ result: NSDictionary?) -> Void ) {
+
+        guard let serviceUrl = URL(string: url) else { return }
+        var request = URLRequest(url: serviceUrl)
+        request.httpMethod = "POST"
+        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
+        request.addValue("Basic c2Vla2luZ2FscGhhOmlwdmlwdg==", forHTTPHeaderField: "Authorization")
+        request.addValue("gzip, deflate, sdch", forHTTPHeaderField: "Accept-Encoding")
+        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        request.addValue("1", forHTTPHeaderField: "Fastly-Debug")
+
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+            return
+        }
+        request.httpBody = httpBody
+
+        let session = URLSession.shared
+        session.dataTask(with: request) { (data, response, error) in
+            if let response = response {
+                print(response)
+            }
+            if let data = data {
+                do {
+                    let json = try JSONSerialization.jsonObject(with: data, options: [])
+                    print(json)
+
+                    if let dict = json as? NSDictionary {
+                        complition(dict)
+                    }
+                } catch {
+                    print(error)
+                }
+            }
+        }.resume()
+    }
 }
