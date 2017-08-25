@@ -99,26 +99,55 @@ final class AuthViewController: BaseViewController {
     internal func handleAuthenticationResponse(_ response: SocketResponse) {
         stopLoading()
 
-        if response.isError() {
-            if let error = response.result["error"].dictionary {
-                let code = error["error"]?.int
-                if code != nil && code == 403 {
-                    performSegue(withIdentifier: "403", sender: nil)
-                } else {
-                    let alert = UIAlertController(
-                        title: localized("error.socket.default_error_title"),
-                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
-                        preferredStyle: .alert
-                    )
-
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    present(alert, animated: true, completion: nil)
-                }
-            }
-            self.stateMachine?.error()
-        } else {
+//        if response.isError() {
+//            if let error = response.result["error"].dictionary {
+//                let code = error["error"]?.int
+//                if code != nil && code == 403 {
+//                    performSegue(withIdentifier: "403", sender: nil)
+//                } else {
+//                    let alert = UIAlertController(
+//                        title: localized("error.socket.default_error_title"),
+//                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
+//                        preferredStyle: .alert
+//                    )
+//
+//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                    present(alert, animated: true, completion: nil)
+//                }
+//            }
+//            self.stateMachine?.error()
+//        } else {
             self.stateMachine?.success()
+//        }
+    }
+
+    internal func loginResponse(_ response: HTTPResponse) {
+        stopLoading()
+        if !response.isError {
+            self.stateMachine?.success()
+        } else {
+            self.stateMachine?.error()
         }
+
+//        if response.isError() {
+//            if let error = response.result["error"].dictionary {
+//                let code = error["error"]?.int
+//                if code != nil && code == 403 {
+//                    performSegue(withIdentifier: "403", sender: nil)
+//                } else {
+//                    let alert = UIAlertController(
+//                        title: localized("error.socket.default_error_title"),
+//                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
+//                        preferredStyle: .alert
+//                    )
+//
+//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                    present(alert, animated: true, completion: nil)
+//                }
+//            }
+//            self.stateMachine?.error()
+//        } else {
+//        }
     }
 
     // MARK: Loaders
@@ -142,21 +171,10 @@ final class AuthViewController: BaseViewController {
     func authenticateWithUsernameOrEmail() {
         let email = textFieldUsername.text ?? ""
         let password = textFieldPassword.text ?? ""
-
         startLoading()
-
-        if serverPublicSettings?.isLDAPAuthenticationEnabled ?? false {
-            let params = [
-                "ldap": true,
-                "username": email,
-                "ldapPass": password,
-                "ldapOptions": []
-            ] as [String : Any]
-
-            AuthManager.auth(params: params, completion: self.handleAuthenticationResponse)
-        } else {
-            AuthManager.auth(email, password: password, completion: self.handleAuthenticationResponse)
-        }
+        let params = ["email": email,
+                      "password": password]
+        AuthManager.auth(params: params, completion: self.loginResponse)
     }
 
     @IBAction func buttonAuthenticateGoogleDidPressed(_ sender: Any) {

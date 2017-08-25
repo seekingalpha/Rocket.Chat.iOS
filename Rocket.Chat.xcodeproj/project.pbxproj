@@ -120,7 +120,6 @@
 		41DCB8281DDC82E000E1197F /* SubscriptionSearchMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DCB8271DDC82E000E1197F /* SubscriptionSearchMoreView.swift */; };
 		41DF76E31D2C50710028DBF8 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DF76E21D2C50710028DBF8 /* AppDelegate.swift */; };
 		41DF76E81D2C50710028DBF8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41DF76E61D2C50710028DBF8 /* Main.storyboard */; };
-		41DF76EA1D2C50710028DBF8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 41DF76E91D2C50710028DBF8 /* Assets.xcassets */; };
 		41DF76ED1D2C50720028DBF8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41DF76EB1D2C50720028DBF8 /* LaunchScreen.storyboard */; };
 		41DF77031D2C50720028DBF8 /* RocketChatUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41DF77021D2C50720028DBF8 /* RocketChatUITests.swift */; };
 		41E2F9FF1D414DE800238DFD /* Chat.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 41E2F9FE1D414DE800238DFD /* Chat.storyboard */; };
@@ -144,6 +143,8 @@
 		68D186DF1ED9714F0030EE8C /* MessageURLSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 68D186DE1ED9714F0030EE8C /* MessageURLSpec.swift */; };
 		7308DFBB1F28C78C00F77C28 /* AuthStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7308DFBA1F28C78C00F77C28 /* AuthStates.swift */; };
 		734A2E491F26231300A902B0 /* AuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734A2E481F26231300A902B0 /* AuthInteractor.swift */; };
+		737DA8A81F4D9EA90036DACD /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 737DA8A71F4D9EA80036DACD /* HTTPResponse.swift */; };
+		737DA8AA1F502C8C0036DACD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 737DA8A91F502C8C0036DACD /* Assets.xcassets */; };
 		73904E721F1FAD8D00FBDB7B /* CoreComponentsAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */; };
 		73904E791F1FBF0500FBDB7B /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 73904E781F1FBF0500FBDB7B /* Configuration.plist */; };
 		73DD56371F1FAB3100821775 /* ApplicationAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DD56361F1FAB3100821775 /* ApplicationAssembly.m */; };
@@ -292,7 +293,6 @@
 		41DF76DF1D2C50710028DBF8 /* Rocket.Chat.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rocket.Chat.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		41DF76E21D2C50710028DBF8 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		41DF76E71D2C50710028DBF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		41DF76E91D2C50710028DBF8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		41DF76EC1D2C50720028DBF8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		41DF76EE1D2C50720028DBF8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		41DF76F31D2C50720028DBF8 /* Rocket.ChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Rocket.ChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -327,6 +327,8 @@
 		68D870A8D54F5431A14607AE /* Pods_Rocket_ChatTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Rocket_ChatTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7308DFBA1F28C78C00F77C28 /* AuthStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthStates.swift; sourceTree = "<group>"; };
 		734A2E481F26231300A902B0 /* AuthInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthInteractor.swift; path = Interactors/AuthInteractor.swift; sourceTree = "<group>"; };
+		737DA8A71F4D9EA80036DACD /* HTTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
+		737DA8A91F502C8C0036DACD /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		73904E701F1FAD8D00FBDB7B /* CoreComponentsAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreComponentsAssembly.h; path = Assembly/CoreComponentsAssembly.h; sourceTree = "<group>"; };
 		73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreComponentsAssembly.m; path = Assembly/CoreComponentsAssembly.m; sourceTree = "<group>"; };
 		73904E781F1FBF0500FBDB7B /* Configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Configuration.plist; path = Assembly/Configuration.plist; sourceTree = "<group>"; };
@@ -403,6 +405,7 @@
 				414A1FFB1D46395900093E10 /* SocketResponse.swift */,
 				4162E1541D654A7400AAAE49 /* SocketHandlers.swift */,
 				414A1FF51D46320F00093E10 /* ResponseMessage.swift */,
+				737DA8A71F4D9EA80036DACD /* HTTPResponse.swift */,
 			);
 			name = Response;
 			sourceTree = "<group>";
@@ -770,6 +773,7 @@
 		41DF76E11D2C50710028DBF8 /* Rocket.Chat */ = {
 			isa = PBXGroup;
 			children = (
+				737DA8A91F502C8C0036DACD /* Assets.xcassets */,
 				734A2E471F2622D300A902B0 /* Interactors */,
 				73DD562F1F1F798800821775 /* Assembly */,
 				4199A9861DABCC2E0035F820 /* External */,
@@ -782,7 +786,6 @@
 				4174CB0A1D2D990F0086DAC8 /* Controllers */,
 				41DF76E21D2C50710028DBF8 /* AppDelegate.swift */,
 				4174CB201D2DD4690086DAC8 /* Rocket.Chat-Bridge.h */,
-				41DF76E91D2C50710028DBF8 /* Assets.xcassets */,
 				41DF76EE1D2C50720028DBF8 /* Info.plist */,
 				41833F4D1DEF16B600E54655 /* Keys.plist */,
 				4116C52C1E69B15400AC4E43 /* GoogleService-Info.plist */,
@@ -1062,7 +1065,6 @@
 				41833F4E1DEF16B600E54655 /* Keys.plist in Resources */,
 				41DF76ED1D2C50720028DBF8 /* LaunchScreen.storyboard in Resources */,
 				412731D51DE0A55C00FC45A0 /* ChatPreviewModeView.xib in Resources */,
-				41DF76EA1D2C50710028DBF8 /* Assets.xcassets in Resources */,
 				41DCB8261DDC828200E1197F /* SubscriptionSearchMoreView.xib in Resources */,
 				4102E3AA1E532323004BAA82 /* Settings.storyboard in Resources */,
 				419D84FE1DF599CA0021F034 /* ChatHeaderViewStatus.xib in Resources */,
@@ -1075,6 +1077,7 @@
 				41DF76E81D2C50710028DBF8 /* Main.storyboard in Resources */,
 				41F167EB1DAC4D5500775CCA /* ChatTitleView.xib in Resources */,
 				41FF36071DBEC0BA0074E20A /* ChatMessageVideoView.xib in Resources */,
+				737DA8AA1F502C8C0036DACD /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1372,6 +1375,7 @@
 				41C45AEF1DFAD42800D9969C /* ChatDataController.swift in Sources */,
 				41EE157E1E05BED600754D45 /* ChatControllerAutocomplete.swift in Sources */,
 				4162E1531D651A8800AAAE49 /* UserManager.swift in Sources */,
+				737DA8A81F4D9EA90036DACD /* HTTPResponse.swift in Sources */,
 				4112BEEC1E7971A400E734CB /* MainChatViewController.swift in Sources */,
 				419D85001DF599DA0021F034 /* ChatHeaderViewStatus.swift in Sources */,
 				41AC3CD91DCCA0C9002DC39A /* AutocompleteCell.swift in Sources */,

@@ -17,6 +17,7 @@ public typealias MessageCompletion = (SocketResponse) -> Void
 public typealias SocketCompletion = (WebSocket?, Bool) -> Void
 public typealias MessageCompletionObject <T: Object> = (T) -> Void
 public typealias MessageCompletionObjectsList <T: Object> = ([T]) -> Void
+public typealias HTTPComplition = (HTTPResponse) -> Void
 
 protocol SocketConnectionHandler {
     func socketDidConnect(socket: SocketManager)

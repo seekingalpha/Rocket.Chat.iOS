@@ -63,7 +63,6 @@ extension SocketManager {
         if result.event != nil {
             return handleEventSubscription(result, socket: socket)
         }
-
         // Handle model updates
         if let collection = result.collection {
             guard let msg = result.msg else { return }

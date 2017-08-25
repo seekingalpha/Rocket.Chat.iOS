@@ -124,6 +124,8 @@ final class SubscriptionsViewController: BaseViewController {
         let titleFormatter = TitleFormatter()
         self.userName.text = titleFormatter.replaceDotWithSpace(string: AuthManager.currentUser()?.username)
         self.userAvatar.user = AuthManager.currentUser()
+        print(">>>>>>>>>>\n")
+        print(self.userAvatar.user)
     }
     override var prefersStatusBarHidden: Bool {
         return false
@@ -394,7 +396,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
 extension SubscriptionsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 21
+        return 30
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -536,12 +538,12 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
         ChatViewController.sharedInstance()?.messagesToken?.stop()
         SubscriptionsViewController.sharedInstance()?.usersToken?.stop()
         SubscriptionsViewController.sharedInstance()?.subscriptionsToken?.stop()
-        
+
         AuthManager.logout {
             let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
             let controller = storyboardChat.instantiateInitialViewController()
             let application = UIApplication.shared
-            
+
             if let window = application.keyWindow {
                 window.rootViewController = controller
                 window.makeKeyAndVisible()

@@ -109,6 +109,8 @@ final class ChatViewController: SLKTextViewController {
         view.bringSubview(toFront: activityIndicatorContainer)
         view.bringSubview(toFront: buttonScrollToBottom)
         view.bringSubview(toFront: textInputbar)
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(customView: UIView(frame: CGRect(x: 0, y: 0, width: 22, height: 22)))
     }
 
     internal func reconnect() {

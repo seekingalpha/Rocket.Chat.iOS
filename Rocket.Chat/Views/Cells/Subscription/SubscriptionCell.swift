@@ -40,10 +40,10 @@ final class SubscriptionCell: UITableViewCell {
 
     @IBOutlet weak var labelUnread: UILabel! {
         didSet {
-            labelUnread.layer.cornerRadius = 11
+            labelUnread.layer.cornerRadius = labelUnread.frame.size.height / 2 
+            labelUnread.layer.masksToBounds = true
         }
     }
-
     func updateSubscriptionInformatin() {
         updateIconImage()
 
