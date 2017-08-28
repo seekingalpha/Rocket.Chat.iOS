@@ -15,7 +15,7 @@ public typealias RequestCompletion = (JSON?, Bool) -> Void
 public typealias VoidCompletion = () -> Void
 public typealias MessageCompletion = (SocketResponse) -> Void
 public typealias SocketCompletion = (WebSocket?, Bool) -> Void
-public typealias MessageCompletionObject <T: Object> = (T) -> Void
+public typealias MessageCompletionObject <T: Object> = (T?) -> Void
 public typealias MessageCompletionObjectsList <T: Object> = ([T]) -> Void
 public typealias HTTPComplition = (HTTPResponse) -> Void
 
@@ -113,8 +113,7 @@ extension SocketManager {
             }
 
             SubscriptionManager.updateSubscriptions(auth, completion: { _ in
-                // TODO: Move it to somewhere else
-                AuthManager.updatePublicSettings(auth, completion: { _ in
+                AuthSettingsManager.updatePublicSettings(auth, completion: { _ in
 
                 })
 

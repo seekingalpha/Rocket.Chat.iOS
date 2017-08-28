@@ -107,7 +107,7 @@ class AuthInteractor: NSObject {
         }
     }
 
-    func connect(socketURL: URL!) -> Observable<Result<AuthSettings>>? {
+    func connect(socketURL: URL!) -> Observable<Result<AuthSettings>> {
         return Observable.create { observer in
 
             SocketManager.connect(socketURL) { (_, _) in
@@ -117,7 +117,8 @@ class AuthInteractor: NSObject {
                          observer.onCompleted()
                          return
                     }
-                    observer.onNext(Result.success(settings))
+                    
+                    observer.onNext(Result.success(settings!))
                     observer.onCompleted()
                 }
             }
