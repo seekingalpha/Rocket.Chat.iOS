@@ -69,6 +69,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
+                                            <outlet property="counterConstraint" destination="MV8-wp-TkF" id="eqf-qt-JCN"/>
                                             <outlet property="labelName" destination="rWv-ey-Vhh" id="EJF-Bn-2Ds"/>
                                             <outlet property="labelUnread" destination="4ug-Om-HBM" id="5Eu-jT-Vom"/>
                                         </connections>
@@ -146,6 +147,7 @@
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         <connections>
+                                            <outlet property="counterConstraint" destination="3E1-TQ-cTP" id="kPH-E2-5fY"/>
                                             <outlet property="labelName" destination="Y6S-q9-3Bj" id="Clf-M0-wcE"/>
                                             <outlet property="labelUnread" destination="58W-AQ-vZy" id="EOz-eN-dje"/>
                                             <outlet property="userAvatar" destination="356-Tn-JgJ" id="935-32-UVK"/>
@@ -284,7 +286,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" navigationBarHidden="YES" id="BRy-Se-87j" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="AU3-QI-Caf">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="AU3-QI-Caf">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

@@ -37,7 +37,7 @@ final class SubscriptionCell: UITableViewCell {
 
     @IBOutlet weak var labelName: UILabel!
     @IBOutlet weak var userAvatar: AvatarView!
-
+    @IBOutlet weak var counterConstraint: NSLayoutConstraint!
     @IBOutlet weak var labelUnread: UILabel! {
         didSet {
             labelUnread.layer.cornerRadius = labelUnread.frame.size.height / 2 
@@ -53,15 +53,16 @@ final class SubscriptionCell: UITableViewCell {
         labelName.attributedText = titleFormatter.title(string: text)
 
         if subscription.unread > 0 || subscription.alert {
-           // labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.headline)
             labelName.textColor = labelUnreadTextColor
         } else {
-          //  labelName.font = UIFont.preferredFont(forTextStyle: UIFontTextStyle.body)
             labelName.textColor = labelReadTextColor
         }
 
         labelUnread.alpha = subscription.unread > 0 ? 1 : 0
-        labelUnread.text = "\(subscription.unread)"
+        let unread = "\(subscription.unread)"
+        let size: CGSize = unread.size(attributes: [NSFontAttributeName: labelUnread.font])
+        counterConstraint.constant = size.width + 10
+        labelUnread.text = unread
     }
 
     func updateIconImage() {
