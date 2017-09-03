@@ -34,7 +34,7 @@ class AuthInteractor: NSObject {
                         return observer.onNext(false)
                     }
                     SubscriptionManager.updateSubscriptions(auth, completion: { _ in
-                        AuthManager.updatePublicSettings(auth, completion: { _ in
+                        AuthSettingsManager.updatePublicSettings(auth, completion: { _ in
                         })
 
                         UserManager.userDataChanges()
@@ -111,7 +111,7 @@ class AuthInteractor: NSObject {
         return Observable.create { observer in
 
             SocketManager.connect(socketURL) { (_, _) in
-                AuthManager.updatePublicSettings(nil) { (settings) in
+                AuthSettingsManager.updatePublicSettings(nil) { (settings) in
                     guard let settings = settings else {
                          observer.onNext(.failure(.connectionError))
                          observer.onCompleted()
