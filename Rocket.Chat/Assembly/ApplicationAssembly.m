@@ -59,6 +59,8 @@
                                 parameters:^(TyphoonMethod *initializer) {
                                     [initializer injectParameterWith:[self connectServerViewController]];
                                     [definition injectProperty:@selector(nextSuccess) with:[self loginInProgressState]];
+                                    [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+                                    [definition injectProperty:@selector(logEvent) with:[self showLoginPageEvent]];
                                 }];
             }];
 }
@@ -95,6 +97,22 @@
                                 parameters:^(TyphoonMethod *initializer) {
                                     [initializer injectParameterWith:[self connectServerViewController]];
                                 }];
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
+}
+
+- (LogEventManager *)logEventManager {
+    return [TyphoonDefinition
+            withClass:[LogEventManager class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition setScope:TyphoonScopeSingleton];
+            }];
+}
+
+- (ShowLoginPageEvent *)showLoginPageEvent {
+    return [TyphoonDefinition
+            withClass:[ShowLoginPageEvent class]
+            configuration:^(TyphoonDefinition *definition) {
             }];
 }
 @end

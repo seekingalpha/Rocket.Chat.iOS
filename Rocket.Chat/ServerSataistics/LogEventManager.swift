@@ -8,7 +8,13 @@
 
 import Foundation
 
+
+//class PostBuilder:  {
+//    
+//}
+
 class LogEventManager: NSObject {
-    func send(event: LogEvent) {
+    func send(event: LogEvent?) {
+        //URLSession.shared.dataTask(with: event?.url)
     }
 }

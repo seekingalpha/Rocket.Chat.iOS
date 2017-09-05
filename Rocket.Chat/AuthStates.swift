@@ -20,6 +20,8 @@ class AuthState: NSObject {
     }
     func execute() {
     }
+    var logEventManager: LogEventManager?
+    var logEvent: LogEvent?
 }
 
 class FirstLoadingState: AuthState {
@@ -69,6 +71,7 @@ class ShowLoginState: AuthState {
         self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
         self.authViewController.textFieldUsername.becomeFirstResponder()
+        self.logEventManager?.send(event: self.logEvent)
     }
 }
 
