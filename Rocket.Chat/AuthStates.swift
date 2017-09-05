@@ -10,24 +10,23 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-protocol AuthState {
-    var authViewController: AuthViewController { get set }
-    init(authViewController: AuthViewController)
-    func execute()
-}
-
-protocol TransitionState {
-    func success() -> AuthState?
-    func failure() -> AuthState?
-}
-
-struct FirstLoadingState: AuthState {
-    var authViewController: AuthViewController
+class AuthState: NSObject {
+    var authViewController: AuthViewController!
+    var nextSuccess: AuthState?
+    var nextFailure: AuthState?
     init(authViewController: AuthViewController) {
+        super.init()
         self.authViewController = authViewController
     }
-    let disposeBag = DisposeBag()
     func execute() {
+    }
+}
+
+class FirstLoadingState: AuthState {
+
+    let disposeBag = DisposeBag()
+    override func execute() {
+        print(self.authViewController)
         self.authViewController.contentContainer.isHidden = true
         self.authViewController.customActivityIndicator.startAnimating()
         self.authViewController.textFieldUsername.resignFirstResponder()
@@ -51,7 +50,7 @@ struct FirstLoadingState: AuthState {
                 switch result {
                 case .success(let serverSettings):
                     self.authViewController.serverPublicSettings = serverSettings
-                    self.authViewController.finishExecution(nextState: ShowLoginState(authViewController: self.authViewController))
+                    self.authViewController.finishExecution(nextState: self.nextFailure)
                 default:
                     break
                 }
@@ -60,36 +59,21 @@ struct FirstLoadingState: AuthState {
         _ = authSharedObservable?.filter {value in
             return value == true
             }.subscribe( onNext: {_ in
-                self.authViewController.finishExecution(nextState: ShowChatState(authViewController: self.authViewController))
+                self.authViewController.finishExecution(nextState: self.nextSuccess)
             }).disposed(by: disposeBag)
     }
 }
 
-struct ShowLoginState: AuthState, TransitionState {
-    var authViewController: AuthViewController
-    init(authViewController: AuthViewController) {
-        self.authViewController = authViewController
-    }
-    func execute() {
+class ShowLoginState: AuthState {
+    override func execute() {
         self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
         self.authViewController.textFieldUsername.becomeFirstResponder()
     }
-    func success() -> AuthState? {
-        return LoginInProgressState(authViewController: self.authViewController)
-    }
-    func failure() -> AuthState? {
-        return nil
-    }
-
 }
 
-struct ShowChatState: AuthState {
-    var authViewController: AuthViewController
-    init(authViewController: AuthViewController) {
-        self.authViewController = authViewController
-    }
-    func execute() {
+class ShowChatState: AuthState {
+    override func execute() {
         self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
         self.authViewController.showChat()
@@ -97,29 +81,15 @@ struct ShowChatState: AuthState {
     }
 }
 
-struct LoginInProgressState: AuthState, TransitionState {
-    var authViewController: AuthViewController
-    init(authViewController: AuthViewController) {
-        self.authViewController = authViewController
-    }
-    func execute() {
+class LoginInProgressState: AuthState {
+    override func execute() {
         self.authViewController.authenticateWithUsernameOrEmail()
-    }
-    func success() -> AuthState? {
-        return LoginSuccessState(authViewController: self.authViewController)
-    }
-    func failure() -> AuthState? {
-        return ShowLoginState(authViewController: self.authViewController)
     }
 }
 
-struct LoginSuccessState: AuthState {
-    var authViewController: AuthViewController
-    init(authViewController: AuthViewController) {
-        self.authViewController = authViewController
-    }
+class LoginSuccessState: AuthState {
     let disposeBag = DisposeBag()
-    func execute() {
+    override func execute() {
         self.authViewController.startLoading()
         _ = self.authViewController.interactor?.checkAuth()?.filter {value in
             return value == true
@@ -135,25 +105,26 @@ struct LoginSuccessState: AuthState {
 }
 
 class AuthStateMachine: NSObject {
-    private var currentState: AuthState?
-    func switchState(state: AuthState?) {
+    var currentState: AuthState?
+    var rootState: AuthState?
+
+    func switchState(state: AuthState) {
         self.currentState = state
     }
     func execute() {
         self.currentState?.execute()
     }
     func success() {
-        guard let transitinableState = self.currentState as? TransitionState else {
+        guard let transitinableState = self.currentState else {
             return
         }
-        self.currentState = transitinableState.success()
+        self.currentState = transitinableState.nextSuccess
         self.execute()
     }
     func error() {
-        guard let transitinableState = self.currentState as? TransitionState else {
+        guard let transitinableState = self.currentState else {
             return
         }
-        self.currentState = transitinableState.failure()
+        self.currentState = transitinableState.nextFailure
     }
-
 }

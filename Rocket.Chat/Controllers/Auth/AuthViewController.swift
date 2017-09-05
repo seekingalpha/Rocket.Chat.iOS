@@ -57,7 +57,6 @@ final class AuthViewController: BaseViewController {
         AuthManager.recoverAuthIfNeeded()
         self.textFieldUsername.text = self.login
         self.textFieldPassword.text = self.password
-        self.stateMachine?.switchState(state: FirstLoadingState(authViewController: self))
         self.stateMachine?.execute()
     }
 
@@ -255,6 +254,9 @@ final class AuthViewController: BaseViewController {
         self.present(alert, animated: true, completion: nil)
     }
     func finishExecution(nextState: AuthState?) {
+        guard let nextState = nextState else {
+            return
+        }
         self.stateMachine?.switchState(state: nextState)
         self.stateMachine?.execute()
     }

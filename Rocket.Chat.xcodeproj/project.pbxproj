@@ -154,6 +154,8 @@
 		731DAEA61F5C7E6300707E07 /* ChatLoaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEA01F5C7E6300707E07 /* ChatLoaderCell.swift */; };
 		731DAEA71F5C7E6300707E07 /* ChatLoaderCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 731DAEA11F5C7E6300707E07 /* ChatLoaderCell.xib */; };
 		731DAEA91F5CD2DF00707E07 /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */; };
+		731DAEAC1F5DAADC00707E07 /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEAB1F5DAADC00707E07 /* LogEvent.swift */; };
+		731DAEB01F5E9F2600707E07 /* LogEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */; };
 		734A2E491F26231300A902B0 /* AuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734A2E481F26231300A902B0 /* AuthInteractor.swift */; };
 		73647A241F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A221F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift */; };
 		73647A251F5C7D3100B35A38 /* UploadHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A231F5C7D3100B35A38 /* UploadHelper.swift */; };
@@ -344,7 +346,7 @@
 		731DAE941F5C7E1600707E07 /* ArrayExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ArrayExtensions.swift; path = Extensions/ArrayExtensions.swift; sourceTree = "<group>"; };
 		731DAE961F5C7E3000707E07 /* AuthSettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthSettingsManager.swift; path = Managers/Model/AuthSettingsManager.swift; sourceTree = "<group>"; };
 		731DAE981F5C7E3C00707E07 /* DownloadManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = DownloadManager.swift; path = Managers/DownloadManager.swift; sourceTree = "<group>"; };
-		731DAE9A1F5C7E4400707E07 /* TimestampCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = TimestampCoordinator.swift; path = Managers/Launcher/TimestampCoordinator.swift; sourceTree = "<group>"; };
+		731DAE9A1F5C7E4400707E07 /* TimestampCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TimestampCoordinator.swift; sourceTree = "<group>"; };
 		731DAE9C1F5C7E6300707E07 /* ChatChannelHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatChannelHeaderCell.swift; path = Views/Cells/Chat/ChatChannelHeaderCell.swift; sourceTree = "<group>"; };
 		731DAE9D1F5C7E6300707E07 /* ChatChannelHeaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ChatChannelHeaderCell.xib; path = Views/Cells/Chat/ChatChannelHeaderCell.xib; sourceTree = "<group>"; };
 		731DAE9E1F5C7E6300707E07 /* ChatDirectMessageHeaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatDirectMessageHeaderCell.swift; path = Views/Cells/Chat/ChatDirectMessageHeaderCell.swift; sourceTree = "<group>"; };
@@ -352,6 +354,8 @@
 		731DAEA01F5C7E6300707E07 /* ChatLoaderCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatLoaderCell.swift; path = Views/Cells/Chat/ChatLoaderCell.swift; sourceTree = "<group>"; };
 		731DAEA11F5C7E6300707E07 /* ChatLoaderCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = ChatLoaderCell.xib; path = Views/Cells/Chat/ChatLoaderCell.xib; sourceTree = "<group>"; };
 		731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
+		731DAEAB1F5DAADC00707E07 /* LogEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEvent.swift; path = Rocket.Chat/ServerSataistics/LogEvent.swift; sourceTree = "<group>"; };
+		731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEventManager.swift; path = Rocket.Chat/ServerSataistics/LogEventManager.swift; sourceTree = "<group>"; };
 		734A2E481F26231300A902B0 /* AuthInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthInteractor.swift; path = Interactors/AuthInteractor.swift; sourceTree = "<group>"; };
 		73647A221F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatCollectionViewFlowLayout.swift; path = Helpers/ChatCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		73647A231F5C7D3100B35A38 /* UploadHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UploadHelper.swift; path = Helpers/UploadHelper.swift; sourceTree = "<group>"; };
@@ -461,6 +465,7 @@
 		41552F641D30307D0081438D /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				731DAE961F5C7E3000707E07 /* AuthSettingsManager.swift */,
 				41552F651D30308C0081438D /* AuthManager.swift */,
 				41DAE93B1D318E280098E068 /* SubscriptionManager.swift */,
 				41DC7A1C1D38471700896FC0 /* MessageManager.swift */,
@@ -504,6 +509,12 @@
 		416133351D46CA7400E09DA2 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				731DAE9C1F5C7E6300707E07 /* ChatChannelHeaderCell.swift */,
+				731DAE9D1F5C7E6300707E07 /* ChatChannelHeaderCell.xib */,
+				731DAE9E1F5C7E6300707E07 /* ChatDirectMessageHeaderCell.swift */,
+				731DAE9F1F5C7E6300707E07 /* ChatDirectMessageHeaderCell.xib */,
+				731DAEA01F5C7E6300707E07 /* ChatLoaderCell.swift */,
+				731DAEA11F5C7E6300707E07 /* ChatLoaderCell.xib */,
 				415029B31E72D43A009F596C /* Info */,
 				416133311D46CA4E00E09DA2 /* ChatMessageCell.swift */,
 				416133331D46CA7200E09DA2 /* ChatMessageCell.xib */,
@@ -606,6 +617,8 @@
 				4174CB1B1D2DB2080086DAC8 /* LogManager.swift */,
 				597ECBA31E3708B10041C5C5 /* PushManager.swift */,
 				415066871EB8B541003AEA1C /* MessageTextCacheManager.swift */,
+				731DAE981F5C7E3C00707E07 /* DownloadManager.swift */,
+				73647A261F5C7D9700B35A38 /* ServerManager.swift */,
 			);
 			name = Managers;
 			sourceTree = "<group>";
@@ -627,6 +640,7 @@
 				41D5BC301DAFBEF4009A493A /* UIViewExtentions.swift */,
 				41E53A161E546F5500C3FBB3 /* UINibExtensions.swift */,
 				41A1748B1DD9F2F900188E3B /* UIViewControllerExtension.swift */,
+				731DAE941F5C7E1600707E07 /* ArrayExtensions.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -785,6 +799,7 @@
 				41DF76E01D2C50710028DBF8 /* Products */,
 				EE693BBD0CC2727847214E2D /* Pods */,
 				106DAA428B5BF7289FB70C65 /* Frameworks */,
+				731DAEAA1F5DA67E00707E07 /* ServerStatistics */,
 			);
 			sourceTree = "<group>";
 		};
@@ -801,20 +816,6 @@
 		41DF76E11D2C50710028DBF8 /* Rocket.Chat */ = {
 			isa = PBXGroup;
 			children = (
-				731DAE9C1F5C7E6300707E07 /* ChatChannelHeaderCell.swift */,
-				731DAE9D1F5C7E6300707E07 /* ChatChannelHeaderCell.xib */,
-				731DAE9E1F5C7E6300707E07 /* ChatDirectMessageHeaderCell.swift */,
-				731DAE9F1F5C7E6300707E07 /* ChatDirectMessageHeaderCell.xib */,
-				731DAEA01F5C7E6300707E07 /* ChatLoaderCell.swift */,
-				731DAEA11F5C7E6300707E07 /* ChatLoaderCell.xib */,
-				731DAE9A1F5C7E4400707E07 /* TimestampCoordinator.swift */,
-				731DAE981F5C7E3C00707E07 /* DownloadManager.swift */,
-				731DAE961F5C7E3000707E07 /* AuthSettingsManager.swift */,
-				731DAE941F5C7E1600707E07 /* ArrayExtensions.swift */,
-				73647A2A1F5C7DF800B35A38 /* ChatControllerDocuments.swift */,
-				73647A2B1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift */,
-				73647A261F5C7D9700B35A38 /* ServerManager.swift */,
-				731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */,
 				734A2E471F2622D300A902B0 /* Interactors */,
 				73DD562F1F1F798800821775 /* Assembly */,
 				4199A9861DABCC2E0035F820 /* External */,
@@ -833,6 +834,7 @@
 				4116C52C1E69B15400AC4E43 /* GoogleService-Info.plist */,
 				41EB22381E5F056600AA3AE7 /* Localizable.strings */,
 				597ECBA01E3708980041C5C5 /* Rocket.Chat.entitlements */,
+				731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */,
 			);
 			path = Rocket.Chat;
 			sourceTree = "<group>";
@@ -870,6 +872,8 @@
 				418688101E53CC86002F785C /* ChatControllerMessageActions.swift */,
 				41C45AEE1DFAD42800D9969C /* ChatDataController.swift */,
 				4180204E1E718E370012A092 /* ChannelInfoViewController.swift */,
+				73647A2A1F5C7DF800B35A38 /* ChatControllerDocuments.swift */,
+				73647A2B1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift */,
 			);
 			name = Chat;
 			sourceTree = "<group>";
@@ -900,6 +904,15 @@
 				414A1FF41D4631F600093E10 /* Response */,
 			);
 			name = Socket;
+			sourceTree = "<group>";
+		};
+		731DAEAA1F5DA67E00707E07 /* ServerStatistics */ = {
+			isa = PBXGroup;
+			children = (
+				731DAEAB1F5DAADC00707E07 /* LogEvent.swift */,
+				731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */,
+			);
+			name = ServerStatistics;
 			sourceTree = "<group>";
 		};
 		734A2E471F2622D300A902B0 /* Interactors */ = {
@@ -933,6 +946,7 @@
 		D32E28201DFD86AC00D6019C /* Launcher */ = {
 			isa = PBXGroup;
 			children = (
+				731DAE9A1F5C7E4400707E07 /* TimestampCoordinator.swift */,
 				D32E28221DFD86C300D6019C /* LauncherProtocol.swift */,
 				D32E28231DFD86C300D6019C /* PersistencyCoordinator.swift */,
 				D32E28211DFD86C300D6019C /* BugTrackingCoordinator.swift */,
@@ -1359,6 +1373,7 @@
 				41ADDD491E9DBB100007A458 /* LoaderView.swift in Sources */,
 				41F167E91DAC4D4300775CCA /* ChatTitleView.swift in Sources */,
 				7308DFBB1F28C78C00F77C28 /* AuthStates.swift in Sources */,
+				731DAEAC1F5DAADC00707E07 /* LogEvent.swift in Sources */,
 				41552F661D30308C0081438D /* AuthManager.swift in Sources */,
 				415972101D3DBDA0002258F4 /* RealmExtension.swift in Sources */,
 				416133321D46CA4E00E09DA2 /* ChatMessageCell.swift in Sources */,
@@ -1392,6 +1407,7 @@
 				A0FFC1611E8A9D8D00A1B5EA /* TintedTextField.swift in Sources */,
 				4174CB171D2D9BB70086DAC8 /* AuthViewController.swift in Sources */,
 				418688111E53CC86002F785C /* ChatControllerMessageActions.swift in Sources */,
+				731DAEB01F5E9F2600707E07 /* LogEventManager.swift in Sources */,
 				41F3C1001DB577ED000E0C76 /* MessageURL.swift in Sources */,
 				4174CB1C1D2DB2080086DAC8 /* LogManager.swift in Sources */,
 				41DC7A1D1D38471700896FC0 /* MessageManager.swift in Sources */,

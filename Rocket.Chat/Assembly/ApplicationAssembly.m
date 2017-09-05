@@ -19,7 +19,7 @@
                 [definition injectProperty:@selector(login) with:TyphoonConfig(@"login")];
                 [definition injectProperty:@selector(password) with:TyphoonConfig(@"password")];
                 [definition injectProperty:@selector(interactor) with:[AuthInteractor new]];
-                [definition injectProperty:@selector(stateMachine) with:[AuthStateMachine new]];
+                [definition injectProperty:@selector(stateMachine) with:[self stateMachine]];
             }];
 }
 
@@ -27,4 +27,74 @@
     return [TyphoonDefinition withConfigName:@"Configuration.plist"];
 }
 
+- (AuthStateMachine *)stateMachine {
+    return [TyphoonDefinition
+            withClass:[AuthStateMachine class]
+            configuration:^(TyphoonDefinition *definition) {
+                
+                FirstLoadingState *firstLoadingState = [self firstLoadingState];
+                [definition injectProperty:@selector(rootState) with:firstLoadingState];
+                [definition injectProperty:@selector(currentState) with:firstLoadingState];
+            }];
+}
+
+- (FirstLoadingState *)firstLoadingState {
+    return [TyphoonDefinition
+            withClass:[FirstLoadingState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+                [definition injectProperty:@selector(nextSuccess) with:[self showChatState]];
+                [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+            }];
+}
+
+- (ShowLoginState *)showLoginState {
+    return [TyphoonDefinition
+            withClass:[ShowLoginState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                    [definition injectProperty:@selector(nextSuccess) with:[self loginInProgressState]];
+                                }];
+            }];
+}
+
+- (ShowChatState *)showChatState {
+    return [TyphoonDefinition
+            withClass:[ShowChatState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+            }];
+}
+
+- (LoginInProgressState *)loginInProgressState {
+    return [TyphoonDefinition
+            withClass:[LoginInProgressState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+                [definition injectProperty:@selector(nextSuccess) with:[self loginSuccessState]];
+                [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+            }];
+}
+
+- (LoginSuccessState *)loginSuccessState {
+    return [TyphoonDefinition
+            withClass:[LoginSuccessState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+            }];
+}
 @end
