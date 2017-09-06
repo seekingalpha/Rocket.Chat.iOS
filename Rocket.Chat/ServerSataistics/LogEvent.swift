@@ -9,29 +9,28 @@
 import Foundation
 
 class LogEvent: NSObject {
-    var user_id: String? = "null"
-    var user_agent: String?
+    var userId: String?
+    var userAgent: String?
     //-
-    var machine_ip: String?
+    var machineIp: String?
     //-
-    var machine_cookie: String?
+    var machineCookie: String?
     var url: String?
     //-
-    var page_key: String?
+    var pageKey: String?
     //-
-    var url_params: String?
+    var urlParams: String?
     var refferer: String?
-    var refferer_key: String?
+    var reffererKey: String?
 }
 
 class PageLoadingLogEvent: LogEvent {
-    
 }
 
 class ActionLogEvent: LogEvent {
-    var type_id: String?
+    var typeId: String?
     var source: String?
-    var action_id: String?
+    var actionId: String?
     var data: String?
 
 }

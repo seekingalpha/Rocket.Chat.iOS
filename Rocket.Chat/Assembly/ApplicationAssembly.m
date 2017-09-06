@@ -113,6 +113,11 @@
     return [TyphoonDefinition
             withClass:[ShowLoginPageEvent class]
             configuration:^(TyphoonDefinition *definition) {
+                [definition injectProperty:@selector(userAgent) with:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"];
+                [definition injectProperty:@selector(machineIp) with:@"192.168.3.55"];
+                [definition injectProperty:@selector(machineCookie) with:[[NSUUID UUID] UUIDString]];
+                [definition injectProperty:@selector(url) with:@"/roadblock"];
             }];
 }
+
 @end
