@@ -19,7 +19,7 @@ class EventConverter {
        return nil
     }
     func convertToPost(event: LogEvent?) -> Data? {
-       
+ 
         let params = ["user_id": event?.userId ?? "null",
                       "user_agent": event?.userAgent ?? "null",
                       "machine_ip": event?.machineIp ?? "null",
