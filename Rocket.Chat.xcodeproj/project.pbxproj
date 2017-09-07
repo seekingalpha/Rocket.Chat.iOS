@@ -1669,7 +1669,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.seekingalpha.MarketChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6614a089-034c-4dfe-871b-1bf1bbbc4f46";
+				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: com.seekingalpha.MarketChat";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rocket.Chat/Rocket.Chat-Bridge.h";
 				SWIFT_VERSION = 3.0;
 			};
@@ -1690,7 +1691,8 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.seekingalpha.MarketChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "6614a089-034c-4dfe-871b-1bf1bbbc4f46";
+				PROVISIONING_PROFILE_SPECIFIER = "XC iOS: com.seekingalpha.MarketChat";
 				SWIFT_OBJC_BRIDGING_HEADER = "Rocket.Chat/Rocket.Chat-Bridge.h";
 				SWIFT_VERSION = 3.0;
 			};
