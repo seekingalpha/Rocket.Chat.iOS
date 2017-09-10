@@ -155,8 +155,13 @@ extension AuthManager {
         self.post(params : params, url : "https://staging.seekingalpha.com/authentication/rc_mobile_login", complition : { result in
 
             var httpResponse = HTTPResponse()
+            guard let response = result as? [String: Any] else {
+               return
+            }
+
             guard let rc_token = result?["rc_token"] as? String else {
                 httpResponse.isError = true
+                httpResponse.response = response
                 completion(httpResponse)
                 return
             }
@@ -365,7 +370,9 @@ extension AuthManager {
                     print(json)
 
                     if let dict = json as? NSDictionary {
-                        complition(dict)
+                        DispatchQueue.main.async {
+                            complition(dict)
+                        }
                     }
                 } catch {
                     print(error)

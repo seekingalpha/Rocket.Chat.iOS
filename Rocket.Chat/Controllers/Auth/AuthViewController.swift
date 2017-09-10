@@ -124,6 +124,13 @@ final class AuthViewController: BaseViewController {
         if !response.isError {
             self.stateMachine?.success()
         } else {
+            if let error = response.response?["error"] as? [String: Any] {
+                if let message = error["msg"] as? String {
+                    let alert = UIAlertController(title: "", message: message, preferredStyle: UIAlertControllerStyle.alert)
+                    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
             self.stateMachine?.error()
         }
 

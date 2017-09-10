@@ -10,4 +10,5 @@ import Foundation
 
 public struct HTTPResponse {
     var isError = false
+    var response:[String: Any]?
 }

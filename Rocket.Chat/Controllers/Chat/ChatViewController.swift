@@ -52,6 +52,7 @@ final class ChatViewController: SLKTextViewController {
             markAsRead()
         }
     }
+    public var logEventManager: LogEventManager?
 
     // MARK: View Life Cycle
 
@@ -340,6 +341,12 @@ final class ChatViewController: SLKTextViewController {
             setTextInputbarHidden(true, animated: false)
             showChatPreviewModeView()
         }
+        self.sendLogEvent(subscription: subscription)
+    }
+    internal func sendLogEvent(subscription: Subscription?) {
+        let logEvent = ChatPageLogEvent(subscription: subscription)
+        logEvent.urlParams = "?source=drawer_menu"
+        self.logEventManager?.send(event: logEvent)
     }
 
     internal func updateSubscriptionMessages() {

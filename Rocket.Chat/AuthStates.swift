@@ -15,8 +15,10 @@ class AuthState: NSObject {
     var nextSuccess: AuthState?
     var nextFailure: AuthState?
     init(authViewController: AuthViewController) {
-        super.init()
         self.authViewController = authViewController
+    }
+    override init() {
+        
     }
     func execute() {
     }
@@ -107,6 +109,15 @@ class LoginSuccessState: AuthState {
     }
 }
 
+class LoginFailureState: AuthState {
+    override func execute() {
+        let loginText = self.authViewController.textFieldUsername.text
+        let event = ErrorLoginEvent(login: loginText)
+        self.logEventManager?.send(event: event)
+        self.authViewController.finishExecution(nextState: nil)
+    }
+}
+
 class AuthStateMachine: NSObject {
     var currentState: AuthState?
     var rootState: AuthState?
@@ -129,5 +140,6 @@ class AuthStateMachine: NSObject {
             return
         }
         self.currentState = transitinableState.nextFailure
+        self.execute()
     }
 }

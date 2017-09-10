@@ -12,7 +12,6 @@ class LogEventManager: NSObject {
     var eventConverter = EventConverter()
 
     func send(event: LogEvent?) {
-        
         guard let path = event?.url else {
             return
         }

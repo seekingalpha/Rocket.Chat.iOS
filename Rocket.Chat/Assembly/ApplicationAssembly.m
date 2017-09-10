@@ -85,7 +85,7 @@
                                     [initializer injectParameterWith:[self connectServerViewController]];
                                 }];
                 [definition injectProperty:@selector(nextSuccess) with:[self loginSuccessState]];
-                [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+                [definition injectProperty:@selector(nextFailure) with:[self loginFailureState]];
             }];
 }
 
@@ -109,15 +109,33 @@
             }];
 }
 
-- (ShowLoginPageEvent *)showLoginPageEvent {
+- (LogEvent *)showLoginPageEvent {
     return [TyphoonDefinition
-            withClass:[ShowLoginPageEvent class]
+            withClass:[LogEvent class]
             configuration:^(TyphoonDefinition *definition) {
-                [definition injectProperty:@selector(userAgent) with:@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"];
-                [definition injectProperty:@selector(machineIp) with:@"192.168.3.55"];
-                [definition injectProperty:@selector(machineCookie) with:[[NSUUID UUID] UUIDString]];
                 [definition injectProperty:@selector(url) with:@"/roadblock"];
             }];
 }
 
+- (ChatViewController *)chatViewController {
+    return [TyphoonDefinition
+            withClass:[ChatViewController class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
+}
+
+- (LoginFailureState *)loginFailureState {
+    return [TyphoonDefinition
+            withClass:[LoginFailureState class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+
+                [definition injectProperty:@selector(nextSuccess) with:[self showLoginState]];
+                [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+            }];
+}
 @end
