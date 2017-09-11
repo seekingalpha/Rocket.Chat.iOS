@@ -534,16 +534,12 @@
                             <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Background" translatesAutoresizingMaskIntoConstraints="NO" id="pPC-bc-RBN">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fn3-qu-nMK">
-                                <rect key="frame" x="63" y="391" width="249" height="105"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fn3-qu-nMK">
+                                <rect key="frame" x="63" y="290" width="249" height="87.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="249" id="JAU-BV-eio"/>
                                 </constraints>
-                                <string key="text" base64-UTF8="YES">
-VGhlIFNlZWtpbmcgQWxwaGEgTWFya2V0cGxhY2UgYXBwIANpcyBvbmx5IGF2YWlsYWJsZSBmb3Igc3Vi
-c2NyaWJlcnMuIANUaGUgYWNjb3VudCB5b3UgZW50ZXJlZCBoYXMgbm8gYWN0aXZlIHN1YnNjcmlwdGlv
-bnMuIA1JZiB5b3UgZmVlbCB0aGlzIGlzIGFuIGVycm9yLCBwbGVhc2UgZW1haWwgA
-</string>
+                                <string key="text">The Seeking Alpha Chat app is only available for subscribers to our paid products. The account you entered has no active subscriptions. If you feel this is an error, please email </string>
                                 <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <nil key="highlightedColor"/>
@@ -554,8 +550,8 @@ bnMuIA1JZiB5b3UgZmVlbCB0aGlzIGlzIGFuIGVycm9yLCBwbGVhc2UgZW1haWwgA
                                     <constraint firstAttribute="height" constant="34" id="Rsg-X3-UBZ"/>
                                 </constraints>
                             </imageView>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" text="subscriptions@seekingalpha.com" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kJH-EW-iK5">
-                                <rect key="frame" x="63" y="496" width="249" height="18"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="subscriptions@seekingalpha.com" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kJH-EW-iK5">
+                                <rect key="frame" x="63" y="377.5" width="249" height="18"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="17.5" id="8GN-7P-kRv"/>
                                 </constraints>
@@ -569,7 +565,7 @@ bnMuIA1JZiB5b3UgZmVlbCB0aGlzIGlzIGFuIGVycm9yLCBwbGVhc2UgZW1haWwgA
                             <constraint firstItem="LqI-n6-C3V" firstAttribute="top" secondItem="pPC-bc-RBN" secondAttribute="bottom" id="0q1-Tj-Sv2"/>
                             <constraint firstItem="Fn3-qu-nMK" firstAttribute="centerX" secondItem="bzg-qZ-c5m" secondAttribute="centerX" id="4Lb-vi-i8B"/>
                             <constraint firstItem="kJH-EW-iK5" firstAttribute="top" secondItem="Fn3-qu-nMK" secondAttribute="bottom" id="7tZ-pR-G0J"/>
-                            <constraint firstItem="LqI-n6-C3V" firstAttribute="top" relation="greaterThanOrEqual" secondItem="kJH-EW-iK5" secondAttribute="bottom" constant="10" id="AAC-cG-LDx"/>
+                            <constraint firstItem="Fn3-qu-nMK" firstAttribute="centerY" secondItem="bzg-qZ-c5m" secondAttribute="centerY" id="Sje-MV-DtP"/>
                             <constraint firstItem="yaq-LE-aow" firstAttribute="centerY" secondItem="bzg-qZ-c5m" secondAttribute="centerY" multiplier="0.7" id="TcW-vc-YsX"/>
                             <constraint firstItem="kJH-EW-iK5" firstAttribute="leading" secondItem="Fn3-qu-nMK" secondAttribute="leading" id="VID-jm-CMw"/>
                             <constraint firstItem="yaq-LE-aow" firstAttribute="leading" secondItem="bzg-qZ-c5m" secondAttribute="leading" constant="38" id="afZ-EQ-Hbc"/>
@@ -579,6 +575,7 @@ bnMuIA1JZiB5b3UgZmVlbCB0aGlzIGlzIGFuIGVycm9yLCBwbGVhc2UgZW1haWwgA
                             <constraint firstItem="kJH-EW-iK5" firstAttribute="width" secondItem="Fn3-qu-nMK" secondAttribute="width" id="qfd-FA-gcl"/>
                             <constraint firstAttribute="trailing" secondItem="yaq-LE-aow" secondAttribute="trailing" constant="38" id="rjJ-98-kfr"/>
                             <constraint firstAttribute="trailing" secondItem="pPC-bc-RBN" secondAttribute="trailing" id="sIQ-vo-PGG"/>
+                            <constraint firstItem="Fn3-qu-nMK" firstAttribute="centerX" secondItem="bzg-qZ-c5m" secondAttribute="centerX" id="v6A-ol-NqD"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="5fl-AS-Wi9">
@@ -594,7 +591,7 @@ bnMuIA1JZiB5b3UgZmVlbCB0aGlzIGlzIGFuIGVycm9yLCBwbGVhc2UgZW1haWwgA
     </scenes>
     <resources>
         <image name="Background" width="750" height="1334"/>
-        <image name="Logo" width="567" height="64"/>
+        <image name="Logo" width="208" height="32"/>
         <image name="TextField" width="641" height="79"/>
     </resources>
     <inferredMetricsTieBreakers>

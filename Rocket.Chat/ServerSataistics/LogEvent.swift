@@ -27,7 +27,6 @@ class LogEvent: NSObject {
         self.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
         self.machineIp = "192.168.3.55"
         self.machineCookie = UUID().uuidString
-        
     }
 }
 
@@ -39,11 +38,8 @@ class ChatPageLogEvent: LogEvent {
                 return
             }
             self.url = "/chat/direct_msg/" + displayName
-            print(">> direct message")
         } else if subscription?.type == .group {
             self.url = "/chat/group/"
-            print(subscription?.displayName() ?? "")
-            print(">> group message")
         }
     }
 }
@@ -105,4 +101,3 @@ class GroupMessageEvent: ActionLogEvent {
         //        Source   =   drawer_menu Action_id   =   open
     }
 }
-

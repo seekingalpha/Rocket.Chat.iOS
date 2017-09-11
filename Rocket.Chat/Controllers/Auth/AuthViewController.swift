@@ -96,27 +96,7 @@ final class AuthViewController: BaseViewController {
 
     internal func handleAuthenticationResponse(_ response: SocketResponse) {
         stopLoading()
-
-//        if response.isError() {
-//            if let error = response.result["error"].dictionary {
-//                let code = error["error"]?.int
-//                if code != nil && code == 403 {
-//                    performSegue(withIdentifier: "403", sender: nil)
-//                } else {
-//                    let alert = UIAlertController(
-//                        title: localized("error.socket.default_error_title"),
-//                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
-//                        preferredStyle: .alert
-//                    )
-//
-//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//                    present(alert, animated: true, completion: nil)
-//                }
-//            }
-//            self.stateMachine?.error()
-//        } else {
-            self.stateMachine?.success()
-//        }
+        self.stateMachine?.success()
     }
 
     internal func loginResponse(_ response: HTTPResponse) {
@@ -125,7 +105,11 @@ final class AuthViewController: BaseViewController {
             self.stateMachine?.success()
         } else {
             if let error = response.response?["error"] as? [String: Any] {
-                if let message = error["msg"] as? String {
+                if let errorCode = error["code"] as? NSInteger {
+                    if errorCode == 3 {
+                        self.performSegue(withIdentifier: "403", sender: nil)
+                    }
+                } else if let message = error["msg"] as? String {
                     let alert = UIAlertController(title: "", message: message, preferredStyle: UIAlertControllerStyle.alert)
                     alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
                     self.present(alert, animated: true, completion: nil)
@@ -133,26 +117,6 @@ final class AuthViewController: BaseViewController {
             }
             self.stateMachine?.error()
         }
-
-//        if response.isError() {
-//            if let error = response.result["error"].dictionary {
-//                let code = error["error"]?.int
-//                if code != nil && code == 403 {
-//                    performSegue(withIdentifier: "403", sender: nil)
-//                } else {
-//                    let alert = UIAlertController(
-//                        title: localized("error.socket.default_error_title"),
-//                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
-//                        preferredStyle: .alert
-//                    )
-//
-//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//                    present(alert, animated: true, completion: nil)
-//                }
-//            }
-//            self.stateMachine?.error()
-//        } else {
-//        }
     }
 
     // MARK: Loaders
