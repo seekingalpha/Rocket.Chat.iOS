@@ -141,4 +141,21 @@
                 [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
             }];
 }
+
+- (MainChatViewController *)mainChatViewController {
+    return [TyphoonDefinition
+            withClass:[MainChatViewController class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
+}
+
+- (SubscriptionUserStatusView *)subscriptionUserStatusView {
+    return [TyphoonDefinition
+            withClass:[SubscriptionUserStatusView class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
+}
+
 @end

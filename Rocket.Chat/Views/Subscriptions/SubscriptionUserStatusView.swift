@@ -16,6 +16,7 @@ final class SubscriptionUserStatusView: UIView {
 
     weak var delegate: SubscriptionUserStatusViewProtocol?
     weak var parentController: UIViewController?
+    weak var logEventManager: LogEventManager?
 
     @IBOutlet weak var buttonOnline: UIButton!
     @IBOutlet weak var labelOnline: UILabel! {
@@ -117,6 +118,9 @@ final class SubscriptionUserStatusView: UIView {
         SubscriptionsViewController.sharedInstance()?.subscriptionsToken?.stop()
 
         AuthManager.logout {
+            
+            self.logEventManager?.send(event: LogoutMenuEvent())
+            
             let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
             let controller = storyboardChat.instantiateInitialViewController()
             let application = UIApplication.shared

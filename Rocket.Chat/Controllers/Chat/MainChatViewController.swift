@@ -10,6 +10,7 @@ import UIKit
 import SideMenuController
 
 class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
+    var logEventManager: LogEventManager?
 
     class func shared() -> MainChatViewController? {
         return UIApplication.shared.windows.first?.rootViewController as? MainChatViewController
@@ -65,6 +66,7 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
     func sideMenuControllerDidReveal(_ sideMenuController: SideMenuController) {
         ChatViewController.sharedInstance()?.textView.resignFirstResponder()
         SubscriptionsViewController.sharedInstance()?.textFieldSearch.resignFirstResponder()
+        self.logEventManager?.send(event: OpenMenuEvent())
     }
 
     func sideMenuControllerWillReveal(_ sideMenuController: SideMenuController) {

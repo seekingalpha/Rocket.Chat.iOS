@@ -266,6 +266,12 @@ final class ChatViewController: SLKTextViewController {
     fileprivate func sendMessage() {
         guard let messageText = textView.text, messageText.characters.count > 0 else { return }
 
+        if self.subscription.type == .directMessage {
+            self.logEventManager?.send(event: DirectMessageEvent())
+        } else if self.subscription.type == .group {
+            self.logEventManager?.send(event: GroupMessageEvent())
+        }
+
         rightButton.isEnabled = false
 
         var message: Message?

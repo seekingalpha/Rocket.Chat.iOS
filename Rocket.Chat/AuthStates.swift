@@ -102,6 +102,8 @@ class LoginSuccessState: AuthState {
                 if let user = AuthManager.currentUser() {
                     if user.username != nil {
                         self.authViewController.stopLoading()
+                        let logEvent = SuccessLoginEvent()
+                        self.logEventManager?.send(event: logEvent)
                         self.authViewController.showChat()
                     }
                 }
