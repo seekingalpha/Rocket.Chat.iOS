@@ -108,11 +108,11 @@ final class AuthViewController: BaseViewController {
                 if let errorCode = error["code"] as? NSInteger {
                     if errorCode == 3 {
                         self.performSegue(withIdentifier: "403", sender: nil)
+                    } else if let message = error["msg"] as? String {
+                        let alert = UIAlertController(title: "", message: message, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
                     }
-                } else if let message = error["msg"] as? String {
-                    let alert = UIAlertController(title: "", message: message, preferredStyle: UIAlertControllerStyle.alert)
-                    alert.addAction(UIAlertAction(title: "Ok", style: UIAlertActionStyle.default, handler: nil))
-                    self.present(alert, animated: true, completion: nil)
                 }
             }
             self.stateMachine?.error()
