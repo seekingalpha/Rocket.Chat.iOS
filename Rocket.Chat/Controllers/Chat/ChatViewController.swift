@@ -12,7 +12,7 @@ import URBMediaFocusViewController
 
 // swiftlint:disable file_length type_body_length
 final class ChatViewController: SLKTextViewController {
-
+    var selected: [String] = [String]()
     var activityIndicator: LoaderView!
     @IBOutlet weak var activityIndicatorContainer: UIView! {
         didSet {
@@ -113,7 +113,28 @@ final class ChatViewController: SLKTextViewController {
         view.bringSubview(toFront: activityIndicatorContainer)
         view.bringSubview(toFront: buttonScrollToBottom)
         view.bringSubview(toFront: textInputbar)
+        
+        
+        self.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action:  #selector(handlePopGesture))
+        /*
+         [self.navigationController.interactivePopGestureRecognizer addTarget:self
+         action:@selector(handlePopGesture:)];
+         }
+         
+         
+         - (void)handlePopGesture:(UIGestureRecognizer *)gesture
+         {
+         // handle other gesture states, if desired
+         }
+         */
     }
+//    func handlePopGesture() {
+//    if (gesture.state == UIGestureRecognizerStateBegan)
+//    {
+//      respond to beginning of pop gesture
+//    }
+
+//    }
 
     internal func reconnect() {
         if !SocketManager.isConnected() {
@@ -269,7 +290,22 @@ final class ChatViewController: SLKTextViewController {
         if self.subscription.type == .directMessage {
             self.logEventManager?.send(event: DirectMessageEvent())
         } else if self.subscription.type == .group {
-            self.logEventManager?.send(event: GroupMessageEvent())
+            var param: String?
+            var mentions = [String]()
+            for userName in self.selected {
+                if "all".contains(userName) {
+                    param = "0"
+                } else if "here".contains(userName) {
+                    param = "00"
+                } else {
+                    param = userName
+                }
+                guard let param = param else {
+                    return
+                }
+                mentions.append(param)
+            }
+            self.logEventManager?.send(event: GroupMessageEvent(data: mentions))
         }
 
         rightButton.isEnabled = false

@@ -139,6 +139,7 @@
 
                 [definition injectProperty:@selector(nextSuccess) with:[self showLoginState]];
                 [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
             }];
 }
 
@@ -158,4 +159,10 @@
             }];
 }
 
+- (AppDelegate *)appDelegate {
+    return [TyphoonDefinition withClass:[AppDelegate class]
+                          configuration:^(TyphoonDefinition *definition) {
+                              [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+                          }];
+}
 @end

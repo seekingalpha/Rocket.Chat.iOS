@@ -9,34 +9,19 @@
 import Foundation
 
 class LogEventManager: NSObject {
-    var eventConverter = EventConverter()
-
     func send(event: LogEvent?) {
-        guard let path = event?.url else {
-            return
-        }
-
-        var url: String?
-        if let params = event?.urlParams {
-            url = path + params
-        } else {
-            url = path
-        }
-
-        let httpBody = eventConverter.convertToPost(event: event)
-        self.post(httpBody: httpBody, url: url) { result in
-        }
+        let httpBody = event?.convertToPost()
+        self.post(httpBody: httpBody)
     }
-    
-    func post(httpBody: Data?, url: String?, complition: @escaping (_ result: NSDictionary?) -> Void ) {
-        guard let url = url else {
-            return
-        }
+
+    func post(httpBody: Data?) {
         guard let httpBody = httpBody else {
             return
         }
-        let serviceUrl = URL(string: "https://staging.seekingalpha.com/mone_event")
-        var request = URLRequest(url: serviceUrl!)
+        guard let serviceUrl = URL(string: "https://staging.seekingalpha.com/mone_event") else {
+            return
+        }
+        var request = URLRequest(url: serviceUrl)
         request.httpMethod = "POST"
         request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Basic c2Vla2luZ2FscGhhOmlwdmlwdg==", forHTTPHeaderField: "Authorization")
@@ -48,16 +33,16 @@ class LogEventManager: NSObject {
         let session = URLSession.shared
         session.dataTask(with: request) { (data, response, error) in
             if let response = response {
+                print(">>>>>>> event sending response ")
                 print(response)
             }
             if let data = data {
                 do {
                     let json = try JSONSerialization.jsonObject(with: data, options: [])
                     print(json)
-
-                    if let dict = json as? NSDictionary {
-                        complition(dict)
-                    }
+//                    if let dict = json as? NSDictionary {
+//                        complition(dict)
+//                    }
                 } catch {
                     print(error)
                 }

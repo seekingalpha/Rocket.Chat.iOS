@@ -10,6 +10,7 @@ import UIKit
 import RealmSwift
 
 extension ChatViewController {
+    
 
     override func didChangeAutoCompletionPrefix(_ prefix: String, andWord word: String) {
         searchResult = [:]
@@ -62,6 +63,9 @@ extension ChatViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let key = Array(searchResult.keys)[indexPath.row]
+
+        self.selected.append(key)
+
         acceptAutoCompletion(with: "\(key) ", keepPrefix: true)
     }
 

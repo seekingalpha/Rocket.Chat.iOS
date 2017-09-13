@@ -113,8 +113,8 @@ class LoginSuccessState: AuthState {
 
 class LoginFailureState: AuthState {
     override func execute() {
-        let loginText = self.authViewController.textFieldUsername.text
-        let event = ErrorLoginEvent(login: loginText)
+        let text = self.authViewController.textFieldUsername.text
+        let event = ErrorLoginEvent(login: text)
         self.logEventManager?.send(event: event)
         self.authViewController.finishExecution(nextState: nil)
     }
