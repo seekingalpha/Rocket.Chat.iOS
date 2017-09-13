@@ -115,7 +115,7 @@ final class ChatViewController: SLKTextViewController {
         view.bringSubview(toFront: textInputbar)
         
         
-        self.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action:  #selector(handlePopGesture))
+        //self.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action:  #selector(handlePopGesture))
         /*
          [self.navigationController.interactivePopGestureRecognizer addTarget:self
          action:@selector(handlePopGesture:)];
@@ -128,13 +128,13 @@ final class ChatViewController: SLKTextViewController {
          }
          */
     }
-//    func handlePopGesture() {
+    //func handlePopGesture() {
 //    if (gesture.state == UIGestureRecognizerStateBegan)
 //    {
 //      respond to beginning of pop gesture
 //    }
 
-//    }
+    //}
 
     internal func reconnect() {
         if !SocketManager.isConnected() {
