@@ -10,9 +10,7 @@ import Foundation
 
 class LogEvent: NSObject {
     var userId: String? {
-        get {
-            return AuthManager.currentUser()?.identifier ?? "null"
-        }
+        return AuthManager.currentUser()?.identifier ?? "null"
     }
     var userAgent: String?
     //-
@@ -46,6 +44,9 @@ class LogEvent: NSObject {
             return nil
         }
         return httpBody
+    }
+    var moneURL: String {
+        return "https://staging.seekingalpha.com/mone"
     }
 }
 
@@ -90,6 +91,9 @@ class ActionLogEvent: LogEvent {
         return httpBody
     }
 
+    override var moneURL: String {
+        return "https://staging.seekingalpha.com/mone_event"
+    }
 }
 
 class ErrorLoginEvent: ActionLogEvent {

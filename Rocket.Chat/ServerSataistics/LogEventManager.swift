@@ -11,14 +11,17 @@ import Foundation
 class LogEventManager: NSObject {
     func send(event: LogEvent?) {
         let httpBody = event?.convertToPost()
-        self.post(httpBody: httpBody)
+        self.post(httpBody: httpBody, url: event?.moneURL)
     }
 
-    func post(httpBody: Data?) {
+    func post(httpBody: Data?, url: String?) {
         guard let httpBody = httpBody else {
             return
         }
-        guard let serviceUrl = URL(string: "https://staging.seekingalpha.com/mone_event") else {
+        guard let url = url else {
+            return
+        }
+        guard let serviceUrl = URL(string: url) else {
             return
         }
         var request = URLRequest(url: serviceUrl)
