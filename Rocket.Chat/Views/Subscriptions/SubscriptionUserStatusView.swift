@@ -118,9 +118,9 @@ final class SubscriptionUserStatusView: UIView {
         SubscriptionsViewController.sharedInstance()?.subscriptionsToken?.stop()
 
         AuthManager.logout {
-            
+
             self.logEventManager?.send(event: LogoutMenuEvent())
-            
+
             let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
             let controller = storyboardChat.instantiateInitialViewController()
             let application = UIApplication.shared

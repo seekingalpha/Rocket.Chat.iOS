@@ -151,18 +151,18 @@
             }];
 }
 
-- (SubscriptionUserStatusView *)subscriptionUserStatusView {
-    return [TyphoonDefinition
-            withClass:[SubscriptionUserStatusView class]
-            configuration:^(TyphoonDefinition *definition) {
-                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
-            }];
-}
-
 - (AppDelegate *)appDelegate {
     return [TyphoonDefinition withClass:[AppDelegate class]
                           configuration:^(TyphoonDefinition *definition) {
                               [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
                           }];
+}
+
+- (SubscriptionsViewController *)subscriptionViewController {
+    return [TyphoonDefinition
+            withClass:[SubscriptionsViewController class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
 }
 @end

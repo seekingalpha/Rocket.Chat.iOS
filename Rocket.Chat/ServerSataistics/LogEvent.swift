@@ -9,7 +9,11 @@
 import Foundation
 
 class LogEvent: NSObject {
-    var userId: String?
+    var userId: String? {
+        get {
+            return AuthManager.currentUser()?.identifier ?? "null"
+        }
+    }
     var userAgent: String?
     //-
     var machineIp: String?
@@ -156,7 +160,7 @@ class GroupMessageEvent: ActionLogEvent {
                       "type_id": self.typeId ?? "null",
                       "source": self.source ?? "null",
                       "action_id": self.actionId ?? "null",
-                      "data": self.mentions]
+                      "data": self.mentions ?? [""]]
 
         print(">>>>>>>> event params: ")
         print(params)

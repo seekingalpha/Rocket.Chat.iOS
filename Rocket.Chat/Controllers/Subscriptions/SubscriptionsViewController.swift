@@ -10,7 +10,7 @@ import RealmSwift
 
 // swiftlint:disable file_length
 final class SubscriptionsViewController: BaseViewController {
-
+    var logEventManager: LogEventManager?
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityViewSearching: UIActivityIndicatorView!
 
@@ -44,7 +44,12 @@ final class SubscriptionsViewController: BaseViewController {
         }
     }
 
-    weak var viewUserMenu: SubscriptionUserStatusView?
+    weak var viewUserMenu: SubscriptionUserStatusView? {
+        didSet {
+            viewUserMenu?.logEventManager = self.logEventManager
+        }
+    }
+
     @IBOutlet weak var viewUser: UIView! {
         didSet {
             let gesture = UITapGestureRecognizer(target: self, action: #selector(viewUserDidTap))
