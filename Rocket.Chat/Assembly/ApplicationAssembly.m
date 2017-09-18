@@ -104,17 +104,9 @@
             }];
 }
 
-- (LogEventManager *)logEventManager {
+- (PageMoneEvent *)showLoginPageEvent {
     return [TyphoonDefinition
-            withClass:[LogEventManager class]
-            configuration:^(TyphoonDefinition *definition) {
-                [definition setScope:TyphoonScopeSingleton];
-            }];
-}
-
-- (LogEvent *)showLoginPageEvent {
-    return [TyphoonDefinition
-            withClass:[LogEvent class]
+            withClass:[PageMoneEvent class]
             configuration:^(TyphoonDefinition *definition) {
                 [definition injectProperty:@selector(url) with:@"/roadblock"];
             }];
@@ -163,6 +155,14 @@
             withClass:[SubscriptionsViewController class]
             configuration:^(TyphoonDefinition *definition) {
                 [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+            }];
+}
+
+- (LogEventManager *)logEventManager {
+    return [TyphoonDefinition
+            withClass:[LogEventManager class]
+            configuration:^(TyphoonDefinition *definition) {
+                [definition setScope:TyphoonScopeSingleton];
             }];
 }
 @end

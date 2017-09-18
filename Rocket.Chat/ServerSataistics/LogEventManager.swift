@@ -9,12 +9,14 @@
 import Foundation
 
 class LogEventManager: NSObject {
+    var httpSessionManager: LogEventManager?
     func send(event: LogEvent?) {
         let httpBody = event?.convertToPost()
         self.post(httpBody: httpBody, url: event?.moneURL)
     }
 
     func post(httpBody: Data?, url: String?) {
+
         guard let httpBody = httpBody else {
             return
         }
@@ -26,11 +28,8 @@ class LogEventManager: NSObject {
         }
         var request = URLRequest(url: serviceUrl)
         request.httpMethod = "POST"
-        request.setValue("Application/json", forHTTPHeaderField: "Content-Type")
         request.addValue("Basic c2Vla2luZ2FscGhhOmlwdmlwdg==", forHTTPHeaderField: "Authorization")
-        request.addValue("gzip, deflate, sdch", forHTTPHeaderField: "Accept-Encoding")
         request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", forHTTPHeaderField: "User-Agent")
-        request.addValue("1", forHTTPHeaderField: "Fastly-Debug")
         request.httpBody = httpBody
 
         let session = URLSession.shared
@@ -52,5 +51,4 @@ class LogEventManager: NSObject {
             }
             }.resume()
     }
-
 }

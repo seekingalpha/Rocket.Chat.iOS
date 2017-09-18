@@ -158,6 +158,7 @@
 		731DAEB01F5E9F2600707E07 /* LogEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */; };
 		7324CF5C1F6845A900B26CFD /* IPaddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 7324CF5B1F6845A900B26CFD /* IPaddress.m */; };
 		734A2E491F26231300A902B0 /* AuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734A2E481F26231300A902B0 /* AuthInteractor.swift */; };
+		735C0D661F7064BB0018917A /* RCPageKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 735C0D651F7064BB0018917A /* RCPageKey.m */; };
 		73647A241F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A221F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift */; };
 		73647A251F5C7D3100B35A38 /* UploadHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A231F5C7D3100B35A38 /* UploadHelper.swift */; };
 		73647A271F5C7D9700B35A38 /* ServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A261F5C7D9700B35A38 /* ServerManager.swift */; };
@@ -360,6 +361,8 @@
 		7324CF5A1F6845A900B26CFD /* IPaddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPaddress.h; sourceTree = "<group>"; };
 		7324CF5B1F6845A900B26CFD /* IPaddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPaddress.m; sourceTree = "<group>"; };
 		734A2E481F26231300A902B0 /* AuthInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthInteractor.swift; path = Interactors/AuthInteractor.swift; sourceTree = "<group>"; };
+		735C0D641F7064BB0018917A /* RCPageKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCPageKey.h; path = ServerSataistics/RCPageKey.h; sourceTree = "<group>"; };
+		735C0D651F7064BB0018917A /* RCPageKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCPageKey.m; path = ServerSataistics/RCPageKey.m; sourceTree = "<group>"; };
 		73647A221F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatCollectionViewFlowLayout.swift; path = Helpers/ChatCollectionViewFlowLayout.swift; sourceTree = "<group>"; };
 		73647A231F5C7D3100B35A38 /* UploadHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = UploadHelper.swift; path = Helpers/UploadHelper.swift; sourceTree = "<group>"; };
 		73647A261F5C7D9700B35A38 /* ServerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerManager.swift; path = Managers/ServerManager.swift; sourceTree = "<group>"; };
@@ -819,6 +822,8 @@
 		41DF76E11D2C50710028DBF8 /* Rocket.Chat */ = {
 			isa = PBXGroup;
 			children = (
+				735C0D641F7064BB0018917A /* RCPageKey.h */,
+				735C0D651F7064BB0018917A /* RCPageKey.m */,
 				734A2E471F2622D300A902B0 /* Interactors */,
 				73DD562F1F1F798800821775 /* Assembly */,
 				4199A9861DABCC2E0035F820 /* External */,
@@ -1392,6 +1397,7 @@
 				73647A2D1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift in Sources */,
 				41D5BC311DAFBEF4009A493A /* UIViewExtentions.swift in Sources */,
 				597ECBA41E3708B10041C5C5 /* PushManager.swift in Sources */,
+				735C0D661F7064BB0018917A /* RCPageKey.m in Sources */,
 				D32E28261DFD86C300D6019C /* PersistencyCoordinator.swift in Sources */,
 				73647A271F5C7D9700B35A38 /* ServerManager.swift in Sources */,
 				419205491D52EDE6004EEC5F /* UILabelExtension.swift in Sources */,

@@ -59,6 +59,13 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>ww17.thisismylink.com</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>rocket.chat</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

@@ -9,48 +9,71 @@
 import Foundation
 
 class LogEvent: NSObject {
+    //-
+    var pageKey: String?
+    //-
+    var machineIp: String?
+    //-
+
+    override init() {
+        super.init()
+        self.machineIp = IPaddress.getIPAddress()
+        self.pageKey = RCPageKey.generateUniqueString()
+    }
+    var moneURL: String {
+        return ""
+    }
+    func convertToPost() -> Data? {
+        return nil
+    }
+}
+
+class PageMoneEvent: LogEvent {
     var userId: String? {
         return AuthManager.currentUser()?.identifier ?? "null"
     }
     var userAgent: String?
-    //-
-    var machineIp: String?
-    //-
     var machineCookie: String?
+
     var url: String?
-    //-
-    var pageKey: String?
-    //-
-    var urlParams: String?
+    var urlParams: String? = ""
+    var refferer: String? = ""
+    var reffererKey: String? = ""
+
     override init() {
         super.init()
         self.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
         self.machineCookie = UUID().uuidString
-        self.machineIp = IPaddress.getIPAddress()
+
     }
-    func convertToPost() -> Data? {
-
-        let params = ["user_id": self.userId ?? "null",
-                      "user_agent": self.userAgent ?? "null",
-                      "machine_ip": self.machineIp ?? "null",
-                      "machine_cookie": self.machineCookie ?? "null",
-                      "page_key": self.pageKey ?? "null",
-                      "url": self.url ?? "null"]
-
+    override func convertToPost() -> Data? {
+        let params = [self.userId ?? "",
+                      self.userAgent ?? "",
+                      self.machineIp ?? "",
+                      self.machineCookie ?? "",
+                      self.url ?? "",
+                      self.pageKey ?? "",
+                      "",
+                      "",
+                      ""]
+//                      self.urlParams,
+//                      self.refferer,
+//                      self.reffererKey]
+        let joindParams = params.joined(separator: ";;;")
         print(">>>>>>>> event params: ")
         print(params)
 
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: params, options: []) else {
-            return nil
-        }
-        return httpBody
+        //        guard let httpBody = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+        //            return nil
+        //        }
+        return joindParams.data(using: .utf8)
     }
-    var moneURL: String {
+    override var moneURL: String {
         return "https://staging.seekingalpha.com/mone"
     }
 }
 
-class ChatPageLogEvent: LogEvent {
+class ChatPageLogEvent: PageMoneEvent {
     init (subscription: Subscription?) {
         super.init()
         if subscription?.type == .directMessage {
@@ -71,35 +94,45 @@ class ActionLogEvent: LogEvent {
     var data: [String: Any]?
     override func convertToPost() -> Data? {
 
-        let params = ["user_id": self.userId ?? "null",
-                      "user_agent": self.userAgent ?? "null",
-                      "machine_ip": self.machineIp ?? "null",
-                      "machine_cookie": self.machineCookie ?? "null",
-                      "page_key": self.pageKey ?? "null",
-                      "url": self.url ?? "null",
-                      "type_id": self.typeId ?? "null",
-                      "source": self.source ?? "null",
-                      "action_id": self.actionId ?? "null"]
+        let params = ["machine_ip": self.machineIp ?? "",
+                      "page_key": self.pageKey ?? "",
+                      "type_id": self.typeId ?? "",
+                      "source": self.source ?? "",
+                      "action_id": self.actionId ?? ""]
                       //"data": self.data] //as [String : Any]
 
         print(">>>>>>>> event params: ")
         print(params)
 
-        guard let httpBody = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+//        guard let httpBody = try? JSONSerialization.data(withJSONObject: params, options: []) else {
+//            return nil
+//        }
+
+        guard let httpBody = try? self.encodeParameters(parameters: params) else {
             return nil
         }
+
         return httpBody
     }
 
     override var moneURL: String {
         return "https://staging.seekingalpha.com/mone_event"
     }
+
+    func encodeParameters(parameters: [String : String]) -> Data? {
+        let parameterArray = parameters.map { (key, value) -> String in
+            return "\(key)=\(value)"//self.percentEscapeString(string: value)
+        }
+
+        var HTTPBody = parameterArray.joined(separator: "&").data(using: String.Encoding.utf8)
+        return HTTPBody
+    }
+
 }
 
 class ErrorLoginEvent: ActionLogEvent {
     init(login: String?) {
         super.init()
-        self.url = "/roadblock"
         self.typeId = "credentials"
         self.source = "roadblock"
         self.actionId = "wrong_credentials"
@@ -110,7 +143,6 @@ class ErrorLoginEvent: ActionLogEvent {
 class SuccessLoginEvent: ActionLogEvent {
     override init() {
         super.init()
-        self.url = "/roadblock"
         self.typeId = "credentials"
         self.source = "roadblock"
         self.actionId = "success"
@@ -154,16 +186,11 @@ class GroupMessageEvent: ActionLogEvent {
         self.mentions = data
     }
     override func convertToPost() -> Data? {
-
-        let params: [String: Any] = ["user_id": self.userId ?? "null",
-                      "user_agent": self.userAgent ?? "null",
-                      "machine_ip": self.machineIp ?? "null",
-                      "machine_cookie": self.machineCookie ?? "null",
-                      "page_key": self.pageKey ?? "null",
-                      "url": self.url ?? "null",
-                      "type_id": self.typeId ?? "null",
-                      "source": self.source ?? "null",
-                      "action_id": self.actionId ?? "null",
+        let params: [String : Any] = ["machine_ip": self.machineIp ?? "",
+                      "page_key": self.pageKey ?? "",
+                      "type_id": self.typeId ?? "",
+                      "source": self.source ?? "",
+                      "action_id": self.actionId ?? "",
                       "data": self.mentions ?? [""]]
 
         print(">>>>>>>> event params: ")
