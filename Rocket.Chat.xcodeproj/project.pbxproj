@@ -156,7 +156,6 @@
 		731DAEA91F5CD2DF00707E07 /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */; };
 		731DAEAC1F5DAADC00707E07 /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEAB1F5DAADC00707E07 /* LogEvent.swift */; };
 		731DAEB01F5E9F2600707E07 /* LogEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */; };
-		7324CF5C1F6845A900B26CFD /* IPaddress.m in Sources */ = {isa = PBXBuildFile; fileRef = 7324CF5B1F6845A900B26CFD /* IPaddress.m */; };
 		734A2E491F26231300A902B0 /* AuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 734A2E481F26231300A902B0 /* AuthInteractor.swift */; };
 		735C0D661F7064BB0018917A /* RCPageKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 735C0D651F7064BB0018917A /* RCPageKey.m */; };
 		73647A241F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A221F5C7D3100B35A38 /* ChatCollectionViewFlowLayout.swift */; };
@@ -358,8 +357,6 @@
 		731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
 		731DAEAB1F5DAADC00707E07 /* LogEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEvent.swift; path = Rocket.Chat/ServerSataistics/LogEvent.swift; sourceTree = "<group>"; };
 		731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEventManager.swift; path = Rocket.Chat/ServerSataistics/LogEventManager.swift; sourceTree = "<group>"; };
-		7324CF5A1F6845A900B26CFD /* IPaddress.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IPaddress.h; sourceTree = "<group>"; };
-		7324CF5B1F6845A900B26CFD /* IPaddress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IPaddress.m; sourceTree = "<group>"; };
 		734A2E481F26231300A902B0 /* AuthInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthInteractor.swift; path = Interactors/AuthInteractor.swift; sourceTree = "<group>"; };
 		735C0D641F7064BB0018917A /* RCPageKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCPageKey.h; path = ServerSataistics/RCPageKey.h; sourceTree = "<group>"; };
 		735C0D651F7064BB0018917A /* RCPageKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCPageKey.m; path = ServerSataistics/RCPageKey.m; sourceTree = "<group>"; };
@@ -843,8 +840,6 @@
 				41EB22381E5F056600AA3AE7 /* Localizable.strings */,
 				597ECBA01E3708980041C5C5 /* Rocket.Chat.entitlements */,
 				731DAEA81F5CD2DF00707E07 /* HTTPResponse.swift */,
-				7324CF5A1F6845A900B26CFD /* IPaddress.h */,
-				7324CF5B1F6845A900B26CFD /* IPaddress.m */,
 			);
 			path = Rocket.Chat;
 			sourceTree = "<group>";
@@ -1418,7 +1413,6 @@
 				734A2E491F26231300A902B0 /* AuthInteractor.swift in Sources */,
 				A0FFC1611E8A9D8D00A1B5EA /* TintedTextField.swift in Sources */,
 				4174CB171D2D9BB70086DAC8 /* AuthViewController.swift in Sources */,
-				7324CF5C1F6845A900B26CFD /* IPaddress.m in Sources */,
 				418688111E53CC86002F785C /* ChatControllerMessageActions.swift in Sources */,
 				731DAEB01F5E9F2600707E07 /* LogEventManager.swift in Sources */,
 				41F3C1001DB577ED000E0C76 /* MessageURL.swift in Sources */,

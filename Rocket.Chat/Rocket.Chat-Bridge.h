@@ -19,6 +19,5 @@
 
 #import <Typhoon/Typhoon.h>
 #include <ifaddrs.h>
-#import "IPaddress.h"
 #import "RCPageKey.h"
 #endif /* Rocket_Chat_Bridge_h */
