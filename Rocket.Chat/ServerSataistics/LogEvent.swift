@@ -79,13 +79,15 @@ class ActionLogEvent: LogEvent {
     var source: String?
     var actionId: String?
     var data: [String: Any]?
-    
+
     override func convertToPost() -> Data? {
 
-        let params = ["page_key": self.pageKey ?? "",
-                      "type_id": self.typeId ?? "",
+        let params:[String: Any] = [
+                      "key": self.pageKey ?? "",
+                      "type": self.typeId ?? "",
                       "source": self.source ?? "",
-                      "action_id": self.actionId ?? "",
+                      "action": self.actionId ?? "",
+                      "data": self.dataConverted(),
                       "version": "2"]
 
         guard let httpBody = try? self.encodeParameters(parameters: params) else {
@@ -99,24 +101,32 @@ class ActionLogEvent: LogEvent {
         return "https://staging.seekingalpha.com/mone_event"
     }
 
-    func encodeParameters(parameters: [String : Any]) -> Data? {
+    func convertParamsToString(parameters: [String : Any]) -> String {
         let parameterArray = parameters.map { (key, value) -> String in
-            return "\(key)=\(value)"//self.percentEscapeString(string: value)
+            return "\(key)=\(value)"
         }
-
-        let HTTPBody = parameterArray.joined(separator: "&").data(using: String.Encoding.utf8)
+        return parameterArray.joined(separator: "&")
+    }
+    func encodeParameters(parameters: [String : Any]) -> Data? {
+        let HTTPBody = self.convertParamsToString(parameters: parameters).data(using: String.Encoding.utf8)
         return HTTPBody
     }
-
+    func dataConverted() -> String {
+        return "{}"
+    }
 }
 
 class ErrorLoginEvent: ActionLogEvent {
+    var login: String?
     init(login: String?) {
         super.init()
         self.typeId = "credentials"
         self.source = "roadblock"
         self.actionId = "wrong_credentials"
-        self.data = ["email": login ?? ""]
+        self.login = login
+    }
+    override func dataConverted() -> String {
+        return self.convertParamsToString(parameters: ["email": login ?? ""])
     }
 }
 
@@ -126,7 +136,6 @@ class SuccessLoginEvent: ActionLogEvent {
         self.typeId = "credentials"
         self.source = "roadblock"
         self.actionId = "success"
-        self.data = ["": ""]
     }
 }
 
@@ -136,7 +145,6 @@ class OpenMenuEvent: ActionLogEvent {
         self.typeId = "click"
         self.source = "drawer_menu"
         self.actionId = "open"
-        self.data = ["": ""]
     }
 }
 
@@ -146,7 +154,6 @@ class LogoutMenuEvent: ActionLogEvent {
         self.typeId = "click"
         self.source = "drawer_menu"
         self.actionId = "logout"
-        self.data = ["": ""]
     }
 }
 
@@ -156,7 +163,6 @@ class DirectMessageEvent: ActionLogEvent {
         self.typeId = "direct_msg"
         self.source = "message"
         self.actionId = "sent"
-        self.data = ["": ""]
     }
 }
 
@@ -169,17 +175,10 @@ class GroupMessageEvent: ActionLogEvent {
         self.actionId = "sent"
         self.mentions = data
     }
-    override func convertToPost() -> Data? {
-        let params: [String : Any] = ["page_key": self.pageKey ?? "",
-                      "type_id": self.typeId ?? "",
-                      "source": self.source ?? "",
-                      "action_id": self.actionId ?? "",
-                      "data": self.mentions ?? [""],
-                      "version": "2"]
-        guard let httpBody = try? super.encodeParameters(parameters: params) else {
-            return nil
-        }
-        return httpBody
+
+    override func dataConverted() -> String {
+        let result = self.mentions?.joined(separator: ",") ?? ""
+        return "{" + result + "}"
     }
 
 }
@@ -190,6 +189,5 @@ class OpenByURLEvent: ActionLogEvent {
         self.typeId = "direct_msg"
         self.source = "notification"
         self.actionId = "sent"
-        self.data = ["": ""]
     }
 }
