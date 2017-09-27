@@ -395,6 +395,9 @@ extension SubscriptionsViewController: UITableViewDelegate {
         guard let selectedSubscription = ChatViewController.sharedInstance()?.subscription else { return }
 
         if subscription.identifier == selectedSubscription.identifier {
+            let logEvent = ChatPageLogEvent(subscription: subscription)
+            logEvent.urlParams = "?source=drawer_menu"
+            self.logEventManager?.send(event: logEvent)
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         }
     }

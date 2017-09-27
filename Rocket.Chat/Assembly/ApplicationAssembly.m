@@ -108,7 +108,7 @@
     return [TyphoonDefinition
             withClass:[PageMoneEvent class]
             configuration:^(TyphoonDefinition *definition) {
-                [definition injectProperty:@selector(url) with:@"/roadblock"];
+                [definition injectProperty:@selector(url) with:@"/roadblock/step_1"];
             }];
 }
 

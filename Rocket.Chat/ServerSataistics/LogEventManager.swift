@@ -10,8 +10,13 @@ import Foundation
 
 class LogEventManager: NSObject {
     var httpSessionManager: LogEventManager?
+    var latestPageKey: String? = nil
+
     func send(event: LogEvent?) {
-        let httpBody = event?.convertToPost()
+        if event?.pageKey != nil {
+            self.latestPageKey = event?.pageKey
+        }
+        let httpBody = event?.convertToPost(previousPageKey: latestPageKey)
         self.post(httpBody: httpBody, url: event?.moneURL)
     }
 
@@ -29,7 +34,7 @@ class LogEventManager: NSObject {
         var request = URLRequest(url: serviceUrl)
         request.httpMethod = "POST"
         request.addValue("Basic c2Vla2luZ2FscGhhOmlwdmlwdg==", forHTTPHeaderField: "Authorization")
-        request.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", forHTTPHeaderField: "User-Agent")
+        request.setValue("Mozilla/5.0 (Macintosh Intel Mac OS X 10_8_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36", forHTTPHeaderField: "User-Agent")
         request.httpBody = httpBody
 
         let session = URLSession.shared

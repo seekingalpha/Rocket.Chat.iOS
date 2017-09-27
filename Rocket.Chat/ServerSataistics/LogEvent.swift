@@ -8,27 +8,30 @@
 
 import Foundation
 
-class LogEvent: NSObject {
+@objc class LogEvent: NSObject {
     //-
-    var pageKey: String?
+    var pageKey: String? = nil
 
     override init() {
         super.init()
-        self.pageKey = RCPageKey.generateUniqueString()
     }
     var moneURL: String {
         return ""
     }
-    func convertToPost() -> Data? {
+    func convertToPost(previousPageKey: String?) -> Data? {
         return nil
+    }
+    func onlyAlphanumeric(string: String, separator: String) -> String {
+        let result = string.replacingOccurrences(of: "\\W+", with: separator, options: NSString.CompareOptions.regularExpression, range: nil).trimmingCharacters(in: NSCharacterSet.whitespaces)
+        return result
     }
 }
 
-class PageMoneEvent: LogEvent {
+@objc class PageMoneEvent: LogEvent {
     var userId: String? {
-        return AuthManager.currentUser()?.identifier ?? "null"
+        let email = AuthManager.currentUser()?.emails.last
+        return email?.email
     }
-    var userAgent: String?
     var machineCookie: String?
 
     var url: String?
@@ -38,19 +41,35 @@ class PageMoneEvent: LogEvent {
 
     override init() {
         super.init()
-        self.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_    5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.157 Safari/537.36"
-        self.machineCookie = UUID().uuidString
-
+        let uuid = UIDevice.current.identifierForVendor?.uuidString
+        self.machineCookie = uuid?.replacingOccurrences(of: "-", with: "", options: .literal, range: nil)
+        self.pageKey = RCPageKey.generateUniqueString()
     }
-    override func convertToPost() -> Data? {
-        let params = [self.userId ?? "",
-                      self.userAgent ?? "",
-                      self.machineCookie ?? "",
-                      self.url ?? "",
+    override func convertToPost(previousPageKey: String?) -> Data? {
+        let params = ["",
                       self.pageKey ?? "",
                       "",
                       "",
-                      ""]
+                      self.url ?? "",
+                      "",
+                      self.machineCookie ?? "",
+                      "",
+                      self.userId ?? "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "",
+                      "{}",
+                      "{}",
+                      "{}",
+                      "{}",
+                      "{}",
+                      "{}",
+                      "{}",
+                      "{}"]
         let joindParams = params.joined(separator: ";;;")
         let finalString = "mone=2;;;" + joindParams
         return finalString.data(using: .utf8)
@@ -60,34 +79,34 @@ class PageMoneEvent: LogEvent {
     }
 }
 
-class ChatPageLogEvent: PageMoneEvent {
+@objc class ChatPageLogEvent: PageMoneEvent {
     init (subscription: Subscription?) {
         super.init()
+        guard var displayName = subscription?.displayName() else {
+            return
+        }
+        displayName = "%^&%&^abcd&&&*efgh()_88"
         if subscription?.type == .directMessage {
-            guard let displayName = subscription?.displayName() else {
-                return
-            }
-            self.url = "/chat/direct_msg/" + displayName
+            self.url = "/chat/direct_msg/" + self.onlyAlphanumeric(string: displayName, separator: ".")
         } else if subscription?.type == .group {
-            self.url = "/chat/group/"
+            self.url = "/chat/group/" + self.onlyAlphanumeric(string: displayName, separator: "-")
         }
     }
 }
 
-class ActionLogEvent: LogEvent {
+@objc class ActionLogEvent: LogEvent {
     var typeId: String?
     var source: String?
     var actionId: String?
     var data: [String: Any]?
 
-    override func convertToPost() -> Data? {
-
+    override func convertToPost(previousPageKey: String?) -> Data? {
         let params:[String: Any] = [
-                      "key": self.pageKey ?? "",
+                      "key": previousPageKey ?? "",
                       "type": self.typeId ?? "",
                       "source": self.source ?? "",
                       "action": self.actionId ?? "",
-                      "data": self.dataConverted(),
+                      "data": self.dataConverted(convertable: nil) ?? "{}",
                       "version": "2"]
 
         guard let httpBody = try? self.encodeParameters(parameters: params) else {
@@ -111,12 +130,27 @@ class ActionLogEvent: LogEvent {
         let HTTPBody = self.convertParamsToString(parameters: parameters).data(using: String.Encoding.utf8)
         return HTTPBody
     }
-    func dataConverted() -> String {
-        return "{}"
+    func dataConverted(convertable: [String:Any]?) -> String? {
+        guard var convertable:[String: Any] = convertable else {
+            return nil
+        }
+        do {
+            if let theJSONData = try? JSONSerialization.data(
+                withJSONObject: convertable,
+                options: []) {
+                let theJSONText = String(data: theJSONData,
+                                         encoding: .utf8)
+                return theJSONText
+            }
+        } catch {
+            print(error.localizedDescription)
+        }
+        return ""
     }
+
 }
 
-class ErrorLoginEvent: ActionLogEvent {
+@objc class ErrorLoginEvent: ActionLogEvent {
     var login: String?
     init(login: String?) {
         super.init()
@@ -125,12 +159,13 @@ class ErrorLoginEvent: ActionLogEvent {
         self.actionId = "wrong_credentials"
         self.login = login
     }
-    override func dataConverted() -> String {
-        return self.convertParamsToString(parameters: ["email": login ?? ""])
+    override func dataConverted(convertable: [String:Any]?) -> String? {
+        let convertable = ["email": login ?? ""]
+        return super.dataConverted(convertable: convertable)
     }
 }
 
-class SuccessLoginEvent: ActionLogEvent {
+@objc class SuccessLoginEvent: ActionLogEvent {
     override init() {
         super.init()
         self.typeId = "credentials"
@@ -139,7 +174,7 @@ class SuccessLoginEvent: ActionLogEvent {
     }
 }
 
-class OpenMenuEvent: ActionLogEvent {
+@objc class OpenMenuEvent: ActionLogEvent {
     override init() {
         super.init()
         self.typeId = "click"
@@ -148,7 +183,7 @@ class OpenMenuEvent: ActionLogEvent {
     }
 }
 
-class LogoutMenuEvent: ActionLogEvent {
+@objc class LogoutMenuEvent: ActionLogEvent {
     override init() {
         super.init()
         self.typeId = "click"
@@ -157,7 +192,7 @@ class LogoutMenuEvent: ActionLogEvent {
     }
 }
 
-class DirectMessageEvent: ActionLogEvent {
+@objc class DirectMessageEvent: ActionLogEvent {
     override init() {
         super.init()
         self.typeId = "direct_msg"
@@ -166,7 +201,7 @@ class DirectMessageEvent: ActionLogEvent {
     }
 }
 
-class GroupMessageEvent: ActionLogEvent {
+@objc class GroupMessageEvent: ActionLogEvent {
     var mentions: [String]?
     init(data: [String]) {
         super.init()
@@ -176,14 +211,14 @@ class GroupMessageEvent: ActionLogEvent {
         self.mentions = data
     }
 
-    override func dataConverted() -> String {
-        let result = self.mentions?.joined(separator: ",") ?? ""
-        return "{" + result + "}"
+    override func dataConverted(convertable: [String:Any]?) -> String? {
+        let convertable = ["mentions": self.mentions]
+        return super.dataConverted(convertable: convertable)
     }
 
 }
 
-class OpenByURLEvent: ActionLogEvent {
+@objc class OpenByURLEvent: ActionLogEvent {
     override init() {
         super.init()
         self.typeId = "direct_msg"
