@@ -20,6 +20,4 @@
 #import <Typhoon/Typhoon.h>
 #include <ifaddrs.h>
 #import "RCPageKey.h"
-#import <AFNetworking/AFNetworking.h>
-#import "SALAnalytics.h"
 #endif /* Rocket_Chat_Bridge_h */

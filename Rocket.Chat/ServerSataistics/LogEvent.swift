@@ -29,8 +29,7 @@ import Foundation
 
 @objc class PageMoneEvent: LogEvent {
     var userId: String? {
-        let email = AuthManager.currentUser()?.emails.last
-        return email?.email
+        return AuthManager.currentUser()?.email()
     }
     var machineCookie: String?
 
@@ -82,10 +81,9 @@ import Foundation
 @objc class ChatPageLogEvent: PageMoneEvent {
     init (subscription: Subscription?) {
         super.init()
-        guard var displayName = subscription?.displayName() else {
+        guard let displayName = subscription?.displayName() else {
             return
         }
-        displayName = "%^&%&^abcd&&&*efgh()_88"
         if subscription?.type == .directMessage {
             self.url = "/chat/direct_msg/" + self.onlyAlphanumeric(string: displayName, separator: ".")
         } else if subscription?.type == .group {
@@ -166,11 +164,17 @@ import Foundation
 }
 
 @objc class SuccessLoginEvent: ActionLogEvent {
-    override init() {
+    var login: String?
+    init(login: String?) {
         super.init()
         self.typeId = "credentials"
         self.source = "roadblock"
         self.actionId = "success"
+        self.login = login
+    }
+    override func dataConverted(convertable: [String:Any]?) -> String? {
+        let convertable = ["email": login ?? ""]
+        return super.dataConverted(convertable: convertable)
     }
 }
 

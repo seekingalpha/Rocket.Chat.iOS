@@ -18,7 +18,7 @@ class AuthState: NSObject {
         self.authViewController = authViewController
     }
     override init() {
-        
+
     }
     func execute() {
     }
@@ -102,7 +102,8 @@ class LoginSuccessState: AuthState {
                 if let user = AuthManager.currentUser() {
                     if user.username != nil {
                         self.authViewController.stopLoading()
-                        let logEvent = SuccessLoginEvent()
+                        user.setEmail(email: self.authViewController.login)
+                        let logEvent = SuccessLoginEvent(login: user.email())
                         self.logEventManager?.send(event: logEvent)
                         self.authViewController.showChat()
                     }

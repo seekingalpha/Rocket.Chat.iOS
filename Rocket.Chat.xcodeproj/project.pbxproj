@@ -163,11 +163,6 @@
 		73647A271F5C7D9700B35A38 /* ServerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A261F5C7D9700B35A38 /* ServerManager.swift */; };
 		73647A2C1F5C7DF800B35A38 /* ChatControllerDocuments.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A2A1F5C7DF800B35A38 /* ChatControllerDocuments.swift */; };
 		73647A2D1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73647A2B1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift */; };
-		73888CCC1F791559003BFDA4 /* RCAnalyticsBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 73888CCB1F791559003BFDA4 /* RCAnalyticsBuilder.m */; };
-		73888CCF1F7916EB003BFDA4 /* Analytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 73888CCE1F7916EB003BFDA4 /* Analytics.m */; };
-		73888CD21F793BEF003BFDA4 /* SALAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = 73888CD11F793BEF003BFDA4 /* SALAnalytics.m */; };
-		73888CD51F794246003BFDA4 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 73888CD41F794246003BFDA4 /* Reachability.m */; };
-		73888CD81F794E70003BFDA4 /* RCEventSender.m in Sources */ = {isa = PBXBuildFile; fileRef = 73888CD71F794E70003BFDA4 /* RCEventSender.m */; };
 		73904E721F1FAD8D00FBDB7B /* CoreComponentsAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */; };
 		73904E791F1FBF0500FBDB7B /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 73904E781F1FBF0500FBDB7B /* Configuration.plist */; };
 		73DD56371F1FAB3100821775 /* ApplicationAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 73DD56361F1FAB3100821775 /* ApplicationAssembly.m */; };
@@ -370,16 +365,6 @@
 		73647A261F5C7D9700B35A38 /* ServerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ServerManager.swift; path = Managers/ServerManager.swift; sourceTree = "<group>"; };
 		73647A2A1F5C7DF800B35A38 /* ChatControllerDocuments.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatControllerDocuments.swift; path = Controllers/Chat/ChatControllerDocuments.swift; sourceTree = "<group>"; };
 		73647A2B1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChatControllerHeaderStatus.swift; path = Controllers/Chat/ChatControllerHeaderStatus.swift; sourceTree = "<group>"; };
-		73888CCA1F791559003BFDA4 /* RCAnalyticsBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCAnalyticsBuilder.h; path = Rocket.Chat/ServerSataistics/RCAnalyticsBuilder.h; sourceTree = "<group>"; };
-		73888CCB1F791559003BFDA4 /* RCAnalyticsBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCAnalyticsBuilder.m; path = Rocket.Chat/ServerSataistics/RCAnalyticsBuilder.m; sourceTree = "<group>"; };
-		73888CCD1F7916EB003BFDA4 /* Analytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Analytics.h; path = Rocket.Chat/ServerSataistics/Analytics.h; sourceTree = "<group>"; };
-		73888CCE1F7916EB003BFDA4 /* Analytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Analytics.m; path = Rocket.Chat/ServerSataistics/Analytics.m; sourceTree = "<group>"; };
-		73888CD01F793BEF003BFDA4 /* SALAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SALAnalytics.h; sourceTree = "<group>"; };
-		73888CD11F793BEF003BFDA4 /* SALAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SALAnalytics.m; sourceTree = "<group>"; };
-		73888CD31F794246003BFDA4 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = Rocket.Chat/Reachability.h; sourceTree = "<group>"; };
-		73888CD41F794246003BFDA4 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = Rocket.Chat/Reachability.m; sourceTree = "<group>"; };
-		73888CD61F794E70003BFDA4 /* RCEventSender.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCEventSender.h; path = Rocket.Chat/ServerSataistics/RCEventSender.h; sourceTree = "<group>"; };
-		73888CD71F794E70003BFDA4 /* RCEventSender.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCEventSender.m; path = Rocket.Chat/ServerSataistics/RCEventSender.m; sourceTree = "<group>"; };
 		73904E701F1FAD8D00FBDB7B /* CoreComponentsAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreComponentsAssembly.h; path = Assembly/CoreComponentsAssembly.h; sourceTree = "<group>"; };
 		73904E711F1FAD8D00FBDB7B /* CoreComponentsAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreComponentsAssembly.m; path = Assembly/CoreComponentsAssembly.m; sourceTree = "<group>"; };
 		73904E781F1FBF0500FBDB7B /* Configuration.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Configuration.plist; path = Assembly/Configuration.plist; sourceTree = "<group>"; };
@@ -929,18 +914,8 @@
 		731DAEAA1F5DA67E00707E07 /* ServerStatistics */ = {
 			isa = PBXGroup;
 			children = (
-				73888CD01F793BEF003BFDA4 /* SALAnalytics.h */,
-				73888CD11F793BEF003BFDA4 /* SALAnalytics.m */,
 				731DAEAB1F5DAADC00707E07 /* LogEvent.swift */,
 				731DAEAF1F5E9F2600707E07 /* LogEventManager.swift */,
-				73888CCA1F791559003BFDA4 /* RCAnalyticsBuilder.h */,
-				73888CCB1F791559003BFDA4 /* RCAnalyticsBuilder.m */,
-				73888CCD1F7916EB003BFDA4 /* Analytics.h */,
-				73888CCE1F7916EB003BFDA4 /* Analytics.m */,
-				73888CD31F794246003BFDA4 /* Reachability.h */,
-				73888CD41F794246003BFDA4 /* Reachability.m */,
-				73888CD61F794E70003BFDA4 /* RCEventSender.h */,
-				73888CD71F794E70003BFDA4 /* RCEventSender.m */,
 			);
 			name = ServerStatistics;
 			sourceTree = "<group>";
@@ -1414,7 +1389,6 @@
 				4151B45A1E2D1DD400F8AA1B /* AttachmentModelMapping.swift in Sources */,
 				411EDED51E3102CB00BC7BE3 /* UploadManager.swift in Sources */,
 				731DAEA61F5C7E6300707E07 /* ChatLoaderCell.swift in Sources */,
-				73888CD81F794E70003BFDA4 /* RCEventSender.m in Sources */,
 				73647A2D1F5C7DF800B35A38 /* ChatControllerHeaderStatus.swift in Sources */,
 				41D5BC311DAFBEF4009A493A /* UIViewExtentions.swift in Sources */,
 				597ECBA41E3708B10041C5C5 /* PushManager.swift in Sources */,
@@ -1476,8 +1450,6 @@
 				41C45AEF1DFAD42800D9969C /* ChatDataController.swift in Sources */,
 				41EE157E1E05BED600754D45 /* ChatControllerAutocomplete.swift in Sources */,
 				4162E1531D651A8800AAAE49 /* UserManager.swift in Sources */,
-				73888CCF1F7916EB003BFDA4 /* Analytics.m in Sources */,
-				73888CCC1F791559003BFDA4 /* RCAnalyticsBuilder.m in Sources */,
 				4112BEEC1E7971A400E734CB /* MainChatViewController.swift in Sources */,
 				731DAE991F5C7E3C00707E07 /* DownloadManager.swift in Sources */,
 				419D85001DF599DA0021F034 /* ChatHeaderViewStatus.swift in Sources */,
@@ -1500,9 +1472,7 @@
 				597ECBA21E3708A50041C5C5 /* DataExtension.swift in Sources */,
 				414A1FFC1D46395900093E10 /* SocketResponse.swift in Sources */,
 				41B4B2341E40B1D200F4D252 /* ChatControllerUploader.swift in Sources */,
-				73888CD51F794246003BFDA4 /* Reachability.m in Sources */,
 				731DAE951F5C7E1600707E07 /* ArrayExtensions.swift in Sources */,
-				73888CD21F793BEF003BFDA4 /* SALAnalytics.m in Sources */,
 				4133EDCF1DA2834E005AA783 /* ChatMessageImageView.swift in Sources */,
 				731DAEA91F5CD2DF00707E07 /* HTTPResponse.swift in Sources */,
 				41A87BAD1DA66E700000EE80 /* AuthSettings.swift in Sources */,

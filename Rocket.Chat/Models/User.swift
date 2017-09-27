@@ -22,7 +22,6 @@ class User: BaseModel {
     dynamic var username: String?
     dynamic var name: String?
     var emails = List<Email>()
-
     fileprivate dynamic var privateStatus = UserStatus.offline.rawValue
     var status: UserStatus {
         get { return UserStatus(rawValue: privateStatus) ?? UserStatus.offline }
@@ -38,6 +37,15 @@ extension User {
         }
 
         return (settings.useUserRealName ? name : username) ?? ""
+    }
+    func email() -> String? {
+        guard let email = UserDefaults.standard.object(forKey: "email") as? String else {
+            return nil
+        }
+        return email
+    }
+    func setEmail(email: String?) {
+        UserDefaults.standard.set(email, forKey: "email")
     }
 
 }

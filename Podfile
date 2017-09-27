@@ -33,7 +33,6 @@ def shared_pods
   pod '1PasswordExtension'
   pod 'Google/SignIn'
   pod 'Typhoon'
-  pod 'AFNetworking', '~> 3.0'
 end
 
 target 'Rocket.Chat' do

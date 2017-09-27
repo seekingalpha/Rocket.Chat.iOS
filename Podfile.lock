@@ -1,20 +1,5 @@
 PODS:
   - 1PasswordExtension (1.8.4)
-  - AFNetworking (3.1.0):
-    - AFNetworking/NSURLSession (= 3.1.0)
-    - AFNetworking/Reachability (= 3.1.0)
-    - AFNetworking/Security (= 3.1.0)
-    - AFNetworking/Serialization (= 3.1.0)
-    - AFNetworking/UIKit (= 3.1.0)
-  - AFNetworking/NSURLSession (3.1.0):
-    - AFNetworking/Reachability
-    - AFNetworking/Security
-    - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.1.0)
-  - AFNetworking/Security (3.1.0)
-  - AFNetworking/Serialization (3.1.0)
-  - AFNetworking/UIKit (3.1.0):
-    - AFNetworking/NSURLSession
   - Crashlytics (3.8.5):
     - Fabric (~> 1.6.3)
   - Fabric (1.6.12)
@@ -83,7 +68,6 @@ PODS:
 
 DEPENDENCIES:
   - 1PasswordExtension
-  - AFNetworking (~> 3.0)
   - Crashlytics
   - Fabric
   - Google/SignIn
@@ -112,7 +96,6 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   1PasswordExtension: e775a29310c65851e5a6cec1afc349ab4e334e47
-  AFNetworking: 5e0e199f73d8626b11e79750991f5d173d1f8b67
   Crashlytics: dfbae35ef22ca189240d230ad501feea4ee85d2d
   Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
@@ -138,6 +121,6 @@ SPEC CHECKSUMS:
   Typhoon: 05db9d33d798b90c202bf3f754275c03efe93297
   URBMediaFocusViewController: 26779e301fe75ec0152fbe8b476bd06ccee9f9b3
 
-PODFILE CHECKSUM: 4b895ccbb7ab0dceaed2285bbaf29b72f3b2436b
+PODFILE CHECKSUM: 255285c8818cf0cb3da7b41b550e0ed879532eb8
 
 COCOAPODS: 1.2.1
