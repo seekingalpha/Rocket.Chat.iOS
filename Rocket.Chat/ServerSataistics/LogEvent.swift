@@ -45,7 +45,7 @@ import Foundation
         self.pageKey = RCPageKey.generateUniqueString()
     }
     override func convertToPost(previousPageKey: String?) -> Data? {
-        let params = ["",
+        let params = ["rocketchat",
                       self.pageKey ?? "",
                       "",
                       "",
@@ -216,6 +216,9 @@ import Foundation
     }
 
     override func dataConverted(convertable: [String:Any]?) -> String? {
+        guard (self.mentions?.count)! > 0 else {
+            return "{}"
+        }
         let convertable = ["mentions": self.mentions]
         return super.dataConverted(convertable: convertable)
     }

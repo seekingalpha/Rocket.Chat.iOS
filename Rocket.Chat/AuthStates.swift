@@ -102,7 +102,7 @@ class LoginSuccessState: AuthState {
                 if let user = AuthManager.currentUser() {
                     if user.username != nil {
                         self.authViewController.stopLoading()
-                        user.setEmail(email: self.authViewController.login)
+                        user.setEmail(email: self.authViewController.textFieldUsername.text)
                         let logEvent = SuccessLoginEvent(login: user.email())
                         self.logEventManager?.send(event: logEvent)
                         self.authViewController.showChat()
