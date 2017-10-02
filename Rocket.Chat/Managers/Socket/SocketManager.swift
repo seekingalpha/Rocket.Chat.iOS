@@ -143,7 +143,7 @@ extension SocketManager {
     }
 
     static func removeConnectionHandler(token: String) {
-        sharedInstance.connectionHandlers[token] = nil
+        sharedInstance.connectionHandlers.removeValue(forKey: token)
     }
 
 }
@@ -170,8 +170,10 @@ extension SocketManager: WebSocketDelegate {
         events = [:]
         queue = [:]
 
-        internalConnectionHandler?(socket, socket.isConnected)
-        internalConnectionHandler = nil
+        if let handler = internalConnectionHandler {
+            internalConnectionHandler = nil
+            handler(socket, socket.isConnected)
+        }
 
         for (_, handler) in connectionHandlers {
             handler.socketDidDisconnect(socket: self)

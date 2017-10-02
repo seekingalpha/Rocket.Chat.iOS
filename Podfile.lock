@@ -1,8 +1,8 @@
 PODS:
   - 1PasswordExtension (1.8.4)
-  - Crashlytics (3.8.5):
+  - Crashlytics (3.8.6):
     - Fabric (~> 1.6.3)
-  - Fabric (1.6.12)
+  - Fabric (1.6.13)
   - FirebaseAnalytics (3.9.0):
     - FirebaseCore (~> 3.6)
     - FirebaseInstanceID (~> 1.0)
@@ -16,7 +16,7 @@ PODS:
   - Google/SignIn (3.1.0):
     - Google/Core
     - GoogleSignIn (~> 4.0)
-  - GoogleSignIn (4.0.2):
+  - GoogleSignIn (4.1.0):
     - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
     - GoogleToolboxForMac/NSString+URLArguments (~> 2.1)
     - GTMOAuth2 (~> 1.0)
@@ -31,7 +31,7 @@ PODS:
     - GoogleToolboxForMac/Defines (= 2.1.1)
     - GoogleToolboxForMac/NSString+URLArguments (= 2.1.1)
   - GoogleToolboxForMac/NSString+URLArguments (2.1.1)
-  - GTMOAuth2 (1.1.4):
+  - GTMOAuth2 (1.1.5):
     - GTMSessionFetcher (~> 1.1)
   - GTMSessionFetcher (1.1.11):
     - GTMSessionFetcher/Full (= 1.1.11)
@@ -39,32 +39,33 @@ PODS:
   - GTMSessionFetcher/Full (1.1.11):
     - GTMSessionFetcher/Core (= 1.1.11)
   - MobilePlayer (1.2.0)
-  - Realm (2.8.3):
-    - Realm/Headers (= 2.8.3)
-  - Realm/Headers (2.8.3)
-  - RealmSwift (2.8.3):
-    - Realm (= 2.8.3)
-  - RxCocoa (3.5.0):
-    - RxSwift (~> 3.4)
-  - RxSwift (3.5.0)
+  - RCMarkdownParser (3.0.3)
+  - ReachabilitySwift (4.0-beta1)
+  - Realm (2.10.1):
+    - Realm/Headers (= 2.10.1)
+  - Realm/Headers (2.10.1)
+  - RealmSwift (2.10.1):
+    - Realm (= 2.10.1)
+  - RxCocoa (3.6.1):
+    - RxSwift (~> 3.6)
+  - RxSwift (3.6.1)
   - SDWebImage (3.8.2):
     - SDWebImage/Core (= 3.8.2)
   - SDWebImage/Core (3.8.2)
   - semver (1.0.0)
   - SideMenuController (0.2.4.1)
+  - SimpleImageViewer (1.0.2)
   - SlackTextViewController (1.9.5)
-  - Starscream (2.0.4)
-  - SwiftyJSON (3.1.4)
-  - TSMarkdownParser (2.1.3)
-  - Typhoon (4.0.2):
-    - Typhoon/DeallocNotifier (= 4.0.2)
-    - Typhoon/IntrospectionUtils (= 4.0.2)
-    - Typhoon/no-arc (= 4.0.2)
-  - Typhoon/DeallocNotifier (4.0.2)
-  - Typhoon/IntrospectionUtils (4.0.2)
-  - Typhoon/no-arc (4.0.2):
+  - Starscream (2.1.1)
+  - SwiftyJSON (4.0.0-alpha.1)
+  - Typhoon (4.0.3):
+    - Typhoon/DeallocNotifier (= 4.0.3)
+    - Typhoon/IntrospectionUtils (= 4.0.3)
+    - Typhoon/no-arc (= 4.0.3)
+  - Typhoon/DeallocNotifier (4.0.3)
+  - Typhoon/IntrospectionUtils (4.0.3)
+  - Typhoon/no-arc (4.0.3):
     - Typhoon/IntrospectionUtils
-  - URBMediaFocusViewController (0.9.0)
 
 DEPENDENCIES:
   - 1PasswordExtension
@@ -72,55 +73,92 @@ DEPENDENCIES:
   - Fabric
   - Google/SignIn
   - MobilePlayer
+  - RCMarkdownParser
+  - ReachabilitySwift (from `https://github.com/ashleymills/Reachability.swift.git`, branch `develop`)
   - RealmSwift
   - RxCocoa (~> 3.0)
   - RxSwift (~> 3.0)
-  - SDWebImage (~> 3.8)
-  - semver
+  - SDWebImage (~> 3)
+  - semver (from `https://github.com/rafaelks/Semver.Swift.git`, branch `chore/swift4`)
   - SideMenuController (from `https://github.com/rafaelks/SideMenuController.git`)
-  - SlackTextViewController
-  - Starscream (~> 2.0.0)
-  - SwiftyJSON
-  - TSMarkdownParser
+  - SimpleImageViewer (from `https://github.com/cardoso/SimpleImageViewer.git`)
+  - SlackTextViewController (from `https://github.com/rafaelks/SlackTextViewController.git`, branch `chore/swift4_xcode9_ios11`)
+  - Starscream (from `https://github.com/daltoniam/Starscream.git`, branch `swift4`)
+  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, tag `4.0.0-alpha.1`)
   - Typhoon
-  - URBMediaFocusViewController
 
 EXTERNAL SOURCES:
+  ReachabilitySwift:
+    :branch: develop
+    :git: https://github.com/ashleymills/Reachability.swift.git
+  semver:
+    :branch: chore/swift4
+    :git: https://github.com/rafaelks/Semver.Swift.git
   SideMenuController:
     :git: https://github.com/rafaelks/SideMenuController.git
+  SimpleImageViewer:
+    :git: https://github.com/cardoso/SimpleImageViewer.git
+  SlackTextViewController:
+    :branch: chore/swift4_xcode9_ios11
+    :git: https://github.com/rafaelks/SlackTextViewController.git
+  Starscream:
+    :branch: swift4
+    :git: https://github.com/daltoniam/Starscream.git
+  SwiftyJSON:
+    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+    :tag: 4.0.0-alpha.1
 
 CHECKOUT OPTIONS:
+  ReachabilitySwift:
+    :commit: 6451cd109ef2e88a0763387de44668e17cb1b49e
+    :git: https://github.com/ashleymills/Reachability.swift.git
+  semver:
+    :commit: a8ad3f3c1b168dfa6a8f1f7de2e5cae59239d9bf
+    :git: https://github.com/rafaelks/Semver.Swift.git
   SideMenuController:
-    :commit: a3a55e08f4752b5a4e169c6a8b2ceee0096649f5
+    :commit: bc78eff529e5efb59fbfb93f34127a2dba4306a8
     :git: https://github.com/rafaelks/SideMenuController.git
+  SimpleImageViewer:
+    :commit: 26b54aefeced8039e85f1174ed5e2cd2dfc0251f
+    :git: https://github.com/cardoso/SimpleImageViewer.git
+  SlackTextViewController:
+    :commit: 7deec6edd55ce2e11441f542a18f374ee86bd6ec
+    :git: https://github.com/rafaelks/SlackTextViewController.git
+  Starscream:
+    :commit: e9d10000eca3f682650fb674eecc73ad709b316a
+    :git: https://github.com/daltoniam/Starscream.git
+  SwiftyJSON:
+    :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+    :tag: 4.0.0-alpha.1
 
 SPEC CHECKSUMS:
   1PasswordExtension: e775a29310c65851e5a6cec1afc349ab4e334e47
-  Crashlytics: dfbae35ef22ca189240d230ad501feea4ee85d2d
-  Fabric: f050464eac45a2ce5a8e6e6a07e977c0df32fe28
+  Crashlytics: 95d05f4e4c19a771250c4bd9ce344d996de32bbf
+  Fabric: 2fb5676bc811af011a04513451f463dac6803206
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
   FirebaseCore: 9691ee2ade70c098d7cf92440f4303f16d83ca75
   FirebaseInstanceID: b9eedd6846fb5e1f0f7279e1deaa7a7e4cf8392e
   Google: 98da4b1a60ed0beb80a290387a28333406a1eb90
-  GoogleSignIn: d7ad83f13480e1f30453471d00d19b5293ac46af
+  GoogleSignIn: 8c599fc10d25b2af86a3f82fd9631e863f2b1400
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
-  GTMOAuth2: 7fc9c10f5c745f4d9850419ea88889fe3baa6b7d
+  GTMOAuth2: be83fd28d63ae3087e7d351b1f39c1a7e24ab6e7
   GTMSessionFetcher: 5ad62e8200fa00ed011fe5e08d27fef72c5b1429
   MobilePlayer: 069b13482499f14c25b6ce53f63a91e17975b073
-  Realm: 3601ef091c8c499a31101d8563b991e75546cdce
-  RealmSwift: 8183818515471b01a99abdd2970f8e4fd52b6f4a
-  RxCocoa: a0a09f45d0e5b48ecb6a4a7b4b4c89c88d3f633f
-  RxSwift: 18ee9d78b45edb3b0b7e79916b47a116e6dbc842
+  RCMarkdownParser: 062a5f014134dffe7cf1b0d0dc34c3abb4b0f203
+  ReachabilitySwift: fa4416f5356466392a733d21b41873ebe052bf40
+  Realm: fc7a317a5c2c9ba91f5f235ede4e2ea76e9eba0c
+  RealmSwift: 505ed6c15942a2e76f5cfa78a8667cfa997ee75b
+  RxCocoa: 84a08739ab186248c7f31ce4ee92d6f8a947d690
+  RxSwift: f9de85ea20cd2f7716ee5409fc13523dc638e4e4
   SDWebImage: 098e97e6176540799c27e804c96653ee0833d13c
-  semver: efe6bf4af25bffab18d442592771be392210b5ce
+  semver: df3895a55a097c7a819a80e7375e95b29e136157
   SideMenuController: 44670bc1e1c58d9460fc028e246926227edefec0
+  SimpleImageViewer: 209dc6f6ee0eeed8ec3386b699eae9dca625d560
   SlackTextViewController: fbcdadbb8090673f604484ff5b6eb8d77baed42a
-  Starscream: df5974ee928b157c8eda8af8de7c620276b7dfcc
-  SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
-  TSMarkdownParser: 114779f14d46e7fc6d9880d4797e5abcc01f92c3
-  Typhoon: 05db9d33d798b90c202bf3f754275c03efe93297
-  URBMediaFocusViewController: 26779e301fe75ec0152fbe8b476bd06ccee9f9b3
+  Starscream: 087670fe088bb12c04398fc343442a4b9eb96b86
+  SwiftyJSON: c4d27c2ca659d5c91460cd17cc60fd212b26074d
+  Typhoon: 85d1a7ada9a7def46a374be1301540572cc53636
 
-PODFILE CHECKSUM: 255285c8818cf0cb3da7b41b550e0ed879532eb8
+PODFILE CHECKSUM: 5aad1e965895822d58ec3521ecf46f2ed70fa7ac
 
 COCOAPODS: 1.2.1

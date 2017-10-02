@@ -18,6 +18,8 @@ final class ConnectServerViewController: BaseViewController {
 
     var serverPublicSettings: AuthSettings?
 
+    @IBOutlet weak var buttonClose: UIBarButtonItem!
+
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var textFieldServerURL: UITextField!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
@@ -36,6 +38,12 @@ final class ConnectServerViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        if DatabaseManager.servers?.count ?? 0 > 0 {
+            title = localized("servers.add_new_team")
+        } else {
+            navigationItem.leftBarButtonItem = nil
+        }
 
         textFieldServerURL.placeholder = defaultURL
 
@@ -73,7 +81,7 @@ final class ConnectServerViewController: BaseViewController {
 
     // MARK: Keyboard Handlers
     override func keyboardWillShow(_ notification: Notification) {
-        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             visibleViewBottomConstraint.constant = keyboardSize.height
         }
     }
@@ -83,6 +91,18 @@ final class ConnectServerViewController: BaseViewController {
     }
 
     // MARK: IBAction
+
+    @IBAction func buttonCloseDidPressed(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+
+        let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+        let controller = storyboardChat.instantiateInitialViewController()
+        let application = UIApplication.shared
+
+        if let window = application.windows.first {
+            window.rootViewController = controller
+        }
+    }
 
     func alertInvalidURL() {
         let alert = UIAlertController(
@@ -105,6 +125,23 @@ final class ConnectServerViewController: BaseViewController {
         guard let socketURL = url.socketURL() else { return alertInvalidURL() }
         guard let validateURL = url.validateURL() else { return alertInvalidURL() }
 
+        if let servers = DatabaseManager.servers {
+            let sameServerIndex = servers.index(where: {
+                if let stringServerUrl = $0[ServerPersistKeys.serverURL],
+                    let serverUrl = URL(string: stringServerUrl) {
+
+                    return serverUrl == socketURL
+                } else {
+                    return false
+                }
+            })
+
+            if let sameServerIndex = sameServerIndex {
+                MainChatViewController.shared?.changeSelectedServer(index: sameServerIndex)
+                return
+            }
+        }
+
         connecting = true
         textFieldServerURL.alpha = 0.5
         activityIndicator.startAnimating()
@@ -123,6 +160,9 @@ final class ConnectServerViewController: BaseViewController {
 
                 return
             }
+
+            let index = DatabaseManager.createNewDatabaseInstance(serverURL: socketURL.absoluteString)
+            DatabaseManager.changeDatabaseInstance(index: index)
 
             SocketManager.connect(socketURL) { (_, connected) in
                 AuthSettingsManager.updatePublicSettings(nil) { (settings) in
@@ -146,7 +186,7 @@ final class ConnectServerViewController: BaseViewController {
 
         let task = session.dataTask(with: request, completionHandler: { (data, _, _) in
             if let data = data {
-                let json = JSON(data: data)
+                guard let json = try? JSON(data: data) else { return completion(nil, true) }
                 Log.debug(json.rawString())
 
                 guard let version = json["version"].string else {

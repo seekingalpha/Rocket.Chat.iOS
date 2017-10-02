@@ -73,20 +73,24 @@ class AuthInteractor: NSObject {
 
             let task = session.dataTask(with: request, completionHandler: { (data, _, _) in
                 if let data = data {
-                    let json = JSON(data: data)
-                    Log.debug(json.rawString())
+                    do {
+                        let json = try JSON(data: data)
+                        Log.debug(json.rawString())
 
-                    guard let version = json["version"].string else {
-                        return observer.onNext(Result.failure(.invalidURL))
-                    }
-
-                    if let minVersion = Bundle.main.object(forInfoDictionaryKey: "RC_MIN_SERVER_VERSION") as? String {
-                        if Semver.lt(version, minVersion) {
-                            DispatchQueue.main.async(execute: {
-                                observer.onNext(Result.failure(ErrorType.wrongServerVersion(version: version, minVersion: minVersion)))
-                                observer.onCompleted()
-                            })
+                        guard let version = json["version"].string else {
+                            return observer.onNext(Result.failure(.invalidURL))
                         }
+
+                        if let minVersion = Bundle.main.object(forInfoDictionaryKey: "RC_MIN_SERVER_VERSION") as? String {
+                            if Semver.lt(version, minVersion) {
+                                DispatchQueue.main.async(execute: {
+                                    observer.onNext(Result.failure(ErrorType.wrongServerVersion(version: version, minVersion: minVersion)))
+                                    observer.onCompleted()
+                                })
+                            }
+                            }
+                    } catch {
+                        
                     }
                     DispatchQueue.main.async(execute: {
                         observer.onNext(Result.success(socketURL))

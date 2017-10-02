@@ -37,6 +37,11 @@
 "subscriptions.channels" = "Kanäle";
 "subscriptions.direct_messages" = "Direktnachrichten";
 
+// Servers
+"servers.add_new_team" = "Neues Team hinzufügen";
+"servers.action.connect" = "Verbinden";
+"servers.action.remove" = "Team entfernen";
+
 // User Menu
 "user_menu.online" = "Online";
 "user_menu.away" = "Abwesend";

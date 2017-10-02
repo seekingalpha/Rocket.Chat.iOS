@@ -80,10 +80,8 @@ struct SubscriptionManager {
 
                     auth.lastSubscriptionFetch = Date.serverDate
                     realm.add(subscriptions, update: true)
-
-                    DispatchQueue.main.async {
-                        completion(response)
-                    }
+                }, completion: {
+                    completion(response)
                 })
             }
         }
@@ -204,6 +202,7 @@ struct SubscriptionManager {
                     subscription.otherUserId = user.identifier
                     subscription.type = .directMessage
                     subscription.name = user.username ?? ""
+                    subscription.fname = user.name ?? ""
                     subscriptions.append(subscription)
 
                     if let identifier = subscription.identifier {

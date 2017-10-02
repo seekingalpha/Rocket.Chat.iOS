@@ -10,7 +10,7 @@ import RealmSwift
 
 // swiftlint:disable file_length
 final class SubscriptionsViewController: BaseViewController {
-    var logEventManager: LogEventManager?
+    @objc var logEventManager: LogEventManager?
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var activityViewSearching: UIActivityIndicatorView!
 
@@ -20,19 +20,15 @@ final class SubscriptionsViewController: BaseViewController {
             buttonCancelSearch.setTitle(localized("global.cancel"), for: .normal)
         }
     }
-    @IBOutlet weak var buttonCancelSearchWidthConstraint: NSLayoutConstraint! {
-        didSet {
-            buttonCancelSearchWidthConstraint.constant = 0
-        }
-    }
+    @IBOutlet weak var buttonCancelSearchWidthConstraint: NSLayoutConstraint!
 
     @IBOutlet weak var textFieldSearch: UITextField! {
         didSet {
             textFieldSearch.placeholder = localized("subscriptions.search")
 
             if let placeholder = textFieldSearch.placeholder {
-                let color = UIColor(rgb: 0x9AB1BF, alphaVal: 1)
-                textFieldSearch.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: [NSForegroundColorAttributeName: color])
+                let color = UIColor(rgb: 0x9ea2a4, alphaVal: 1)
+                textFieldSearch.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: [NSAttributedStringKey.foregroundColor: color])
             }
         }
     }
@@ -58,6 +54,28 @@ final class SubscriptionsViewController: BaseViewController {
     }
 
     @IBOutlet weak var viewUserStatus: UIView!
+
+    weak var avatarView: AvatarView?
+    @IBOutlet weak var avatarViewContainer: UIView! {
+        didSet {
+            avatarViewContainer.layer.masksToBounds = true
+            avatarViewContainer.layer.cornerRadius = 5
+
+            if let avatarView = AvatarView.instantiateFromNib() {
+                avatarView.frame = CGRect(
+                    x: 0,
+                    y: 0,
+                    width: avatarViewContainer.frame.width,
+                    height: avatarViewContainer.frame.height
+                )
+
+                avatarViewContainer.addSubview(avatarView)
+                self.avatarView = avatarView
+            }
+        }
+    }
+
+    @IBOutlet weak var labelServer: UILabel!
     @IBOutlet weak var labelUsername: UILabel!
     @IBOutlet weak var imageViewArrowDown: UIImageView! {
         didSet {
@@ -65,11 +83,9 @@ final class SubscriptionsViewController: BaseViewController {
         }
     }
 
-    class func sharedInstance() -> SubscriptionsViewController? {
-        if let main = UIApplication.shared.delegate?.window??.rootViewController as? MainChatViewController {
-            if let nav = main.sideViewController as? UINavigationController {
-                return nav.viewControllers.first as? SubscriptionsViewController
-            }
+    static var shared: SubscriptionsViewController? {
+        if let pageController = SubscriptionsPageViewController.shared {
+            return pageController.subscriptionsController
         }
 
         return nil
@@ -85,6 +101,8 @@ final class SubscriptionsViewController: BaseViewController {
 
     var groupInfomation: [[String: String]]?
     var groupSubscriptions: [[Subscription]]?
+
+    var searchText: String = ""
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -108,10 +126,36 @@ final class SubscriptionsViewController: BaseViewController {
     }
 
     override func viewDidLoad() {
-        guard let selectedSubscription = ChatViewController.sharedInstance()?.subscription else { return }
+        guard let selectedSubscription = ChatViewController.shared?.subscription else { return }
         let logEvent = ChatPageLogEvent(subscription: selectedSubscription)
         logEvent.urlParams = "?source=drawer_menu"
         self.logEventManager?.send(event: logEvent)
+    }
+}
+
+// MARK: Side Menu callbacks
+extension SubscriptionsViewController {
+    func willHide() {
+        self.textFieldSearch.resignFirstResponder()
+    }
+
+    func didHide() {
+        self.textFieldSearch.resignFirstResponder()
+    }
+
+    func willReveal() {
+        if searchText.isEmpty {
+            hideCancelSearchButton()
+        } else {
+            showCancelSearchButton()
+        }
+
+        self.textFieldSearch.resignFirstResponder()
+        self.updateData()
+    }
+
+    func didReveal() {
+        self.textFieldSearch.resignFirstResponder()
     }
 }
 
@@ -119,11 +163,14 @@ extension SubscriptionsViewController {
 
     @IBAction func buttonCancelSearchDidPressed(_ sender: Any) {
         textFieldSearch.resignFirstResponder()
+        textFieldSearch.text = ""
+        searchText = ""
+        searchBy()
     }
 
     func searchBy(_ text: String = "") {
         guard let auth = AuthManager.isAuthenticated() else { return }
-        subscriptions = auth.subscriptions.filter("name CONTAINS %@", text)
+        subscriptions = auth.subscriptions.filterBy(name: text)
 
         if text.characters.count == 0 {
             isSearchingLocally = false
@@ -175,6 +222,16 @@ extension SubscriptionsViewController {
         }
     }
 
+    func updateAll() {
+        guard let auth = AuthManager.isAuthenticated() else { return }
+        subscriptions = auth.subscriptions.sortedByLastSeen()
+    }
+
+    func updateSearched() {
+        guard let auth = AuthManager.isAuthenticated() else { return }
+        subscriptions = auth.subscriptions.filterBy(name: searchText).sortedByLastSeen()
+    }
+
     func updateData() {
         guard !isSearchingLocally && !isSearchingRemotely else { return }
         guard let auth = AuthManager.isAuthenticated() else { return }
@@ -185,25 +242,32 @@ extension SubscriptionsViewController {
     }
 
     func handleModelUpdates<T>(_: RealmCollectionChange<RealmSwift.Results<T>>?) {
-        guard !isSearchingLocally && !isSearchingRemotely else { return }
-        guard let auth = AuthManager.isAuthenticated() else { return }
-        subscriptions = auth.subscriptions.sorted(byKeyPath: "lastSeen", ascending: false)
+        if isSearchingLocally || isSearchingRemotely {
+            updateSearched()
+        } else {
+            updateAll()
+        }
+
         groupSubscription()
 
         updateCurrentUserInformation()
         SubscriptionManager.updateUnreadApplicationBadge()
 
-        if MainChatViewController.shared()?.sidePanelVisible ?? false {
+        if MainChatViewController.shared?.sidePanelVisible ?? false {
             tableView?.reloadData()
         }
     }
 
     func updateCurrentUserInformation() {
+        guard let settings = AuthSettingsManager.settings else { return }
         guard let user = AuthManager.currentUser() else { return }
         guard let labelUsername = self.labelUsername else { return }
         guard let viewUserStatus = self.viewUserStatus else { return }
+        guard let avatarView = self.avatarView else { return }
 
+        labelServer.text = settings.serverName
         labelUsername.text = user.displayName()
+        avatarView.user = user
 
         switch user.status {
         case .online:
@@ -224,12 +288,13 @@ extension SubscriptionsViewController {
     func subscribeModelChanges() {
         guard !assigned else { return }
         guard let auth = AuthManager.isAuthenticated() else { return }
+        guard let realm = Realm.shared else { return }
 
         assigned = true
 
         subscriptions = auth.subscriptions.sorted(byKeyPath: "lastSeen", ascending: false)
         subscriptionsToken = subscriptions?.addNotificationBlock(handleModelUpdates)
-        usersToken = try? Realm().objects(User.self).addNotificationBlock(handleModelUpdates)
+        usersToken = realm.objects(User.self).addNotificationBlock(handleModelUpdates)
 
         groupSubscription()
     }
@@ -335,6 +400,11 @@ extension SubscriptionsViewController {
         guard groups[indexPath.section].count > indexPath.row else { return nil }
         return groups[indexPath.section][indexPath.row]
     }
+
+    func imageViewServerDidTapped(gesture: UIGestureRecognizer) {
+        SubscriptionsPageViewController.shared?.showServersList()
+    }
+
 }
 
 extension SubscriptionsViewController: UITableViewDataSource {
@@ -363,7 +433,7 @@ extension SubscriptionsViewController: UITableViewDataSource {
 extension SubscriptionsViewController: UITableViewDelegate {
 
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return section == 0 ? 50 : 60
+        return 60
     }
 
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
@@ -391,7 +461,7 @@ extension SubscriptionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard let subscription = subscription(for: indexPath) else { return }
 
-        let controller = ChatViewController.sharedInstance()
+        let controller = ChatViewController.shared
         controller?.closeSidebarAfterSubscriptionUpdate = true
         controller?.subscription = subscription
     }
@@ -399,7 +469,7 @@ extension SubscriptionsViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         guard let cell = cell as? SubscriptionCell else { return }
         guard let subscription = cell.subscription else { return }
-        guard let selectedSubscription = ChatViewController.sharedInstance()?.subscription else { return }
+        guard let selectedSubscription = ChatViewController.shared?.subscription else { return }
 
         if subscription.identifier == selectedSubscription.identifier {
             tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
@@ -409,8 +479,16 @@ extension SubscriptionsViewController: UITableViewDelegate {
 
 extension SubscriptionsViewController: UITextFieldDelegate {
 
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    func showCancelSearchButton() {
         buttonCancelSearchWidthConstraint.constant = defaultButtonCancelSearchWidth
+    }
+
+    func hideCancelSearchButton() {
+        buttonCancelSearchWidthConstraint.constant = 0
+    }
+
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        self.showCancelSearchButton()
 
         UIView.animate(withDuration: 0.1) {
             self.view.layoutIfNeeded()
@@ -418,7 +496,7 @@ extension SubscriptionsViewController: UITextFieldDelegate {
     }
 
     func textFieldDidEndEditing(_ textField: UITextField) {
-        buttonCancelSearchWidthConstraint.constant = 0
+        hideCancelSearchButton()
 
         UIView.animate(withDuration: 0.1) {
             self.view.layoutIfNeeded()
@@ -427,7 +505,7 @@ extension SubscriptionsViewController: UITextFieldDelegate {
 
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         let currentText = textField.text ?? ""
-        let prospectiveText = (currentText as NSString).replacingCharacters(in: range, with: string)
+        searchText = (currentText as NSString).replacingCharacters(in: range, with: string)
 
         if string == "\n" {
             if currentText.characters.count > 0 {
@@ -437,7 +515,7 @@ extension SubscriptionsViewController: UITextFieldDelegate {
             return false
         }
 
-        searchBy(prospectiveText)
+        searchBy(searchText)
         return true
     }
 
@@ -468,7 +546,7 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
         view.addSubview(viewUserMenu)
         self.viewUserMenu = viewUserMenu
 
-        newFrame.origin.y = 64
+        newFrame.origin.y = 84
         UIView.animate(withDuration: 0.15) {
             viewUserMenu.frame = newFrame
             self.imageViewArrowDown.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
@@ -484,12 +562,12 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
         UIView.animate(withDuration: 0.15, animations: {
             viewUserMenu.frame = newFrame
             self.imageViewArrowDown.transform = CGAffineTransform(rotationAngle: CGFloat(0))
-        }) { (_) in
+        }, completion: { (_) in
             viewUserMenu.removeFromSuperview()
-        }
+        })
     }
 
-    func viewUserDidTap(sender: Any) {
+    @objc func viewUserDidTap(sender: Any) {
         textFieldSearch.resignFirstResponder()
 
         if viewUserMenu != nil {
@@ -502,4 +580,5 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
     func userDidPressedOption() {
         dismissUserMenu()
     }
+
 }

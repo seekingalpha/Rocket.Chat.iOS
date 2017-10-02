@@ -5,52 +5,54 @@ use_frameworks!
 inhibit_all_warnings!
 
 def shared_pods
-  # Crash Report
-  pod 'Fabric'
-  pod 'Crashlytics'
-
-  # Code utilities
-  pod 'SwiftyJSON'
-  pod 'semver'
-
-  # UI
-  pod 'SideMenuController', :git => 'https://github.com/rafaelks/SideMenuController.git'
-  pod 'SlackTextViewController'
-  pod 'MobilePlayer'
-  pod 'URBMediaFocusViewController'
-
-  # Text Processing
-  pod 'TSMarkdownParser'
-
-  # Database
-  pod 'RealmSwift'
-
-  # Network
-  pod 'SDWebImage', '~> 3.8'
-  pod 'Starscream', '~> 2.0.0'
-
-  # Authentication SDKs
-  pod '1PasswordExtension'
-  pod 'Google/SignIn'
-  pod 'Typhoon'
+    # Crash Report
+    pod 'Fabric'
+    pod 'Crashlytics'
+    
+    # Code utilities
+    pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :tag => '4.0.0-alpha.1'
+    pod 'semver', :git => 'https://github.com/rafaelks/Semver.Swift.git', :branch => 'chore/swift4'
+    
+    # UI
+    pod 'SideMenuController', :git => 'https://github.com/rafaelks/SideMenuController.git'
+    pod 'SlackTextViewController', :git => 'https://github.com/rafaelks/SlackTextViewController.git', :branch => 'chore/swift4_xcode9_ios11'
+    pod 'MobilePlayer'
+    pod 'SimpleImageViewer', :git => 'https://github.com/cardoso/SimpleImageViewer.git'
+    
+    # Text Processing
+    pod 'RCMarkdownParser'
+    
+    # Database
+    pod 'RealmSwift'
+    
+    # Network
+    pod 'SDWebImage', '~> 3'
+    pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git', :branch => 'swift4'
+    pod 'ReachabilitySwift', :git => 'https://github.com/ashleymills/Reachability.swift.git', :branch => 'develop'
+    
+    # Authentication SDKs
+    pod '1PasswordExtension'
+    pod 'Google/SignIn'
+    pod 'Typhoon'
 end
 
 target 'Rocket.Chat' do
-  # Shared pods
-  shared_pods
-  pod 'RxSwift',    '~> 3.0'
-  pod 'RxCocoa',    '~> 3.0'
+    # Shared pods
+    shared_pods
+    pod 'RxSwift',    '~> 3.0'
+    pod 'RxCocoa',    '~> 3.0'
 end
 
 target 'Rocket.ChatTests' do
-  # Shared pods
-  shared_pods
+    # Shared pods
+    shared_pods
 end
 
 post_install do |installer|
-  installer.pods_project.targets.each do |target|
-    target.build_configurations.each do |config|
-      config.build_settings['SWIFT_VERSION'] = '3.1'
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '3.1'
+        end
     end
-  end
 end
+

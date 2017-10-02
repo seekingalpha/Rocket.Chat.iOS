@@ -11,10 +11,10 @@ import RxSwift
 import RxCocoa
 
 class AuthState: NSObject {
-    var authViewController: AuthViewController!
-    var nextSuccess: AuthState?
-    var nextFailure: AuthState?
-    init(authViewController: AuthViewController) {
+    @objc var authViewController: AuthViewController!
+    @objc var nextSuccess: AuthState?
+    @objc var nextFailure: AuthState?
+    @objc init(authViewController: AuthViewController) {
         self.authViewController = authViewController
     }
     override init() {
@@ -22,8 +22,8 @@ class AuthState: NSObject {
     }
     func execute() {
     }
-    var logEventManager: LogEventManager?
-    var logEvent: LogEvent?
+    @objc var logEventManager: LogEventManager?
+    @objc var logEvent: LogEvent?
 }
 
 class FirstLoadingState: AuthState {
@@ -122,8 +122,8 @@ class LoginFailureState: AuthState {
 }
 
 class AuthStateMachine: NSObject {
-    var currentState: AuthState?
-    var rootState: AuthState?
+    @objc var currentState: AuthState?
+    @objc var rootState: AuthState?
 
     func switchState(state: AuthState) {
         self.currentState = state

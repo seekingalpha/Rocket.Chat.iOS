@@ -10,7 +10,7 @@ import Foundation
 
 @objc class LogEvent: NSObject {
     //-
-    var pageKey: String? = nil
+    @objc var pageKey: String? = nil
 
     override init() {
         super.init()
@@ -33,7 +33,7 @@ import Foundation
     }
     var machineCookie: String?
 
-    var url: String?
+    @objc var url: String?
     var urlParams: String? = ""
     var refferer: String? = ""
     var reffererKey: String? = ""

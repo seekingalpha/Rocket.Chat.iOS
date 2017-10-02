@@ -11,14 +11,14 @@ import UIKit
 import SafariServices
 import OnePasswordExtension
 
-final class AuthViewController: BaseViewController {
-    var interactor: AuthInteractor?
+@objc final class AuthViewController: BaseViewController, URLSessionDelegate {
+    @objc var interactor: AuthInteractor?
     internal var connecting = false
-    var serverURL: URL?
-    var serverPublicSettings: AuthSettings?
-    var login: String?
-    var password: String?
-    var stateMachine: AuthStateMachine?
+    @objc var serverURL: URL?
+    @objc var serverPublicSettings: AuthSettings?
+    @objc var login: String?
+    @objc var password: String?
+    @objc var stateMachine: AuthStateMachine?
     @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
@@ -143,9 +143,12 @@ final class AuthViewController: BaseViewController {
         startLoading()
         let params = ["email": email,
                       "password": password]
-        AuthManager.auth(params: params, completion: self.loginResponse)
+        let urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        AuthManager.auth(urlSession:urlSession, params: params, completion: self.loginResponse)
     }
-
+    
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {        completionHandler(            .useCredential,            URLCredential(trust: challenge.protectionSpace.serverTrust!)        )
+    }
     @IBAction func buttonAuthenticateGoogleDidPressed(_ sender: Any) {
         authenticateWithGoogle()
     }

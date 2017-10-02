@@ -79,7 +79,7 @@ final class RegisterUsernameViewController: BaseViewController {
 
     // MARK: Keyboard Handlers
     override func keyboardWillShow(_ notification: Notification) {
-        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue {
+        if let keyboardSize = ((notification as NSNotification).userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             visibleViewBottomConstraint.constant = keyboardSize.height
         }
     }
@@ -108,6 +108,14 @@ final class RegisterUsernameViewController: BaseViewController {
                 }
             } else {
                 self?.dismiss(animated: true, completion: nil)
+
+                let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+                let controller = storyboardChat.instantiateInitialViewController()
+                let application = UIApplication.shared
+
+                if let window = application.windows.first {
+                    window.rootViewController = controller
+                }
             }
         }
     }

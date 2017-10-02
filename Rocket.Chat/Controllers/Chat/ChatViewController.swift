@@ -8,7 +8,7 @@
 
 import RealmSwift
 import SlackTextViewController
-import URBMediaFocusViewController
+import SimpleImageViewer
 
 // swiftlint:disable file_length type_body_length
 final class ChatViewController: SLKTextViewController {
@@ -31,7 +31,6 @@ final class ChatViewController: SLKTextViewController {
     weak var chatTitleView: ChatTitleView?
     weak var chatPreviewModeView: ChatPreviewModeView?
     weak var chatHeaderViewStatus: ChatHeaderViewStatus?
-    lazy var mediaFocusViewController = URBMediaFocusViewController()
     var documentController: UIDocumentInteractionController?
 
     var dataController = ChatDataController()
@@ -41,6 +40,7 @@ final class ChatViewController: SLKTextViewController {
     var closeSidebarAfterSubscriptionUpdate = false
 
     var isRequestingHistory = false
+    var isAppendingMessages = false
 
     let socketHandlerToken = String.random(5)
     var messagesToken: NotificationToken!
@@ -52,11 +52,11 @@ final class ChatViewController: SLKTextViewController {
             markAsRead()
         }
     }
-    public var logEventManager: LogEventManager?
+    @objc var logEventManager: LogEventManager?
 
     // MARK: View Life Cycle
 
-    class func sharedInstance() -> ChatViewController? {
+    static var shared: ChatViewController? {
         if let main = UIApplication.shared.delegate?.window??.rootViewController as? MainChatViewController {
             if let nav = main.centerViewController as? UINavigationController {
                 return nav.viewControllers.first as? ChatViewController
@@ -82,9 +82,6 @@ final class ChatViewController: SLKTextViewController {
         navigationController?.navigationBar.barTintColor = UIColor.white
         navigationController?.navigationBar.tintColor = UIColor(rgb: 0x5B5B5B, alphaVal: 1)
 
-        mediaFocusViewController.shouldDismissOnTap = true
-        mediaFocusViewController.shouldShowPhotoActions = true
-
         collectionView?.isPrefetchingEnabled = true
 
         isInverted = false
@@ -101,8 +98,12 @@ final class ChatViewController: SLKTextViewController {
         setupTextViewSettings()
         setupScrollToBottomButton()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(ChatViewController.reconnect), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reconnect), name: NSNotification.Name.UIApplicationDidBecomeActive, object: nil)
         SocketManager.addConnectionHandler(token: socketHandlerToken, handler: self)
+
+        if !SocketManager.isConnected() {
+            socketDidDisconnect(socket: SocketManager.sharedInstance)
+        }
 
         guard let auth = AuthManager.isAuthenticated() else { return }
         let subscriptions = auth.subscriptions.sorted(byKeyPath: "lastSeen", ascending: false)
@@ -136,7 +137,7 @@ final class ChatViewController: SLKTextViewController {
 
     //}
 
-    internal func reconnect() {
+    @objc internal func reconnect() {
         if !SocketManager.isConnected() {
             SocketManager.reconnect()
         }
@@ -330,10 +331,13 @@ final class ChatViewController: SLKTextViewController {
             textView.text = ""
             rightButton.isEnabled = true
 
-            SubscriptionManager.sendTextMessage(message) { _ in
+            SubscriptionManager.sendTextMessage(message) { response in
                 Realm.executeOnMainThread({ (realm) in
                     message.temporary = false
+                    message.map(response.result["result"], realm: realm)
                     realm.add(message, update: true)
+
+                    MessageTextCacheManager.shared.update(for: message)
                 })
             }
         }
@@ -411,6 +415,10 @@ final class ChatViewController: SLKTextViewController {
             case .initial: break
             case .update(_, _, let insertions, let modifications):
                 if insertions.count > 0 {
+                    if insertions.count > 1 && self.isRequestingHistory {
+                        return
+                    }
+
                     var newMessages: [Message] = []
                     for insertion in insertions {
                         let newMessage = Message(value: self.messagesQuery[insertion])
@@ -418,8 +426,9 @@ final class ChatViewController: SLKTextViewController {
                     }
 
                     self.messages.append(contentsOf: newMessages)
-                    self.appendMessages(messages: newMessages, completion: nil)
-                    self.markAsRead()
+                    self.appendMessages(messages: newMessages, completion: {
+                        self.markAsRead()
+                    })
                 }
 
                 if modifications.count == 0 {
@@ -471,6 +480,7 @@ final class ChatViewController: SLKTextViewController {
                 DispatchQueue.main.async {
                     self?.activityIndicator.stopAnimating()
                     self?.isRequestingHistory = false
+                    self?.loadMoreMessagesFrom(date: date, loadRemoteHistory: false)
 
                     if messages.count == 0 {
                         self?.dataController.loadedAllMessages = true
@@ -498,15 +508,23 @@ final class ChatViewController: SLKTextViewController {
                     self?.scrollToBottom()
                 }
 
-                if !loadRemoteHistory {
-                    self?.isRequestingHistory = false
+                if SocketManager.isConnected() {
+                    if !loadRemoteHistory {
+                        self?.isRequestingHistory = false
+                    } else {
+                        loadHistoryFromRemote()
+                    }
                 } else {
-                    loadHistoryFromRemote()
+                    self?.isRequestingHistory = false
                 }
             })
         } else {
-            if loadRemoteHistory {
-                loadHistoryFromRemote()
+            if SocketManager.isConnected() {
+                if loadRemoteHistory {
+                    loadHistoryFromRemote()
+                } else {
+                    isRequestingHistory = false
+                }
             } else {
                 isRequestingHistory = false
             }
@@ -514,7 +532,10 @@ final class ChatViewController: SLKTextViewController {
     }
 
     fileprivate func appendMessages(messages: [Message], completion: VoidCompletion?) {
+        guard !isAppendingMessages else { return }
         guard let collectionView = self.collectionView else { return }
+
+        isAppendingMessages = true
 
         var tempMessages: [Message] = []
         for message in messages {
@@ -542,7 +563,7 @@ final class ChatViewController: SLKTextViewController {
             // Normalize data into ChatData object
             for message in newMessages {
                 guard let createdAt = message.createdAt else { continue }
-                guard var obj = ChatData(type: .message, timestamp: createdAt) else { continue }
+                var obj = ChatData(type: .message, timestamp: createdAt)
                 obj.message = message
                 objs.append(obj)
             }
@@ -550,6 +571,7 @@ final class ChatViewController: SLKTextViewController {
             // No new data? Don't update it then
             if objs.count == 0 {
                 DispatchQueue.main.async {
+                    self.isAppendingMessages = false
                     completion?()
                 }
 
@@ -562,6 +584,7 @@ final class ChatViewController: SLKTextViewController {
                     collectionView.insertItems(at: indexPaths)
                     collectionView.deleteItems(at: removedIndexPaths)
                 }, completion: { _ in
+                    self.isAppendingMessages = false
                     completion?()
                 })
             }
@@ -594,7 +617,7 @@ final class ChatViewController: SLKTextViewController {
 
     // MARK: IBAction
 
-    func chatTitleViewDidPressed(_ sender: AnyObject) {
+    @objc func chatTitleViewDidPressed(_ sender: AnyObject) {
         performSegue(withIdentifier: "Channel Info", sender: sender)
     }
 
@@ -662,6 +685,8 @@ extension ChatViewController {
             cell.message = message
         }
 
+        cell.sequential = dataController.hasSequentialMessageAt(indexPath)
+
         return cell
     }
 
@@ -715,6 +740,10 @@ extension ChatViewController {
 
 extension ChatViewController: UICollectionViewDelegateFlowLayout {
 
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         return .zero
     }
@@ -740,7 +769,8 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout {
             }
 
             if let message = obj.message {
-                let height = ChatMessageCell.cellMediaHeightFor(message: message)
+                let sequential = dataController.hasSequentialMessageAt(indexPath)
+                let height = ChatMessageCell.cellMediaHeightFor(message: message, sequential: sequential)
                 return CGSize(width: fullWidth, height: height)
             }
         }

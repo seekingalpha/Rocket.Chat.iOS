@@ -11,20 +11,47 @@ import RealmSwift
 import SwiftyJSON
 
 final class AuthSettings: BaseModel {
-    dynamic var siteURL: String?
-    dynamic var cdnPrefixURL: String?
+    @objc dynamic var siteURL: String?
+    @objc dynamic var cdnPrefixURL: String?
 
-    // User
-    dynamic var useUserRealName = false
+    // Server information
+    @objc dynamic var serverName: String?
+    @objc dynamic var serverFaviconURL: String?
+
+    // Layout: User Interface
+    @objc dynamic var useUserRealName = false
+    @objc dynamic var allowSpecialCharsOnRoomNames = false
 
     // Rooms
-    dynamic var favoriteRooms = true
+    @objc dynamic var favoriteRooms = true
 
     // Authentication methods
-    dynamic var isUsernameEmailAuthenticationEnabled = false
-    dynamic var isGoogleAuthenticationEnabled = false
-    dynamic var isLDAPAuthenticationEnabled = false
+    @objc dynamic var isUsernameEmailAuthenticationEnabled = false
+    @objc dynamic var isGoogleAuthenticationEnabled = false
+    @objc dynamic var isLDAPAuthenticationEnabled = false
 
     // File upload
-    dynamic var uploadStorageType: String?
+    @objc dynamic var uploadStorageType: String?
+
+    // Hide Message Types
+    @objc dynamic var hideMessageUserJoined: Bool = false
+    @objc dynamic var hideMessageUserLeft: Bool = false
+    @objc dynamic var hideMessageUserAdded: Bool = false
+    @objc dynamic var hideMessageUserMutedUnmuted: Bool = false
+    @objc dynamic var hideMessageUserRemoved: Bool = false
+
+    var hiddenTypes: Set<MessageType> {
+        var hiddenTypes = Set<MessageType>()
+
+        if hideMessageUserJoined { hiddenTypes.insert(.userJoined) }
+        if hideMessageUserLeft { hiddenTypes.insert(.userLeft) }
+        if hideMessageUserAdded { hiddenTypes.insert(.userAdded) }
+        if hideMessageUserRemoved { hiddenTypes.insert(.userRemoved) }
+        if hideMessageUserMutedUnmuted {
+            hiddenTypes.insert(.userMuted)
+            hiddenTypes.insert(.userUnmuted)
+        }
+
+        return hiddenTypes
+    }
 }
