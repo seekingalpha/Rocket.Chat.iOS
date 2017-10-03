@@ -10,7 +10,6 @@ import Foundation
 import UIKit
 import SafariServices
 import OnePasswordExtension
-
 @objc final class AuthViewController: BaseViewController, URLSessionDelegate {
     @objc var interactor: AuthInteractor?
     internal var connecting = false
@@ -19,6 +18,9 @@ import OnePasswordExtension
     @objc var login: String?
     @objc var password: String?
     @objc var stateMachine: AuthStateMachine?
+    @objc var logEventManager: LogEventManager?
+    @objc var logEvent: LogEvent?
+
     @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
@@ -58,6 +60,7 @@ import OnePasswordExtension
         self.textFieldUsername.text = self.login
         self.textFieldPassword.text = self.password
         self.stateMachine?.execute()
+        self.logEventManager?.send(event: self.logEvent)
     }
 
     override func viewDidAppear(_ animated: Bool) {

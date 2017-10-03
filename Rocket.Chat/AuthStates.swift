@@ -73,7 +73,6 @@ class ShowLoginState: AuthState {
         self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
         self.authViewController.textFieldUsername.becomeFirstResponder()
-        self.logEventManager?.send(event:self.logEvent)
     }
 }
 

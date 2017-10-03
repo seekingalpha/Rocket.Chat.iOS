@@ -22,6 +22,9 @@
 #endif
                 [definition injectProperty:@selector(interactor) with:[AuthInteractor new]];
                 [definition injectProperty:@selector(stateMachine) with:[self stateMachine]];
+                [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
+                [definition injectProperty:@selector(logEvent) with:[self showLoginPageEvent]];
+
             }];
 }
 
@@ -33,7 +36,6 @@
     return [TyphoonDefinition
             withClass:[AuthStateMachine class]
             configuration:^(TyphoonDefinition *definition) {
-                
                 FirstLoadingState *firstLoadingState = [self firstLoadingState];
                 [definition injectProperty:@selector(rootState) with:firstLoadingState];
                 [definition injectProperty:@selector(currentState) with:firstLoadingState];
@@ -61,8 +63,6 @@
                                 parameters:^(TyphoonMethod *initializer) {
                                     [initializer injectParameterWith:[self connectServerViewController]];
                                     [definition injectProperty:@selector(nextSuccess) with:[self loginInProgressState]];
-                                    [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
-                                    [definition injectProperty:@selector(logEvent) with:[self showLoginPageEvent]];
                                 }];
             }];
 }

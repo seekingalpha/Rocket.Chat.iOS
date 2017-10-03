@@ -307,6 +307,7 @@ final class ChatViewController: SLKTextViewController {
                 mentions.append(param)
             }
             self.logEventManager?.send(event: GroupMessageEvent(data: mentions))
+            self.selected.removeAll()
         }
 
         rightButton.isEnabled = false
