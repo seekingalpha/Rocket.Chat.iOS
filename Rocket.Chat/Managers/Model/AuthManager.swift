@@ -220,8 +220,8 @@ extension AuthManager {
     /**
         Generic method that authenticates the user.
     */
-    static func auth(urlSession: URLSession, params: [String: Any], completion: @escaping HTTPComplition) {
-        self.post(session: urlSession, params : params, url : "https://staging.seekingalpha.com/authentication/rc_mobile_login", complition : { result in
+    static func auth(urlSession: URLSession, params: [String: Any], completion: @escaping HTTPComplition, websocketURL: String, servereAuthURL: String) {
+        self.post(session: urlSession, params : params, url : servereAuthURL, complition : { result in
             
             var httpResponse = HTTPResponse()
             guard let response = result as? [String: Any] else {
@@ -248,7 +248,7 @@ extension AuthManager {
                 let auth = Auth()
                 auth.lastSubscriptionFetch = nil
                 auth.lastAccess = Date()
-                auth.serverURL = "wss://rc.staging.seekingalpha.com/websocket"
+                auth.serverURL = websocketURL
                 auth.token = rc_token
                 auth.userId = user_id
                 PushManager.updatePushToken()

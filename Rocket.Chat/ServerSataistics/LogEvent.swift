@@ -14,16 +14,21 @@ import Foundation
 
     override init() {
         super.init()
+        var config: NSDictionary?
+        if let path = Bundle.main.path(forResource: "Configuration", ofType: "plist") {
+            config = NSDictionary(contentsOfFile: path)
+        }
+        self.setupMoneURL(config: config)
     }
-    var moneURL: String {
-        return ""
-    }
+    var moneURL: String?
     func convertToPost(previousPageKey: String?) -> Data? {
         return nil
     }
     func onlyAlphanumeric(string: String, separator: String) -> String {
         let result = string.replacingOccurrences(of: "\\W+", with: separator, options: NSString.CompareOptions.regularExpression, range: nil).trimmingCharacters(in: NSCharacterSet.whitespaces)
         return result
+    }
+    func setupMoneURL(config: NSDictionary!) {
     }
 }
 
@@ -73,8 +78,8 @@ import Foundation
         let finalString = "mone=2;;;" + joindParams
         return finalString.data(using: .utf8)
     }
-    override var moneURL: String {
-        return "https://staging.seekingalpha.com/mone"
+    override func setupMoneURL(config: NSDictionary!) {
+        self.moneURL = config["moneURL"] as? String
     }
 }
 
@@ -113,11 +118,9 @@ import Foundation
 
         return httpBody
     }
-
-    override var moneURL: String {
-        return "https://staging.seekingalpha.com/mone_event"
+    override func setupMoneURL(config: NSDictionary!) {
+        self.moneURL = config["moneEventURL"] as? String
     }
-
     func convertParamsToString(parameters: [String : Any]) -> String {
         let parameterArray = parameters.map { (key, value) -> String in
             return "\(key)=\(value)"

@@ -21,6 +21,9 @@ import OnePasswordExtension
     @objc var logEventManager: LogEventManager?
     @objc var logEvent: LogEvent?
 
+    @objc var websocketURL: String?
+    @objc var servereAuthURL: String?
+    
     @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
@@ -147,7 +150,7 @@ import OnePasswordExtension
         let params = ["email": email,
                       "password": password]
         let urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-        AuthManager.auth(urlSession:urlSession, params: params, completion: self.loginResponse)
+        AuthManager.auth(urlSession:urlSession, params: params, completion: self.loginResponse, websocketURL: self.websocketURL!, servereAuthURL: self.servereAuthURL!)
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {        completionHandler(            .useCredential,            URLCredential(trust: challenge.protectionSpace.serverTrust!)        )

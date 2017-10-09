@@ -24,7 +24,9 @@
                 [definition injectProperty:@selector(stateMachine) with:[self stateMachine]];
                 [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
                 [definition injectProperty:@selector(logEvent) with:[self showLoginPageEvent]];
-
+                
+                [definition injectProperty:@selector(servereAuthURL) with:TyphoonConfig(@"servereAuthURL")];
+                [definition injectProperty:@selector(websocketURL) with:TyphoonConfig(@"websocketURL")];
             }];
 }
 
