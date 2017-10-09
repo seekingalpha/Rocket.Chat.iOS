@@ -9,12 +9,12 @@
 	<key>password</key>
 	<string>123456</string>
 	<key>servereAuthURL</key>
-	<string>https://staging.seekingalpha.com/authentication/rc_mobile_login</string>
+	<string>https://seekingalpha.com/authentication/rc_mobile_login</string>
 	<key>websocketURL</key>
-	<string>wss://rc.staging.seekingalpha.com/websocket</string>
+	<string>wss://rc.seekingalpha.com/websocket</string>
 	<key>moneURL</key>
-	<string>https://staging.seekingalpha.com/mone</string>
+	<string>https://seekingalpha.com/mone</string>
 	<key>moneEventURL</key>
-	<string>https://staging.seekingalpha.com/mone_event</string>
+	<string>https://seekingalpha.com/mone_event</string>
 </dict>
 </plist>
