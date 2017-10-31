@@ -24,14 +24,14 @@ public enum Result<Value> {
 
 class AuthInteractor: NSObject {
 
-    func checkAuth() -> Observable<Bool>? {
+    func checkAuth(complition: @escaping (_ result: Bool) -> Void) {
 
-        return Observable.create { observer in
             if let auth = AuthManager.isAuthenticated() {
                 AuthManager.persistAuthInformation(auth)
                 AuthManager.resume(auth, completion: { response in
                     guard !response.isError(), !(response is Error) else {
-                        return observer.onNext(false)
+                        complition(false)
+                        return
                     }
                     SubscriptionManager.updateSubscriptions(auth, completion: { _ in
                         AuthSettingsManager.updatePublicSettings(auth, completion: { _ in
@@ -44,29 +44,27 @@ class AuthInteractor: NSObject {
                         if let userIdentifier = auth.userId {
                             PushManager.updateUser(userIdentifier)
                         }
-                        observer.onNext(true)
+                        complition(true)
                     })
                 })
             } else {
-                observer.onNext(false)
+                complition(false)
             }
-            return Disposables.create()
-        }
     }
 
-    func validate(URL: URL?) -> Observable<Result<URL>>? {
-        return Observable.create { observer in
+     func validate(URL: URL?, complition: @escaping (_ result: Bool, _ socketURL: URL?) -> Void) {
+
             guard let url = URL else {
-                observer.onNext(Result.failure(.invalidURL))
-                return Disposables.create()
+                complition(false, nil)
+                return
             }
             guard let socketURL = url.socketURL() else {
-                observer.onNext(Result.failure(.invalidURL))
-                return Disposables.create()
+                complition(false, nil)
+                return
             }
             guard let validateURL = url.validateURL() else {
-                observer.onNext(Result.failure(.invalidURL))
-                return Disposables.create()
+                complition(false, nil)
+                return
             }
             let request = URLRequest(url: validateURL)
             let session = URLSession.shared
@@ -76,56 +74,41 @@ class AuthInteractor: NSObject {
                     do {
                         let json = try JSON(data: data)
                         Log.debug(json.rawString())
-
                         guard let version = json["version"].string else {
-                            return observer.onNext(Result.failure(.invalidURL))
+                            complition(false, nil)
+                            return
                         }
 
                         if let minVersion = Bundle.main.object(forInfoDictionaryKey: "RC_MIN_SERVER_VERSION") as? String {
                             if Semver.lt(version, minVersion) {
                                 DispatchQueue.main.async(execute: {
-                                    observer.onNext(Result.failure(ErrorType.wrongServerVersion(version: version, minVersion: minVersion)))
-                                    observer.onCompleted()
+                                    complition(false, nil)
                                 })
                             }
                             }
                     } catch {
-                        
                     }
                     DispatchQueue.main.async(execute: {
-                        observer.onNext(Result.success(socketURL))
-                        observer.onCompleted()
+                        complition(true, socketURL)
                     })
                 } else {
                     DispatchQueue.main.async(execute: {
-                        observer.onNext(Result.failure(.invalidURL))
-                        observer.onCompleted()
+                        complition(false, nil)
                     })
                 }
             })
-
             task.resume()
-            return Disposables.create {
-                task.cancel()
-            }
-        }
     }
 
-    func connect(socketURL: URL!) -> Observable<Result<AuthSettings>>? {
-        return Observable.create { observer in
-
-            SocketManager.connect(socketURL) { (_, _) in
-                AuthSettingsManager.updatePublicSettings(nil) { (settings) in
-                    guard let settings = settings else {
-                         observer.onNext(.failure(.connectionError))
-                         observer.onCompleted()
-                         return
-                    }
-                    observer.onNext(Result.success(settings))
-                    observer.onCompleted()
+    func connect(socketURL: URL!, complition: @escaping (_ sereverSettings: AuthSettings) -> Void, failure: @escaping () -> Void) {
+        SocketManager.connect(socketURL) { (_, _) in
+            AuthSettingsManager.updatePublicSettings(nil) { (settings) in
+                guard let settings = settings else {
+                     failure()
+                     return
                 }
+                complition(settings)
             }
-            return Disposables.create()
         }
     }
 }

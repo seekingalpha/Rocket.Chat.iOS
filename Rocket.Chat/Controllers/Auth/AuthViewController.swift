@@ -23,7 +23,7 @@ import OnePasswordExtension
 
     @objc var websocketURL: String?
     @objc var servereAuthURL: String?
-    
+
     @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {

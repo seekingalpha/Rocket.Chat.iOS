@@ -54,6 +54,7 @@
                                 }];
                 [definition injectProperty:@selector(nextSuccess) with:[self showChatState]];
                 [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
+                [definition injectProperty:@selector(nextFailureWithConnectionError) with:[self validationErrorState]];
             }];
 }
 
@@ -164,6 +165,20 @@
             withClass:[LogEventManager class]
             configuration:^(TyphoonDefinition *definition) {
                 [definition setScope:TyphoonScopeSingleton];
+            }];
+}
+
+- (ValidationConnectionError *)validationErrorState {
+    return [TyphoonDefinition
+            withClass:[ValidationConnectionError class]
+            configuration:^(TyphoonDefinition *definition) {
+
+                [definition useInitializer:@selector(initWithAuthViewController:)
+                                parameters:^(TyphoonMethod *initializer) {
+                                    [initializer injectParameterWith:[self connectServerViewController]];
+                                }];
+
+                [definition injectProperty:@selector(nextSuccess) with:[self firstLoadingState]];
             }];
 }
 @end
