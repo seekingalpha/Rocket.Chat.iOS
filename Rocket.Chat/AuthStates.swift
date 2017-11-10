@@ -69,7 +69,6 @@ class ShowLoginState: AuthState {
 
 class ShowChatState: AuthState {
     override func execute() {
-        self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
         self.authViewController.showChat()
         self.authViewController.finishExecution(nextState: nil)
