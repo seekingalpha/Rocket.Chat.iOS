@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import RxSwift
 import SwiftyJSON
 import semver
 
@@ -62,11 +61,7 @@ class AuthInteractor: NSObject {
                 complition(false, nil)
                 return
             }
-            guard let validateURL = url.validateURL() else {
-                complition(false, nil)
-                return
-            }
-            let request = URLRequest(url: validateURL)
+            let request = URLRequest(url: url)
             let session = URLSession.shared
 
             let task = session.dataTask(with: request, completionHandler: { (data, _, _) in

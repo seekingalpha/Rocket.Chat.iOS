@@ -10,6 +10,8 @@ import Foundation
 import UIKit
 import SafariServices
 import OnePasswordExtension
+import RealmSwift
+
 @objc final class AuthViewController: BaseViewController, URLSessionDelegate {
     @objc var interactor: AuthInteractor?
     internal var connecting = false
@@ -23,7 +25,7 @@ import OnePasswordExtension
 
     @objc var websocketURL: String?
     @objc var servereAuthURL: String?
-
+    var loginServicesToken: NotificationToken?
     @IBOutlet weak var contentContainer: UIView!
     @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
@@ -51,6 +53,17 @@ import OnePasswordExtension
             self.customActivityIndicator = activityIndicator
         }
     }
+
+    @IBOutlet var buttonRegister: UIButton!
+
+    @IBOutlet weak var authButtonsStackView: UIStackView!
+    var customAuthButtons = [String: UIButton]()
+
+    deinit {
+        loginServicesToken?.invalidate()
+        NotificationCenter.default.removeObserver(self)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         if let navigationBar = navigationController?.navigationBar {
@@ -64,10 +77,17 @@ import OnePasswordExtension
         self.textFieldPassword.text = self.password
         self.stateMachine?.execute()
         self.logEventManager?.send(event: self.logEvent)
+        title = serverURL?.host
+
+        if let registrationForm = AuthSettingsManager.shared.settings?.registrationForm {
+           buttonRegister.isHidden = registrationForm != .isPublic
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+
+        setupLoginServices()
 
         NotificationCenter.default.addObserver(
             self,
@@ -136,10 +156,13 @@ import OnePasswordExtension
     }
 
     func stopLoading() {
-        textFieldUsername.alpha = 1
-        textFieldPassword.alpha = 1
+        DispatchQueue.main.async(execute: {
+            self.textFieldUsername.alpha = 1
+            self.textFieldPassword.alpha = 1
+            self.activityIndicator.stopAnimating()
+        })
+
         connecting = false
-        activityIndicator.stopAnimating()
     }
 
     // MARK: IBAction
@@ -262,5 +285,89 @@ extension AuthViewController: UITextFieldDelegate {
             self.stateMachine?.success()
         }
         return true
+    }
+}
+
+// MARK: Login Services
+
+extension AuthViewController {
+    func setupLoginServices() {
+        self.loginServicesToken?.invalidate()
+
+        self.loginServicesToken = LoginServiceManager.observe { [weak self] changes in
+            self?.updateLoginServices(changes: changes)
+        }
+
+        LoginServiceManager.subscribe()
+    }
+
+    @objc func loginServiceButtonDidPress(_ button: UIButton) {
+//        guard let service = customAuthButtons.filter({ $0.value == button }).keys.first,
+//              let realm = Realm.shared,
+//              let loginService = LoginService.find(service: service, realm: realm)
+//        else {
+//            return
+//        }
+//
+//        OAuthManager.authorize(loginService: loginService, at: serverURL, viewController: self,
+//                               success: { [weak self] credentials in
+//
+//            guard let strongSelf = self else { return }
+//            AuthManager.auth(credentials: credentials, completion: strongSelf.handleAuthenticationResponse)
+//
+//        }, failure: { [weak self] in
+//
+//            self?.alert(title: localized("alert.login_service_error.title"),
+//                        message: localized("alert.login_service_error.title"))
+//
+//        })
+    }
+
+    func updateLoginServices(changes: RealmCollectionChange<Results<LoginService>>) {
+        switch changes {
+        case .update(let res, let deletions, let insertions, let modifications):
+            insertions.map { res[$0] }.forEach {
+                guard $0.custom, !($0.serverURL?.isEmpty ?? true) else { return }
+
+                let button = UIButton()
+                button.layer.cornerRadius = 3
+                button.setTitle($0.buttonLabelText ?? "", for: .normal)
+                button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 17.0)
+                button.setTitleColor(UIColor(hex: $0.buttonLabelColor), for: .normal)
+                button.backgroundColor = UIColor(hex: $0.buttonColor)
+                button.addTarget(self, action: #selector(loginServiceButtonDidPress(_:)), for: .touchUpInside)
+
+                authButtonsStackView.addArrangedSubview(button)
+
+                customAuthButtons[$0.service ?? ""] = button
+            }
+
+            modifications.map { res[$0] }.forEach {
+                guard $0.custom,
+                      let identifier = $0.identifier,
+                      let button = self.customAuthButtons[identifier]
+                else {
+                    return
+                }
+
+                button.setTitle($0.buttonLabelText ?? "", for: .normal)
+                button.setTitleColor(UIColor(hex: $0.buttonLabelColor), for: .normal)
+                button.backgroundColor = UIColor(hex: $0.buttonColor)
+            }
+
+            deletions.map { res[$0] }.forEach {
+                guard $0.custom,
+                      let identifier = $0.identifier,
+                      let button = self.customAuthButtons[identifier]
+                else {
+                    return
+                }
+
+                authButtonsStackView.removeArrangedSubview(button)
+                customAuthButtons.removeValue(forKey: identifier)
+            }
+        default:
+            break
+        }
     }
 }

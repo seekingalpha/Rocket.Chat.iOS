@@ -38,7 +38,7 @@ extension MessageManager {
             "params": ["\(subscription.rid)", lastDate, size, [
                 "$date": Date().timeIntervalSince1970 * 1000
             ]]
-        ] as [String : Any]
+        ] as [String: Any]
 
         let validMessages = List<Message>()
 
@@ -73,8 +73,9 @@ extension MessageManager {
         let request = [
             "msg": "sub",
             "name": "stream-room-messages",
+            "id": eventName,
             "params": [eventName, false]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.subscribe(request, eventName: eventName) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -100,7 +101,7 @@ extension MessageManager {
             "msg": "method",
             "method": "reportMessage",
             "params": [messageIdentifier, "Message reported by user."]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(request) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -115,7 +116,7 @@ extension MessageManager {
             "msg": "method",
             "method": "pinMessage",
             "params": [ ["rid": message.rid, "_id": messageIdentifier ] ]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(request, completion: completion)
     }
@@ -127,7 +128,7 @@ extension MessageManager {
             "msg": "method",
             "method": "unpinMessage",
             "params": [ ["rid": message.rid, "_id": messageIdentifier ] ]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(request, completion: completion)
     }

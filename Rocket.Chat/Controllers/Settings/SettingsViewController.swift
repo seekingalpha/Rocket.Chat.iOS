@@ -14,10 +14,28 @@ final class SettingsViewController: UITableViewController {
 
     private let viewModel = SettingsViewModel()
 
+    @IBOutlet weak var labelContactUs: UILabel! {
+        didSet {
+            labelContactUs.text = viewModel.contactus
+        }
+    }
+
+    @IBOutlet weak var labelLicense: UILabel! {
+        didSet {
+            labelLicense.text = viewModel.license
+        }
+    }
+
     @IBOutlet weak var labelVersion: UILabel! {
         didSet {
             labelVersion.text = viewModel.formattedVersion
         }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+
+        title = viewModel.title
     }
 
     @IBAction func buttonCloseDidPressed(_ sender: Any) {
@@ -34,6 +52,14 @@ final class SettingsViewController: UITableViewController {
 
     func cellContactDidPressed() {
         if !MFMailComposeViewController.canSendMail() {
+            let alert = UIAlertController(
+                title: localized("alert.settings.set_mail_app.title"),
+                message: localized("alert.settings.set_mail_app.message"),
+                preferredStyle: .alert
+            )
+
+            alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
+            present(alert, animated: true, completion: nil)
             return
         }
 
@@ -42,7 +68,7 @@ final class SettingsViewController: UITableViewController {
         controller.setToRecipients([viewModel.supportEmail])
         controller.setSubject(viewModel.supportEmailSubject)
         controller.setMessageBody(viewModel.supportEmailBody, isHTML: true)
-        self.present(controller, animated: true, completion: nil)
+        present(controller, animated: true, completion: nil)
     }
 
     // MARK: UITableViewDelegate
@@ -53,6 +79,8 @@ final class SettingsViewController: UITableViewController {
         } else if indexPath.row == 1 {
             cellTermsOfServiceDidPressed()
         }
+
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

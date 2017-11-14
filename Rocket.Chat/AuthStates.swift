@@ -7,8 +7,6 @@
 //
 
 import Foundation
-import RxSwift
-import RxCocoa
 
 class AuthState: NSObject {
     @objc var authViewController: AuthViewController!
@@ -29,7 +27,6 @@ class AuthState: NSObject {
 
 class FirstLoadingState: AuthState {
 
-    let disposeBag = DisposeBag()
     override func execute() {
         print(self.authViewController)
         authViewController.contentContainer.isHidden = true

@@ -11,17 +11,18 @@ import SwiftyJSON
 import RealmSwift
 
 extension Message: ModelMappeable {
+    //swiftlint:disable cyclomatic_complexity function_body_length
     func map(_ values: JSON, realm: Realm?) {
         if self.identifier == nil {
-            self.identifier = values["_id"].string ?? ""
+            self.identifier = values["_id"].stringValue
         }
 
-        self.rid = values["rid"].string ?? ""
-        self.text = values["msg"].string ?? ""
-        self.avatar = values["avatar"].string ?? ""
-        self.alias = values["alias"].string ?? ""
+        self.rid = values["rid"].stringValue
+        self.text = values["msg"].stringValue
+        self.avatar = values["avatar"].stringValue
+        self.alias = values["alias"].stringValue
         self.internalType = values["t"].string ?? "t"
-        self.role = values["role"].string ?? ""
+        self.role = values["role"].stringValue
         self.pinned = values["pinned"].bool ?? false
         self.groupable = values["groupable"].bool ?? true
 
@@ -29,8 +30,16 @@ extension Message: ModelMappeable {
             self.createdAt = Date.dateFromInterval(createdAt)
         }
 
+        if let createdAt = values["ts"].string {
+            self.createdAt = Date.dateFromString(createdAt)
+        }
+
         if let updatedAt = values["_updatedAt"]["$date"].double {
             self.updatedAt = Date.dateFromInterval(updatedAt)
+        }
+
+        if let updatedAt = values["_updatedAt"].string {
+            self.updatedAt = Date.dateFromString(updatedAt)
         }
 
         if let userIdentifier = values["u"]["_id"].string {
@@ -50,7 +59,7 @@ extension Message: ModelMappeable {
 
         // Attachments
         if let attachments = values["attachments"].array {
-            self.attachments = List()
+            self.attachments.removeAll()
 
             for attachment in attachments {
                 let obj = Attachment()
@@ -61,7 +70,7 @@ extension Message: ModelMappeable {
 
         // URLs
         if let urls = values["urls"].array {
-            self.urls = List()
+            self.urls.removeAll()
 
             for url in urls {
                 let obj = MessageURL()
@@ -72,7 +81,7 @@ extension Message: ModelMappeable {
 
         // Mentions
         if let mentions = values["mentions"].array {
-            self.mentions = List()
+            self.mentions.removeAll()
 
             for mention in mentions {
                 let obj = Mention()
@@ -83,7 +92,7 @@ extension Message: ModelMappeable {
 
         // Channels
         if let channels = values["channels"].array {
-            self.channels = List()
+            self.channels.removeAll()
 
             for channel in channels {
                 let obj = Channel()

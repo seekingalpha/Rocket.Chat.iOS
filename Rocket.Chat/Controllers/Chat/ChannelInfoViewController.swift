@@ -8,6 +8,8 @@
 
 import UIKit
 
+fileprivate typealias ListSegueData = (title: String, query: String?)
+
 class ChannelInfoViewController: BaseViewController {
 
     var tableViewData: [[Any]] = [] {
@@ -21,9 +23,9 @@ class ChannelInfoViewController: BaseViewController {
             guard let subscription = self.subscription else { return }
 
             let channelInfoData = [
-                ChannelInfoDetailCellData(title: localized("chat.info.item.members"), detail: ""),
-                ChannelInfoDetailCellData(title: localized("chat.info.item.pinned"), detail: ""),
-                ChannelInfoDetailCellData(title: localized("chat.info.item.starred"), detail: "")
+                ChannelInfoDetailCellData(title: localized("chat.info.item.members"), detail: "", action: showMembersList),
+                ChannelInfoDetailCellData(title: localized("chat.info.item.pinned"), detail: "", action: showPinnedList),
+                ChannelInfoDetailCellData(title: localized("chat.info.item.starred"), detail: "", action: showStarredList)
             ]
 
             if subscription.type == .directMessage {
@@ -31,8 +33,8 @@ class ChannelInfoViewController: BaseViewController {
                     ChannelInfoUserCellData(user: subscription.directMessageUser)
                 ], channelInfoData]
             } else {
-                let topic = subscription.roomTopic?.characters.count ?? 0 == 0 ? localized("chat.info.item.no_topic") : subscription.roomTopic
-                let description = subscription.roomDescription?.characters.count ?? 0 == 0 ? localized("chat.info.item.no_description") : subscription.roomDescription
+                let topic = subscription.roomTopic?.count ?? 0 == 0 ? localized("chat.info.item.no_topic") : subscription.roomTopic
+                let description = subscription.roomDescription?.count ?? 0 == 0 ? localized("chat.info.item.no_description") : subscription.roomDescription
 
                 tableViewData = [[
                     ChannelInfoBasicCellData(title: "#\(subscription.displayName())"),
@@ -79,6 +81,41 @@ class ChannelInfoViewController: BaseViewController {
         }
 
         buttonFavorite.image = image?.withRenderingMode(.alwaysOriginal)
+    }
+
+    func showMembersList() {
+        self.performSegue(withIdentifier: "toMembersList", sender: self)
+    }
+
+    func showPinnedList() {
+        let data = ListSegueData(title: localized("chat.messages.pinned.list.title"), query: "{\"pinned\":true}")
+        self.performSegue(withIdentifier: "toMessagesList", sender: data)
+    }
+
+    func showStarredList() {
+        guard let userId = AuthManager.currentUser()?.identifier else {
+            alert(title: localized("error.socket.default_error_title"), message: "error.socket.default_error_message")
+            return
+        }
+
+        let data = ListSegueData(title: localized("chat.messages.starred.list.title"), query: "{\"starred._id\":{\"$in\":[\"\(userId)\"]}}")
+        self.performSegue(withIdentifier: "toMessagesList", sender: data)
+    }
+
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if let membersList = segue.destination as? MembersListViewController {
+            membersList.data.subscription = self.subscription
+        }
+
+        if let messagesList = segue.destination as? MessagesListViewController {
+
+            messagesList.data.subscription = self.subscription
+
+            if let segueData = sender as? ListSegueData {
+                messagesList.data.title = segueData.title
+                messagesList.data.query = segueData.query
+            }
+        }
     }
 
     // MARK: IBAction
@@ -167,17 +204,19 @@ extension ChannelInfoViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let data = tableViewData[indexPath.section][indexPath.row]
 
-        if data as? ChannelInfoDetailCellData != nil {
-            let alert = UIAlertController(title: "Ops!", message: "We're still working on this feature, stay tunned!", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-            present(alert, animated: true, completion: nil)
+        if let data = data as? ChannelInfoDetailCellData {
+            guard let action = data.action else {
+                alert(title: localized("alert.feature.wip.title"), message: localized("alert.feature.wip.message"))
+                return
+            }
+
+            action()
 
             if let selectedIndex = tableView.indexPathForSelectedRow {
                 tableView.deselectRow(at: selectedIndex, animated: true)
             }
         }
     }
-
 }
 
 // MARK: UITableViewDataSource

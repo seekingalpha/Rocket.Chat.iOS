@@ -9,7 +9,6 @@
 import UIKit
 
 extension ChatViewController {
-
     func presentActionsFor(_ message: Message, view: UIView) {
         let alert = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
 
@@ -44,6 +43,14 @@ extension ChatViewController {
             UIPasteboard.general.string = message.text
         }))
 
+        alert.addAction(UIAlertAction(title: localized("chat.message.actions.quote"), style: .default, handler: { [weak self] (_) in
+            self?.reply(to: message, onlyQuote: true)
+        }))
+
+        alert.addAction(UIAlertAction(title: localized("chat.message.actions.reply"), style: .default, handler: { [weak self] (_) in
+            self?.reply(to: message)
+        }))
+
         alert.addAction(UIAlertAction(title: localized("global.cancel"), style: .cancel, handler: nil))
 
         if let presenter = alert.popoverPresentationController {
@@ -68,5 +75,4 @@ extension ChatViewController {
             self.present(alert, animated: true, completion: nil)
         }
     }
-
 }

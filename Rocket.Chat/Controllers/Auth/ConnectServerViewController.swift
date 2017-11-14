@@ -12,9 +12,15 @@ import semver
 
 final class ConnectServerViewController: BaseViewController {
 
-    internal let defaultURL = "https://demo.rocket.chat"
+    internal let defaultURL = "https://open.rocket.chat"
     internal var connecting = false
-    internal var serverURL: URL!
+    var url: URL? {
+        guard var urlText = textFieldServerURL.text else { return nil }
+        if urlText.isEmpty {
+            urlText = defaultURL
+        }
+        return  URL(string: urlText, scheme: "https")
+    }
 
     var serverPublicSettings: AuthSettings?
 
@@ -32,6 +38,8 @@ final class ConnectServerViewController: BaseViewController {
         }
     }
 
+    @IBOutlet weak var labelSSLRequired: UILabel!
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }
@@ -46,9 +54,24 @@ final class ConnectServerViewController: BaseViewController {
         }
 
         textFieldServerURL.placeholder = defaultURL
+        labelSSLRequired.text = localized("auth.connect.ssl_required")
 
         if let nav = navigationController as? BaseNavigationController {
             nav.setTransparentTheme()
+        }
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        SocketManager.sharedInstance.socket?.disconnect()
+        DatabaseManager.cleanInvalidDatabases()
+
+        if let applicationServerURL = AppManager.applicationServerURL {
+            textFieldServerURL.isEnabled = false
+            labelSSLRequired.text = localized("auth.connect.connecting")
+            textFieldServerURL.text = applicationServerURL.host
+            connect()
         }
     }
 
@@ -74,7 +97,7 @@ final class ConnectServerViewController: BaseViewController {
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if let controller = segue.destination as? AuthViewController, segue.identifier == "Auth" {
-            controller.serverURL = serverURL
+            controller.serverURL = url?.socketURL()
             controller.serverPublicSettings = self.serverPublicSettings
         }
     }
@@ -116,15 +139,10 @@ final class ConnectServerViewController: BaseViewController {
     }
 
     func connect() {
-        var text = textFieldServerURL.text ?? ""
-        if text.characters.count == 0 {
-            text = defaultURL
-        }
-
-        guard let url = URL(string: text) else { return alertInvalidURL() }
+        guard let url = url else { return alertInvalidURL() }
         guard let socketURL = url.socketURL() else { return alertInvalidURL() }
-        guard let validateURL = url.validateURL() else { return alertInvalidURL() }
 
+        // Check if server already exists and connect to that instead
         if let servers = DatabaseManager.servers {
             let sameServerIndex = servers.index(where: {
                 if let stringServerUrl = $0[ServerPersistKeys.serverURL],
@@ -138,6 +156,7 @@ final class ConnectServerViewController: BaseViewController {
 
             if let sameServerIndex = sameServerIndex {
                 MainChatViewController.shared?.changeSelectedServer(index: sameServerIndex)
+                textFieldServerURL.resignFirstResponder()
                 return
             }
         }
@@ -147,24 +166,28 @@ final class ConnectServerViewController: BaseViewController {
         activityIndicator.startAnimating()
         textFieldServerURL.resignFirstResponder()
 
-        serverURL = socketURL
-
-        validate(url: validateURL) { [weak self] (_, error) in
+        API.shared.host = url
+        validate { [weak self] (_, error) in
             guard !error else {
                 DispatchQueue.main.async {
-                    self?.connecting = false
-                    self?.textFieldServerURL.alpha = 1
-                    self?.activityIndicator.stopAnimating()
+                    self?.stopConnecting()
                     self?.alertInvalidURL()
                 }
 
                 return
             }
 
-            let index = DatabaseManager.createNewDatabaseInstance(serverURL: socketURL.absoluteString)
-            DatabaseManager.changeDatabaseInstance(index: index)
-
             SocketManager.connect(socketURL) { (_, connected) in
+                if !connected {
+                    self?.stopConnecting()
+                    self?.alert(title: localized("alert.connection.socket_error.title"),
+                                message: localized("alert.connection.socket_error.message"))
+                    return
+                }
+
+                let index = DatabaseManager.createNewDatabaseInstance(serverURL: socketURL.absoluteString)
+                DatabaseManager.changeDatabaseInstance(index: index)
+
                 AuthSettingsManager.updatePublicSettings(nil) { (settings) in
                     self?.serverPublicSettings = settings
 
@@ -172,49 +195,40 @@ final class ConnectServerViewController: BaseViewController {
                         self?.performSegue(withIdentifier: "Auth", sender: nil)
                     }
 
-                    self?.connecting = false
-                    self?.textFieldServerURL.alpha = 1
-                    self?.activityIndicator.stopAnimating()
+                    self?.stopConnecting()
                 }
             }
         }
     }
 
-    func validate(url: URL, completion: @escaping RequestCompletion) {
-        let request = URLRequest(url: url)
-        let session = URLSession.shared
-
-        let task = session.dataTask(with: request, completionHandler: { (data, _, _) in
-            if let data = data {
-                guard let json = try? JSON(data: data) else { return completion(nil, true) }
-                Log.debug(json.rawString())
-
-                guard let version = json["version"].string else {
-                    return completion(nil, true)
-                }
-
-                if let minVersion = Bundle.main.object(forInfoDictionaryKey: "RC_MIN_SERVER_VERSION") as? String {
-                    if Semver.lt(version, minVersion) {
-                        let alert = UIAlertController(
-                            title: localized("alert.connection.invalid_version.title"),
-                            message: String(format: localized("alert.connection.invalid_version.message"), version, minVersion),
-                            preferredStyle: .alert
-                        )
-
-                        alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
-                        self.present(alert, animated: true, completion: nil)
-                    }
-                }
-
-                completion(json, false)
-            } else {
-                completion(nil, true)
+    func validate(completion: @escaping RequestCompletion) {
+        API.shared.fetch(InfoRequest()) { result in
+            guard let version = result?.version else {
+                return completion(nil, true)
             }
-        })
 
-        task.resume()
+            if let minVersion = Bundle.main.object(forInfoDictionaryKey: "RC_MIN_SERVER_VERSION") as? String {
+                if Semver.lt(version, minVersion) {
+                    let alert = UIAlertController(
+                        title: localized("alert.connection.invalid_version.title"),
+                        message: String(format: localized("alert.connection.invalid_version.message"), version, minVersion),
+                        preferredStyle: .alert
+                    )
+
+                    alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+
+            completion(result?.raw, false)
+        }
     }
 
+    func stopConnecting() {
+        connecting = false
+        textFieldServerURL.alpha = 1
+        activityIndicator.stopAnimating()
+    }
 }
 
 extension ConnectServerViewController: UITextFieldDelegate {

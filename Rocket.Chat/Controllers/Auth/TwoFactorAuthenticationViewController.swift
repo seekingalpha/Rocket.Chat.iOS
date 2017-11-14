@@ -90,32 +90,32 @@ final class TwoFactorAuthenticationViewController: BaseViewController {
     fileprivate func authenticate() {
         startLoading()
 
-        AuthManager.auth(username, password: password, code: textFieldCode.text ?? "") { [weak self] (response) in
-            self?.stopLoading()
-
-            if response.isError() {
-                if let error = response.result["error"].dictionary {
-                    let alert = UIAlertController(
-                        title: localized("error.socket.default_error_title"),
-                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
-                        preferredStyle: .alert
-                    )
-
-                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                    self?.present(alert, animated: true, completion: nil)
-                }
-            } else {
-                self?.dismiss(animated: true, completion: nil)
-
-                let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
-                let controller = storyboardChat.instantiateInitialViewController()
-                let application = UIApplication.shared
-
-                if let window = application.windows.first {
-                    window.rootViewController = controller
-                }
-            }
-        }
+//        AuthManager.auth(username, password: password, code: textFieldCode.text ?? "") { [weak self] (response) in
+//            self?.stopLoading()
+//
+//            if response.isError() {
+//                if let error = response.result["error"].dictionary {
+//                    let alert = UIAlertController(
+//                        title: localized("error.socket.default_error_title"),
+//                        message: error["message"]?.string ?? localized("error.socket.default_error_message"),
+//                        preferredStyle: .alert
+//                    )
+//
+//                    alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+//                    self?.present(alert, animated: true, completion: nil)
+//                }
+//            } else {
+//                self?.dismiss(animated: true, completion: nil)
+//
+//                let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+//                let controller = storyboardChat.instantiateInitialViewController()
+//                let application = UIApplication.shared
+//
+//                if let window = application.windows.first {
+//                    window.rootViewController = controller
+//                }
+//            }
+//        }
     }
 
 }

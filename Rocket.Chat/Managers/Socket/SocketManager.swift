@@ -22,6 +22,7 @@ public typealias HTTPComplition = (HTTPResponse) -> Void
 protocol SocketConnectionHandler {
     func socketDidConnect(socket: SocketManager)
     func socketDidDisconnect(socket: SocketManager)
+    func socketDidReturnError(socket: SocketManager, error: SocketError)
 }
 
 class SocketManager {
@@ -65,15 +66,21 @@ class SocketManager {
 
     static func clear() {
         sharedInstance.internalConnectionHandler = nil
-        sharedInstance.connectionHandlers = [:]
+        sharedInstance.connectionHandlers.removeAll()
     }
 
     // MARK: Messages
 
     static func send(_ object: [String: Any], completion: MessageCompletion? = nil) {
-        let identifier = String.random(50)
         var json = JSON(object)
-        json["id"] = JSON(identifier)
+
+        let identifier: String
+        if let jsonId = json["id"].string {
+            identifier = jsonId
+        } else {
+            identifier = String.random(50)
+            json["id"] = JSON(identifier)
+        }
 
         if let raw = json.rawString() {
             Log.debug("Socket will send message: \(raw)")
@@ -95,6 +102,21 @@ class SocketManager {
         } else {
             self.send(object, completion: completion)
             sharedInstance.events[eventName] = [completion]
+        }
+    }
+
+    static func unsubscribe(eventName: String, completion: MessageCompletion? = nil) {
+        let request = [
+            "msg": "unsub",
+            "id": eventName
+        ] as [String: Any]
+
+        send(request) { response in
+            guard !response.isError() else { return Log.debug(response.result.string) }
+
+            sharedInstance.events.removeValue(forKey: eventName)
+
+            completion?(response)
         }
     }
 
@@ -120,6 +142,9 @@ extension SocketManager {
                 UserManager.userDataChanges()
                 UserManager.changes()
                 SubscriptionManager.changes(auth)
+                SubscriptionManager.subscribeRoomChanges()
+                PermissionManager.changes()
+                PermissionManager.updatePermissions()
 
                 if let userId = auth.userId {
                     PushManager.updateUser(userId)
@@ -159,7 +184,7 @@ extension SocketManager: WebSocketDelegate {
             "msg": "connect",
             "version": "1",
             "support": ["1", "pre2", "pre1"]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(object)
     }

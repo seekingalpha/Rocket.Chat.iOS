@@ -36,7 +36,11 @@ class SubscriptionsPageViewController: UIPageViewController {
         let pageControl = UIPageControl()
         pageControl.numberOfPages = 2
         pageControl.currentPage = 1
+        pageControl.isHidden = !AppManager.supportsMultiServer
         view.addSubview(pageControl)
+
+        pageControl.addTarget(self, action: #selector(SubscriptionsPageViewController.dotTapped(pageControl:)), for: .touchUpInside)
+
         self.pageControl = pageControl
 
         // Setup ViewControllers
@@ -59,10 +63,15 @@ class SubscriptionsPageViewController: UIPageViewController {
         super.viewDidLayoutSubviews()
 
         let pageControlHeight = CGFloat(44)
+        var safeAreaBottomConstraint = CGFloat(0)
+
+        if #available(iOS 11.0, *) {
+            safeAreaBottomConstraint = view.safeAreaInsets.bottom
+        }
 
         pageControl?.frame = CGRect(
             x: 0,
-            y: view.frame.height - pageControlHeight,
+            y: view.frame.height - pageControlHeight - safeAreaBottomConstraint,
             width: view.frame.width,
             height: pageControlHeight
         )
@@ -71,6 +80,7 @@ class SubscriptionsPageViewController: UIPageViewController {
     // MARK: Change controllers externally
 
     func showServersList(animated: Bool = true) {
+        guard AppManager.supportsMultiServer else { return }
         guard let serversController = self.serversController else { return }
         setViewControllers([serversController], direction: .reverse, animated: animated, completion: nil)
         pageControl?.currentPage = 0
@@ -80,6 +90,14 @@ class SubscriptionsPageViewController: UIPageViewController {
         guard let subscriptionsController = self.subscriptionsController else { return }
         setViewControllers([subscriptionsController], direction: .forward, animated: animated, completion: nil)
         pageControl?.currentPage = 1
+    }
+
+    @objc private func dotTapped(pageControl: UIPageControl) {
+        if pageControl.currentPage == 0 {
+            showServersList()
+        } else if pageControl.currentPage == 1 {
+            showSubscriptionsList()
+        }
     }
 
 }
@@ -101,6 +119,8 @@ extension SubscriptionsPageViewController: UIPageViewControllerDelegate {
 extension SubscriptionsPageViewController: UIPageViewControllerDataSource {
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+        guard AppManager.supportsMultiServer else { return nil }
+
         if viewController == subscriptionsController {
             return serversController
         }
@@ -109,6 +129,8 @@ extension SubscriptionsPageViewController: UIPageViewControllerDataSource {
     }
 
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+        guard AppManager.supportsMultiServer else { return nil }
+
         if viewController == serversController {
             return subscriptionsController
         }

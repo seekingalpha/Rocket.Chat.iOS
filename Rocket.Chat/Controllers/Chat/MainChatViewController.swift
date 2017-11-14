@@ -11,6 +11,7 @@ import SideMenuController
 
 class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
     @objc var logEventManager: LogEventManager?
+    let socketHandlerToken = String.random(5)
 
     static var shared: MainChatViewController? {
         return UIApplication.shared.windows.first?.rootViewController as? MainChatViewController
@@ -47,6 +48,8 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
 
         self.delegate = self
 
+        SocketManager.addConnectionHandler(token: socketHandlerToken, handler: self)
+
         performSegue(withIdentifier: "showCenterController", sender: nil)
         performSegue(withIdentifier: "containSideMenu", sender: nil)
     }
@@ -78,6 +81,24 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
 
     // MARK: Authentication & Server management
 
+    func logout() {
+        ChatViewController.shared?.messagesToken?.invalidate()
+        ChatViewController.shared?.subscriptionToken?.invalidate()
+        SubscriptionsViewController.shared?.currentUserToken?.invalidate()
+        SubscriptionsViewController.shared?.subscriptionsToken?.invalidate()
+
+        AuthManager.logout {
+            let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+            let controller = storyboardChat.instantiateInitialViewController()
+            let application = UIApplication.shared
+
+            if let window = application.keyWindow {
+                window.rootViewController = controller
+                window.makeKeyAndVisible()
+            }
+        }
+    }
+
     func openAddNewTeamController() {
         SocketManager.disconnect { (_, _) in
             self.performSegue(withIdentifier: "Auth", sender: nil)
@@ -98,5 +119,32 @@ class MainChatViewController: SideMenuController, SideMenuControllerDelegate {
             }
         }
     }
+}
 
+extension MainChatViewController: SocketConnectionHandler {
+    func socketDidConnect(socket: SocketManager) {
+
+    }
+
+    func socketDidDisconnect(socket: SocketManager) {
+
+    }
+
+    func socketDidReturnError(socket: SocketManager, error: SocketError) {
+        switch error.error {
+        case .invalidUser:
+            alert(title: localized("alert.socket_error.invalid_user.title"),
+                  message: localized("alert.socket_error.invalid_user.message")) { _ in
+                self.logout()
+            }
+        default:
+            break
+        }
+    }
+
+    func alert(title: String, message: String, handler: ((UIAlertAction) -> Void)? = nil) {
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: handler))
+        present(alert, animated: true, completion: nil)
+    }
 }

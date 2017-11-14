@@ -159,6 +159,11 @@ extension AuthManager {
     */
     static func resume(_ auth: Auth, completion: @escaping MessageCompletion) {
         guard let url = URL(string: auth.serverURL) else { return }
+        guard let apiHost = auth.apiHost else { return }
+
+        API.shared.host = apiHost
+        API.shared.authToken = auth.token
+        API.shared.userId = auth.userId
 
         SocketManager.connect(url) { (socket, _) in
             guard SocketManager.isConnected() else {
@@ -225,9 +230,9 @@ extension AuthManager {
             
             var httpResponse = HTTPResponse()
             guard let response = result as? [String: Any] else {
-               return
+                return
             }
-
+            
             guard let rc_token = result?["rc_token"] as? String else {
                 httpResponse.isError = true
                 httpResponse.response = response
@@ -239,12 +244,12 @@ extension AuthManager {
                 completion(httpResponse)
                 return
             }
-
+            
             Realm.execute({ (realm) in
                 // Delete all the Auth objects, since we don't
                 // support multiple-server authentication yet
                 realm.delete(realm.objects(Auth.self))
-
+                
                 let auth = Auth()
                 auth.lastSubscriptionFetch = nil
                 auth.lastAccess = Date()
@@ -252,7 +257,7 @@ extension AuthManager {
                 auth.token = rc_token
                 auth.userId = user_id
                 PushManager.updatePushToken()
-
+                
                 realm.add(auth)
             }, completion: {
                 completion(httpResponse)
@@ -265,7 +270,7 @@ extension AuthManager {
             "msg": "method",
             "method": "login",
             "params": [params]
-            ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(object) { (response) in
             guard !response.isError() else {
@@ -281,6 +286,9 @@ extension AuthManager {
             auth.serverURL = response.socket?.currentURL.absoluteString ?? ""
             auth.token = result["result"]["token"].string
             auth.userId = result["result"]["id"].string
+
+            API.shared.authToken = auth.token
+            API.shared.userId = auth.userId
 
             if let date = result["result"]["tokenExpires"]["$date"].double {
                 auth.tokenExpires = Date.dateFromInterval(date)
@@ -341,13 +349,33 @@ extension AuthManager {
 //    }
 
     /**
+        This method authenticates the user with a credential token
+        and a credential secret (retrieved via an OAuth method)
+
+        - parameter token: The credential token
+        - parameter secret: The credential secret
+        - parameter completion: The completion block that'll be called in case
+            of success or error.
+     */
+    static func auth(credentials: OAuthCredentials, completion: @escaping MessageCompletion) {
+        let params = [
+            "oauth": [
+                "credentialToken": credentials.token,
+                "credentialSecret": credentials.secret
+            ] as [String: Any]
+        ]
+
+        AuthManager.auth(params: params, completion: completion)
+    }
+
+    /**
         Returns the username suggestion for the logged in user.
     */
     static func usernameSuggestion(completion: @escaping MessageCompletion) {
         let object = [
             "msg": "method",
             "method": "getUsernameSuggestion"
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(object, completion: completion)
     }
@@ -360,7 +388,7 @@ extension AuthManager {
             "msg": "method",
             "method": "setUsername",
             "params": [username]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(object, completion: completion)
     }
@@ -371,9 +399,9 @@ extension AuthManager {
      */
     static func logout(completion: @escaping VoidCompletion) {
         SocketManager.disconnect { (_, _) in
-            SocketManager.clear()
             GIDSignIn.sharedInstance().signOut()
 
+            DraftMessageManager.clearServerDraftMessages()
             DatabaseManager.removerSelectedDatabase()
 
             Realm.executeOnMainThread({ (realm) in
@@ -412,7 +440,7 @@ extension AuthManager {
         }
     }
 */
-    
+
     static func post(session: URLSession, params: [String: Any], url: String, complition: @escaping (_ result: NSDictionary?) -> Void ) {
 
         guard let serviceUrl = URL(string: url) else { return }
@@ -447,6 +475,6 @@ extension AuthManager {
                     print(error)
                 }
             }
-        }.resume()
+            }.resume()
     }
 }

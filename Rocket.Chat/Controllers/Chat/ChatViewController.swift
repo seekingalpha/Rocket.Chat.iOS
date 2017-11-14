@@ -28,10 +28,31 @@ final class ChatViewController: SLKTextViewController {
     @IBOutlet weak var buttonScrollToBottom: UIButton!
     var buttonScrollToBottomMarginConstraint: NSLayoutConstraint?
 
+    var showButtonScrollToBottom: Bool = false {
+        didSet {
+            self.buttonScrollToBottom.superview?.layoutIfNeeded()
+
+            if self.showButtonScrollToBottom {
+                self.buttonScrollToBottomMarginConstraint?.constant = -self.textInputbar.frame.height - 40
+            } else {
+                self.buttonScrollToBottomMarginConstraint?.constant = 50
+            }
+
+            if showButtonScrollToBottom != oldValue {
+                UIView.animate(withDuration: 0.5) {
+                    self.buttonScrollToBottom.superview?.layoutIfNeeded()
+                }
+            }
+        }
+    }
+
     weak var chatTitleView: ChatTitleView?
     weak var chatPreviewModeView: ChatPreviewModeView?
     weak var chatHeaderViewStatus: ChatHeaderViewStatus?
     var documentController: UIDocumentInteractionController?
+
+    var replyView: ReplyView!
+    var replyString: String = ""
 
     var dataController = ChatDataController()
 
@@ -42,14 +63,45 @@ final class ChatViewController: SLKTextViewController {
     var isRequestingHistory = false
     var isAppendingMessages = false
 
+    var subscriptionToken: NotificationToken?
+
     let socketHandlerToken = String.random(5)
     var messagesToken: NotificationToken!
     var messagesQuery: Results<Message>!
     var messages: [Message] = []
-    var subscription: Subscription! {
+    var subscription: Subscription? {
         didSet {
+            subscriptionToken?.invalidate()
+
+            guard
+                let subscription = subscription,
+                !subscription.isInvalidated
+            else {
+                return
+            }
+
+            subscriptionToken = subscription.observe { [weak self] changes in
+                switch changes {
+                case .change(let propertyChanges):
+                    propertyChanges.forEach {
+                        if $0.name == "roomReadOnly" || $0.name == "roomMuted" {
+                            self?.updateMessageSendingPermission()
+                        }
+                    }
+                default:
+                    break
+                }
+            }
+
             updateSubscriptionInfo()
             markAsRead()
+            typingIndicatorView?.dismissIndicator()
+
+            if let oldValue = oldValue, oldValue.identifier != subscription.identifier {
+                unsubscribe(for: oldValue)
+            }
+
+            textView.text = DraftMessageManager.draftMessage(for: subscription)
         }
     }
     @objc var logEventManager: LogEventManager?
@@ -114,20 +166,13 @@ final class ChatViewController: SLKTextViewController {
         view.bringSubview(toFront: activityIndicatorContainer)
         view.bringSubview(toFront: buttonScrollToBottom)
         view.bringSubview(toFront: textInputbar)
-        
-        
-        //self.navigationController?.interactivePopGestureRecognizer?.addTarget(self, action:  #selector(handlePopGesture))
-        /*
-         [self.navigationController.interactivePopGestureRecognizer addTarget:self
-         action:@selector(handlePopGesture:)];
-         }
-         
-         
-         - (void)handlePopGesture:(UIGestureRecognizer *)gesture
-         {
-         // handle other gesture states, if desired
-         }
-         */
+
+        if buttonScrollToBottomMarginConstraint == nil {
+            buttonScrollToBottomMarginConstraint = buttonScrollToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 50)
+            buttonScrollToBottomMarginConstraint?.isActive = true
+        }
+
+        setupReplyView()
     }
     //func handlePopGesture() {
 //    if (gesture.state == UIGestureRecognizerStateBegan)
@@ -138,23 +183,39 @@ final class ChatViewController: SLKTextViewController {
     //}
 
     @objc internal func reconnect() {
+        chatHeaderViewStatus?.activityIndicator.startAnimating()
+        chatHeaderViewStatus?.buttonRefresh.isHidden = true
+
         if !SocketManager.isConnected() {
             SocketManager.reconnect()
+        }
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+            if !SocketManager.isConnected() {
+                self.chatHeaderViewStatus?.activityIndicator.stopAnimating()
+                self.chatHeaderViewStatus?.buttonRefresh.isHidden = false
+            }
         }
     }
 
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        let insets = UIEdgeInsets(
-            top: 0,
-            left: 0,
-            bottom: chatPreviewModeView?.frame.height ?? 0,
-            right: 0
-        )
+        guard let collectionView = collectionView else { return }
 
-        collectionView?.contentInset = insets
-        collectionView?.scrollIndicatorInsets = insets
+        var contentInsets = collectionView.contentInset
+        contentInsets.bottom = self.chatPreviewModeView?.frame.height ?? 0
+        if #available(iOS 11, *) {
+            contentInsets.right = collectionView.safeAreaInsets.right
+            contentInsets.left = collectionView.safeAreaInsets.left
+        }
+        collectionView.contentInset = contentInsets
+
+        var scrollIndicatorInsets = collectionView.scrollIndicatorInsets
+        scrollIndicatorInsets.right = 0
+        scrollIndicatorInsets.left = 0
+        scrollIndicatorInsets.bottom = self.chatPreviewModeView?.frame.height ?? 0
+        collectionView.scrollIndicatorInsets = scrollIndicatorInsets
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -176,8 +237,6 @@ final class ChatViewController: SLKTextViewController {
     }
 
     fileprivate func setupTextViewSettings() {
-        textInputbar.autoHideRightButton = true
-
         textView.registerMarkdownFormattingSymbol("*", withTitle: "Bold")
         textView.registerMarkdownFormattingSymbol("_", withTitle: "Italic")
         textView.registerMarkdownFormattingSymbol("~", withTitle: "Strike")
@@ -239,26 +298,12 @@ final class ChatViewController: SLKTextViewController {
         ), forCellReuseIdentifier: AutocompleteCell.identifier)
     }
 
-    fileprivate func scrollToBottom(_ animated: Bool = false) {
+    internal func scrollToBottom(_ animated: Bool = false) {
         let boundsHeight = collectionView?.bounds.size.height ?? 0
         let sizeHeight = collectionView?.contentSize.height ?? 0
         let offset = CGPoint(x: 0, y: max(sizeHeight - boundsHeight, 0))
         collectionView?.setContentOffset(offset, animated: animated)
-        hideButtonScrollToBottom(animated: true)
-    }
-
-    fileprivate func hideButtonScrollToBottom(animated: Bool) {
-        buttonScrollToBottomMarginConstraint?.constant = 50
-
-        let action = {
-            self.buttonScrollToBottom.layoutIfNeeded()
-        }
-
-        if animated {
-            UIView.animate(withDuration: 0.5, animations: action)
-        } else {
-            action()
-        }
+        showButtonScrollToBottom = false
     }
 
     // MARK: SlackTextViewController
@@ -283,14 +328,30 @@ final class ChatViewController: SLKTextViewController {
         scrollToBottom(true)
     }
 
+    override func textViewDidChange(_ textView: UITextView) {
+        guard let subscription = self.subscription else { return }
+
+        DraftMessageManager.update(draftMessage: textView.text, for: subscription)
+
+        if textView.text?.isEmpty ?? true {
+            SubscriptionManager.sendTypingStatus(subscription, isTyping: false)
+        } else {
+            SubscriptionManager.sendTypingStatus(subscription, isTyping: true)
+        }
+    }
+
     // MARK: Message
-
     fileprivate func sendMessage() {
-        guard let messageText = textView.text, messageText.characters.count > 0 else { return }
+        guard let subscription = subscription else { return }
+        guard let messageText = textView.text, messageText.count > 0 else { return }
 
-        if self.subscription.type == .directMessage {
+        let replyString = self.replyString
+        stopReplying()
+
+        self.scrollToBottom()
+        if self.subscription?.type == .directMessage {
             self.logEventManager?.send(event: DirectMessageEvent())
-        } else if self.subscription.type == .group {
+        } else if self.subscription?.type == .group {
             var param: String?
             var mentions = [String]()
             for userName in self.selected {
@@ -317,8 +378,8 @@ final class ChatViewController: SLKTextViewController {
             message = Message()
             message?.internalType = ""
             message?.createdAt = Date.serverDate
-            message?.text = messageText
-            message?.subscription = self.subscription
+            message?.text = "\(messageText)\(replyString)"
+            message?.subscription = subscription
             message?.identifier = String.random(18)
             message?.temporary = true
             message?.user = AuthManager.currentUser()
@@ -329,6 +390,9 @@ final class ChatViewController: SLKTextViewController {
         })
 
         if let message = message {
+            DraftMessageManager.update(draftMessage: "", for: subscription)
+            SubscriptionManager.sendTypingStatus(subscription, isTyping: false)
+
             textView.text = ""
             rightButton.isEnabled = true
 
@@ -338,26 +402,52 @@ final class ChatViewController: SLKTextViewController {
                     message.map(response.result["result"], realm: realm)
                     realm.add(message, update: true)
 
-                    MessageTextCacheManager.shared.update(for: message)
+                    MessageTextCacheManager.shared.update(for: message, completion: nil)
                 })
             }
         }
     }
 
+    fileprivate func updateCellForMessage(identifier: String) {
+        guard let indexPath = self.dataController.indexPathOfMessage(identifier: identifier) else { return }
+
+        UIView.performWithoutAnimation {
+            collectionView?.reloadItems(at: [indexPath])
+        }
+    }
+
+    fileprivate func chatLogIsAtBottom() -> Bool {
+        guard let collectionView = collectionView else { return false }
+
+        let height = collectionView.bounds.height
+        let bottomInset = collectionView.contentInset.bottom
+        let scrollContentSizeHeight = collectionView.contentSize.height
+        let verticalOffsetForBottom = scrollContentSizeHeight + bottomInset - height
+
+        return collectionView.contentOffset.y >= (verticalOffsetForBottom - 1)
+    }
+
     // MARK: Subscription
 
     fileprivate func markAsRead() {
+        guard let subscription = subscription else { return }
+
         SubscriptionManager.markAsRead(subscription) { _ in
             // Nothing, for now
         }
     }
 
-    internal func updateSubscriptionInfo() {
-        if let token = messagesToken {
-            token.stop()
-        }
+    internal func unsubscribe(for subscription: Subscription) {
+        SocketManager.unsubscribe(eventName: subscription.rid)
+        SocketManager.unsubscribe(eventName: "\(subscription.rid)/typing")
+    }
 
-        title = subscription?.displayName()
+    internal func updateSubscriptionInfo() {
+        guard let subscription = subscription else { return }
+
+        messagesToken?.invalidate()
+
+        title = subscription.displayName()
         chatTitleView?.subscription = subscription
         textView.resignFirstResponder()
 
@@ -373,10 +463,10 @@ final class ChatViewController: SLKTextViewController {
             }
         })
 
-        if self.subscription.isValid() {
+        if subscription.isValid() {
             self.updateSubscriptionMessages()
         } else {
-            self.subscription.fetchRoomIdentifier({ [weak self] response in
+            subscription.fetchRoomIdentifier({ [weak self] response in
                 self?.subscription = response
             })
         }
@@ -389,6 +479,8 @@ final class ChatViewController: SLKTextViewController {
             showChatPreviewModeView()
         }
         self.sendLogEvent(subscription: subscription)
+
+        updateMessageSendingPermission()
     }
     internal func sendLogEvent(subscription: Subscription?) {
         let logEvent = ChatPageLogEvent(subscription: subscription)
@@ -397,107 +489,141 @@ final class ChatViewController: SLKTextViewController {
     }
 
     internal func updateSubscriptionMessages() {
+        guard let subscription = subscription else { return }
+
         messagesQuery = subscription.fetchMessagesQueryResults()
 
         activityIndicator.startAnimating()
 
         dataController.loadedAllMessages = false
         isRequestingHistory = false
-        loadMoreMessagesFrom(date: nil)
         updateMessagesQueryNotificationBlock()
+        loadMoreMessagesFrom(date: nil)
 
         MessageManager.changes(subscription)
+        registerTypingEvent()
+    }
+
+    fileprivate func registerTypingEvent() {
+        guard let subscription = subscription else { return }
+
+        typingIndicatorView?.interval = 0
+
+        SubscriptionManager.subscribeTypingEvent(subscription) { [weak self] username, flag in
+            guard let username = username else { return }
+
+            let isAtBottom = self?.chatLogIsAtBottom()
+
+            if flag {
+                self?.typingIndicatorView?.insertUsername(username)
+            } else {
+                self?.typingIndicatorView?.removeUsername(username)
+            }
+
+            if let isAtBottom = isAtBottom,
+                isAtBottom == true {
+                self?.scrollToBottom(true)
+            }
+        }
     }
 
     fileprivate func updateMessagesQueryNotificationBlock() {
-        messagesToken?.stop()
-        messagesToken = messagesQuery.addNotificationBlock { [unowned self] changes in
-            switch changes {
-            case .initial: break
-            case .update(_, _, let insertions, let modifications):
-                if insertions.count > 0 {
-                    if insertions.count > 1 && self.isRequestingHistory {
-                        return
-                    }
+        messagesToken?.invalidate()
+        messagesToken = messagesQuery.observe { [unowned self] changes in
+            guard case .update(_, _, let insertions, let modifications) = changes else {
+                return
+            }
 
-                    var newMessages: [Message] = []
-                    for insertion in insertions {
-                        let newMessage = Message(value: self.messagesQuery[insertion])
-                        newMessages.append(newMessage)
-                    }
-
-                    self.messages.append(contentsOf: newMessages)
-                    self.appendMessages(messages: newMessages, completion: {
-                        self.markAsRead()
-                    })
+            if insertions.count > 0 {
+                var newMessages: [Message] = []
+                for insertion in insertions {
+                    let newMessage = Message(value: self.messagesQuery[insertion])
+                    newMessages.append(newMessage)
                 }
 
-                if modifications.count == 0 {
-                    return
-                }
+                self.messages.append(contentsOf: newMessages)
+                self.appendMessages(messages: newMessages, completion: {
+                    self.markAsRead()
+                })
+            }
 
-                let messagesCount = self.messagesQuery.count
-                var indexPathModifications: [Int] = []
+            if modifications.count == 0 {
+                return
+            }
 
-                for modified in modifications {
-                    if messagesCount < modified + 1 {
-                        continue
+            let messagesCount = self.messagesQuery.count
+
+            if modifications.count > 0 {
+                DispatchQueue.main.async {
+                    let isAtBottom = self.chatLogIsAtBottom()
+
+                    UIView.performWithoutAnimation {
+                        self.collectionView?.performBatchUpdates({
+                            var indexPathModifications: [Int] = []
+
+                            for modified in modifications {
+                                if messagesCount < modified + 1 {
+                                    continue
+                                }
+
+                                let message = Message(value: self.messagesQuery[modified])
+                                let identifier = message.identifier
+                                let index = self.dataController.update(message, completion: { [weak self] in
+                                    guard let identifier = identifier else { return }
+                                    self?.updateCellForMessage(identifier: identifier)
+                                })
+                                if index >= 0 && !indexPathModifications.contains(index) {
+                                    indexPathModifications.append(index)
+                                }
+                            }
+
+                            self.collectionView?.reloadItems(at: indexPathModifications.map { IndexPath(row: $0, section: 0) })
+                        }, completion: { _ in
+                            if isAtBottom {
+                                self.scrollToBottom()
+                            }
+                        })
                     }
-
-                    let message = Message(value: self.messagesQuery[modified])
-                    let index = self.dataController.update(message)
-                    if index >= 0 && !indexPathModifications.contains(index) {
-                        indexPathModifications.append(index)
-                    }
                 }
+            }
+        }
+    }
 
-                if indexPathModifications.count > 0 {
-                    DispatchQueue.main.async {
-                        UIView.performWithoutAnimation {
-                            self.collectionView?.performBatchUpdates({
-                                self.collectionView?.reloadItems(at: indexPathModifications.map { IndexPath(row: $0, section: 0) })
-                            }, completion: nil)
+    func loadHistoryFromRemote(date: Date?) {
+        guard let subscription = subscription else { return }
+
+        let tempSubscription = Subscription(value: subscription)
+
+        MessageManager.getHistory(tempSubscription, lastMessageDate: date) { [weak self] messages in
+            DispatchQueue.main.async {
+                self?.activityIndicator.stopAnimating()
+                self?.isRequestingHistory = false
+                self?.loadMoreMessagesFrom(date: date, loadRemoteHistory: false)
+
+                if messages.count == 0 {
+                    self?.dataController.loadedAllMessages = true
+
+                    self?.collectionView?.performBatchUpdates({
+                        if let (indexPaths, removedIndexPaths) = self?.dataController.insert([]) {
+                            self?.collectionView?.insertItems(at: indexPaths)
+                            self?.collectionView?.deleteItems(at: removedIndexPaths)
                         }
-                    }
+                    }, completion: nil)
+                } else {
+                    self?.dataController.loadedAllMessages = false
                 }
-
-                break
-            case .error: break
             }
         }
     }
 
     fileprivate func loadMoreMessagesFrom(date: Date?, loadRemoteHistory: Bool = true) {
+        guard let subscription = subscription else { return }
+
         if isRequestingHistory || dataController.loadedAllMessages {
             return
         }
 
         isRequestingHistory = true
-
-        func loadHistoryFromRemote() {
-            let tempSubscription = Subscription(value: self.subscription)
-
-            MessageManager.getHistory(tempSubscription, lastMessageDate: date) { [weak self] messages in
-                DispatchQueue.main.async {
-                    self?.activityIndicator.stopAnimating()
-                    self?.isRequestingHistory = false
-                    self?.loadMoreMessagesFrom(date: date, loadRemoteHistory: false)
-
-                    if messages.count == 0 {
-                        self?.dataController.loadedAllMessages = true
-
-                        self?.collectionView?.performBatchUpdates({
-                            if let (indexPaths, removedIndexPaths) = self?.dataController.insert([]) {
-                                self?.collectionView?.insertItems(at: indexPaths)
-                                self?.collectionView?.deleteItems(at: removedIndexPaths)
-                            }
-                        }, completion: nil)
-                    } else {
-                        self?.dataController.loadedAllMessages = false
-                    }
-                }
-            }
-        }
 
         let newMessages = subscription.fetchMessages(lastMessageDate: date).map({ Message(value: $0) })
         if newMessages.count > 0 {
@@ -513,7 +639,7 @@ final class ChatViewController: SLKTextViewController {
                     if !loadRemoteHistory {
                         self?.isRequestingHistory = false
                     } else {
-                        loadHistoryFromRemote()
+                        self?.loadHistoryFromRemote(date: date)
                     }
                 } else {
                     self?.isRequestingHistory = false
@@ -522,7 +648,7 @@ final class ChatViewController: SLKTextViewController {
         } else {
             if SocketManager.isConnected() {
                 if loadRemoteHistory {
-                    loadHistoryFromRemote()
+                    loadHistoryFromRemote(date: date)
                 } else {
                     isRequestingHistory = false
                 }
@@ -533,8 +659,29 @@ final class ChatViewController: SLKTextViewController {
     }
 
     fileprivate func appendMessages(messages: [Message], completion: VoidCompletion?) {
-        guard !isAppendingMessages else { return }
-        guard let collectionView = self.collectionView else { return }
+        guard
+            let subscription = subscription,
+            let collectionView = collectionView
+        else {
+            return
+        }
+
+        guard !isAppendingMessages else {
+            Log.debug("[APPEND MESSAGES] Blocked trying to append \(messages.count) messages")
+
+            // This message can be called many times during the app execution and we need
+            // to call them one per time, to avoid adding the same message multiple times
+            // to the list. Also, we keep the subscription identifier in order to make sure
+            // we're updating the same subscription, because this view controller is reused
+            // for all the chats.
+            let oldSubscriptionIdentifier = subscription.identifier
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: { [weak self] in
+                guard oldSubscriptionIdentifier == self?.subscription?.identifier else { return }
+                self?.appendMessages(messages: messages, completion: completion)
+            })
+
+            return
+        }
 
         isAppendingMessages = true
 
@@ -551,9 +698,8 @@ final class ChatViewController: SLKTextViewController {
             for message in tempMessages {
                 var insert = true
 
-                for obj in self.dataController.data
-                    where message.identifier == obj.message?.identifier {
-                        insert = false
+                for obj in self.dataController.data where message.identifier == obj.message?.identifier {
+                    insert = false
                 }
 
                 if insert {
@@ -644,8 +790,13 @@ extension ChatViewController {
     }
 
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard dataController.data.count > indexPath.row else { return UICollectionViewCell() }
-        guard let obj = dataController.itemAt(indexPath) else { return UICollectionViewCell() }
+        guard
+            dataController.data.count > indexPath.row,
+            let subscription = subscription,
+            let obj = dataController.itemAt(indexPath)
+        else {
+            return UICollectionViewCell()
+        }
 
         if obj.type == .message {
             return cellForMessage(obj, at: indexPath)
@@ -750,7 +901,13 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let fullWidth = collectionView.bounds.size.width
+        guard let subscription = subscription else { return .zero }
+
+        var fullWidth = collectionView.bounds.size.width
+
+        if #available(iOS 11, *) {
+            fullWidth -= collectionView.safeAreaInsets.right + collectionView.safeAreaInsets.left
+        }
 
         if let obj = dataController.itemAt(indexPath) {
             if obj.type == .header {
@@ -771,7 +928,7 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout {
 
             if let message = obj.message {
                 let sequential = dataController.hasSequentialMessageAt(indexPath)
-                let height = ChatMessageCell.cellMediaHeightFor(message: message, sequential: sequential)
+                let height = ChatMessageCell.cellMediaHeightFor(message: message, width: fullWidth, sequential: sequential)
                 return CGSize(width: fullWidth, height: height)
             }
         }
@@ -783,7 +940,6 @@ extension ChatViewController: UICollectionViewDelegateFlowLayout {
 // MARK: UIScrollViewDelegate
 
 extension ChatViewController {
-
     override func scrollViewDidScroll(_ scrollView: UIScrollView) {
         super.scrollViewDidScroll(scrollView)
 
@@ -792,26 +948,9 @@ extension ChatViewController {
                 loadMoreMessagesFrom(date: message.createdAt)
             }
         }
+
+        showButtonScrollToBottom = !chatLogIsAtBottom()
     }
-
-    override func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        guard let view = buttonScrollToBottom.superview else { return }
-
-        if buttonScrollToBottomMarginConstraint == nil {
-            buttonScrollToBottomMarginConstraint = buttonScrollToBottom.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 50)
-            buttonScrollToBottomMarginConstraint?.isActive = true
-        }
-
-        if targetContentOffset.pointee.y < scrollView.contentSize.height - scrollView.frame.height {
-            buttonScrollToBottomMarginConstraint?.constant = -64
-            UIView.animate(withDuration: 0.5) {
-                view.layoutIfNeeded()
-            }
-        } else {
-            hideButtonScrollToBottom(animated: true)
-        }
-    }
-
 }
 
 // MARK: ChatPreviewModeViewProtocol
@@ -827,6 +966,46 @@ extension ChatViewController: ChatPreviewModeViewProtocol {
         })
 
         self.subscription = subscription
+    }
+
+}
+
+// MARK: Block Message Sending
+
+extension ChatViewController {
+
+    fileprivate func updateMessageSendingPermission() {
+        guard
+            let subscription = subscription,
+            let currentUser = AuthManager.currentUser()
+        else {
+            allowMessageSending()
+            return
+        }
+
+        if subscription.roomReadOnly && subscription.roomOwner != currentUser {
+            blockMessageSending(reason: localized("chat.read_only"))
+        } else if let username = currentUser.username, subscription.roomMuted.contains(username) {
+            blockMessageSending(reason: localized("chat.muted"))
+        } else {
+            allowMessageSending()
+        }
+    }
+
+    fileprivate func blockMessageSending(reason: String) {
+        textInputbar.textView.placeholder = reason
+        textInputbar.backgroundColor = .white
+        textInputbar.isUserInteractionEnabled = false
+        leftButton.isEnabled = false
+        rightButton.isEnabled = false
+    }
+
+    fileprivate func allowMessageSending() {
+        textInputbar.textView.placeholder = ""
+        textInputbar.backgroundColor = .backgroundWhite
+        textInputbar.isUserInteractionEnabled = true
+        leftButton.isEnabled = true
+        rightButton.isEnabled = true
     }
 
 }

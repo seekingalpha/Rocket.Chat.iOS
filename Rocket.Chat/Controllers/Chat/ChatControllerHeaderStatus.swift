@@ -14,6 +14,7 @@ extension ChatViewController {
         chatHeaderViewStatus?.removeFromSuperview()
 
         if let headerView = ChatHeaderViewStatus.instantiateFromNib() {
+            headerView.delegate = self
             headerView.translatesAutoresizingMaskIntoConstraints = false
             headerView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 44)
             view.addSubview(headerView)
@@ -44,6 +45,16 @@ extension ChatViewController {
 
     func hideHeaderStatusView() {
         chatHeaderViewStatus?.removeFromSuperview()
+    }
+
+}
+
+// MARK: ChatHeaderViewStatusDelegate
+
+extension ChatViewController: ChatHeaderViewStatusDelegate {
+
+    func viewStatusButtonRefreshDidPressed(_ view: ChatHeaderViewStatus) {
+        reconnect()
     }
 
 }

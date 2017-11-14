@@ -33,6 +33,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     func applicationDidEnterBackground(_ application: UIApplication) {
+        SubscriptionManager.updateUnreadApplicationBadge()
+
         if AuthManager.isAuthenticated() != nil {
             UserManager.setUserPresence(status: .away) { (_) in
                 SocketManager.disconnect({ (_, _) in })
@@ -51,11 +53,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: Remote Notification
 
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
         Log.debug("Notification: \(userInfo)")
     }
 
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         Log.debug("Notification: \(userInfo)")
     }
 

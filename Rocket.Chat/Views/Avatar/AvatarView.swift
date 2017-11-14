@@ -69,7 +69,7 @@ final class AvatarView: UIView {
     }
 
     internal func initialsFor(_ username: String) -> String {
-        guard username.characters.count > 0 else {
+        guard username.count > 0 else {
             return "?"
         }
 
@@ -82,16 +82,16 @@ final class AvatarView: UIView {
 
             let lastOffset = strings.count > 1 ? 1 : 2
             let indexFirst = first.index(first.startIndex, offsetBy: 1)
-            let firstString = first.substring(to: indexFirst)
+            let firstString = first[..<indexFirst]
 
-            var lastString = ""
-            if last.characters.count >= lastOffset {
+            var lastString: Substring = ""
+            if last.count >= lastOffset {
                 let indexLast = last.index(last.startIndex, offsetBy: lastOffset)
-                lastString = last.substring(to: indexLast)
+                lastString = last[..<indexLast]
 
                 if lastOffset == 2 {
                     let endIndex = lastString.index(lastString.startIndex, offsetBy: 1)
-                    lastString = lastString.substring(from: endIndex)
+                    lastString = lastString[endIndex...]
                 }
             }
 
@@ -102,7 +102,7 @@ final class AvatarView: UIView {
     }
 
     private func setAvatarWithInitials() {
-        let username = user?.username ?? "?"
+        let username = self.user?.username ?? "?"
 
         var initials = ""
         var color: UInt = 0x000000
@@ -111,7 +111,7 @@ final class AvatarView: UIView {
             initials = username
             color = 0x000000
         } else {
-            let position = username.characters.count % avatarColors.count
+            let position = username.count % avatarColors.count
             color = avatarColors[position]
             initials = initialsFor(username)
         }

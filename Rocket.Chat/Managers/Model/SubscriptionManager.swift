@@ -10,7 +10,6 @@ import Foundation
 import RealmSwift
 
 struct SubscriptionManager {
-
     static func updateUnreadApplicationBadge() {
         var unread = 0
 
@@ -35,13 +34,13 @@ struct SubscriptionManager {
             "msg": "method",
             "method": "subscriptions/get",
             "params": params
-        ] as [String : Any]
+        ] as [String: Any]
 
         let requestRooms = [
             "msg": "method",
             "method": "rooms/get",
             "params": params
-        ] as [String : Any]
+        ] as [String: Any]
 
         func executeRoomsRequest() {
             SocketManager.send(requestRooms) { response in
@@ -61,8 +60,7 @@ struct SubscriptionManager {
                     list?.forEach { object in
                         if let rid = object["_id"].string {
                             if let subscription = Subscription.find(rid: rid, realm: realm) {
-                                subscription.roomDescription = object["description"].string ?? ""
-                                subscription.roomTopic = object["topic"].string ?? ""
+                                subscription.mapRoom(object)
                                 subscriptions.append(subscription)
                             }
                         }
@@ -71,8 +69,7 @@ struct SubscriptionManager {
                     updated?.forEach { object in
                         if let rid = object["_id"].string {
                             if let subscription = Subscription.find(rid: rid, realm: realm) {
-                                subscription.roomDescription = object["description"].string ?? ""
-                                subscription.roomTopic = object["topic"].string ?? ""
+                                subscription.mapRoom(object)
                                 subscriptions.append(subscription)
                             }
                         }
@@ -143,7 +140,7 @@ struct SubscriptionManager {
             "msg": "sub",
             "name": "stream-notify-user",
             "params": [eventName, false]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.subscribe(request, eventName: eventName) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -162,14 +159,81 @@ struct SubscriptionManager {
         }
     }
 
-    // MARK: Search
+    static func subscribeRoomChanges() {
+        guard let user = AuthManager.currentUser() else { return }
 
+        let eventName = "\(user.identifier ?? "")/rooms-changed"
+        let request = [
+            "msg": "sub",
+            "name": "stream-notify-user",
+            "params": [eventName, false]
+        ] as [String: Any]
+
+        SocketManager.subscribe(request, eventName: eventName) { response in
+            guard !response.isError() else { return Log.debug(response.result.string) }
+
+            let object = response.result["fields"]["args"][1]
+
+            Realm.execute({ (realm) in
+                if let rid = object["_id"].string {
+                    if let subscription = Subscription.find(rid: rid, realm: realm) {
+                        subscription.mapRoom(object)
+
+                        realm.add(subscription, update: true)
+                    }
+                }
+            })
+        }
+    }
+}
+
+// MARK: Typing
+extension SubscriptionManager {
+    static func subscribeTypingEvent(_ subscription: Subscription, completion: @escaping (String?, Bool) -> Void) {
+        let eventName = "\(subscription.rid)/typing"
+        let request = [
+            "msg": "sub",
+            "name": "stream-notify-room",
+            "id": eventName,
+            "params": [eventName, false]
+            ] as [String: Any]
+
+        SocketManager.subscribe(request, eventName: eventName) { response in
+            guard !response.isError() else { return Log.debug(response.result.string) }
+
+            let msg = response.result["fields"]["args"]
+            let userNameTyping = msg[0].string
+            let flag = (msg[1].int ?? 0) > 0
+
+            completion(userNameTyping, flag)
+        }
+    }
+
+    static func sendTypingStatus(_ subscription: Subscription, isTyping: Bool, completion: MessageCompletion? = nil) {
+        guard let username = AuthManager.currentUser()?.username else { return }
+
+        let request = [
+            "msg": "method",
+            "method": "stream-notify-room",
+            "params": ["\(subscription.rid)/typing", username, isTyping]
+            ] as [String: Any]
+
+        SocketManager.send(request) { response in
+            guard !response.isError() else { return Log.debug(response.result.string) }
+
+            completion?(response)
+        }
+    }
+}
+
+// MARK: Search
+extension SubscriptionManager {
     static func spotlight(_ text: String, completion: @escaping MessageCompletionObjectsList<Subscription>) {
         let request = [
             "msg": "method",
             "method": "spotlight",
             "params": [text, NSNull(), ["rooms": true, "users": true]]
-        ] as [String : Any]
+        ] as [String: Any]
 
         SocketManager.send(request) { response in
             guard !response.isError() else {
@@ -226,15 +290,16 @@ struct SubscriptionManager {
             })
         }
     }
+}
 
-    // MARK: Rooms, Groups & DMs
-
+// MARK: Rooms, Groups & DMs
+extension SubscriptionManager {
     static func createDirectMessage(_ username: String, completion: @escaping MessageCompletion) {
         let request = [
             "msg": "method",
             "method": "createDirectMessage",
             "params": [username]
-        ] as [String : Any]
+            ] as [String: Any]
 
         SocketManager.send(request) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -247,7 +312,7 @@ struct SubscriptionManager {
             "msg": "method",
             "method": "getRoomByTypeAndName",
             "params": ["c", name]
-        ] as [String : Any]
+            ] as [String: Any]
 
         SocketManager.send(request) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -260,22 +325,23 @@ struct SubscriptionManager {
             "msg": "method",
             "method": "joinRoom",
             "params": [rid]
-        ] as [String : Any]
+            ] as [String: Any]
 
         SocketManager.send(request) { (response) in
             guard !response.isError() else { return Log.debug(response.result.string) }
             completion(response)
         }
     }
+}
 
-    // MARK: Messages
-
+// MARK: Messages
+extension SubscriptionManager {
     static func markAsRead(_ subscription: Subscription, completion: @escaping MessageCompletion) {
         let request = [
             "msg": "method",
             "method": "readMessages",
             "params": [subscription.rid]
-        ] as [String : Any]
+            ] as [String: Any]
 
         SocketManager.send(request) { response in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -291,8 +357,8 @@ struct SubscriptionManager {
                 "_id": message.identifier ?? "",
                 "rid": message.subscription.rid,
                 "msg": message.text
-            ]]
-        ] as [String : Any]
+                ]]
+            ] as [String: Any]
 
         SocketManager.send(request) { (response) in
             guard !response.isError() else { return Log.debug(response.result.string) }
@@ -305,7 +371,7 @@ struct SubscriptionManager {
             "msg": "method",
             "method": "toggleFavorite",
             "params": [subscription.rid, !subscription.favorite]
-        ] as [String : Any]
+            ] as [String: Any]
 
         SocketManager.send(request, completion: completion)
     }

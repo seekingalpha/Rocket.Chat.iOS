@@ -12,6 +12,15 @@ import RealmSwift
 final class SubscriptionsViewController: BaseViewController {
     @objc var logEventManager: LogEventManager?
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var tableViewBottomConstraint: NSLayoutConstraint! {
+        didSet {
+            // Remove the bottom constraint if we don't support multi server
+            if !AppManager.supportsMultiServer {
+                tableViewBottomConstraint.constant = 0
+            }
+        }
+    }
+
     @IBOutlet weak var activityViewSearching: UIActivityIndicatorView!
 
     let defaultButtonCancelSearchWidth = CGFloat(65)
@@ -28,7 +37,7 @@ final class SubscriptionsViewController: BaseViewController {
 
             if let placeholder = textFieldSearch.placeholder {
                 let color = UIColor(rgb: 0x9ea2a4, alphaVal: 1)
-                textFieldSearch.attributedPlaceholder = NSAttributedString(string:placeholder, attributes: [NSAttributedStringKey.foregroundColor: color])
+                textFieldSearch.attributedPlaceholder = NSAttributedString(string: placeholder, attributes: [NSAttributedStringKey.foregroundColor: color])
             }
         }
     }
@@ -77,6 +86,14 @@ final class SubscriptionsViewController: BaseViewController {
 
     @IBOutlet weak var labelServer: UILabel!
     @IBOutlet weak var labelUsername: UILabel!
+    @IBOutlet weak var buttonAddChannel: UIButton! {
+        didSet {
+            if let image = UIImage(named: "Add") {
+                buttonAddChannel.tintColor = .RCLightBlue()
+                buttonAddChannel.setImage(image, for: .normal)
+            }
+        }
+    }
     @IBOutlet weak var imageViewArrowDown: UIImageView! {
         didSet {
             imageViewArrowDown.image = imageViewArrowDown.image?.imageWithTint(.RCLightBlue())
@@ -97,7 +114,7 @@ final class SubscriptionsViewController: BaseViewController {
     var searchResult: [Subscription]?
     var subscriptions: Results<Subscription>?
     var subscriptionsToken: NotificationToken?
-    var usersToken: NotificationToken?
+    var currentUserToken: NotificationToken?
 
     var groupInfomation: [[String: String]]?
     var groupSubscriptions: [[Subscription]]?
@@ -172,11 +189,12 @@ extension SubscriptionsViewController {
         guard let auth = AuthManager.isAuthenticated() else { return }
         subscriptions = auth.subscriptions.filterBy(name: text)
 
-        if text.characters.count == 0 {
+        if text.count == 0 {
             isSearchingLocally = false
             isSearchingRemotely = false
             searchResult = []
 
+            updateAll()
             groupSubscription()
             tableView.reloadData()
             tableView.tableFooterView = nil
@@ -210,7 +228,7 @@ extension SubscriptionsViewController {
         SubscriptionManager.spotlight(text) { [weak self] result in
             let currentText = self?.textFieldSearch.text ?? ""
 
-            if currentText.characters.count == 0 {
+            if currentText.count == 0 {
                 return
             }
 
@@ -241,19 +259,26 @@ extension SubscriptionsViewController {
         tableView?.reloadData()
     }
 
-    func handleModelUpdates<T>(_: RealmCollectionChange<RealmSwift.Results<T>>?) {
-        if isSearchingLocally || isSearchingRemotely {
-            updateSearched()
-        } else {
-            updateAll()
+    func handleCurrentUserUpdates<T>(changes: RealmCollectionChange<RealmSwift.Results<T>>?) {
+        updateCurrentUserInformation()
+    }
+
+    func handleSubscriptionUpdates<T>(changes: RealmCollectionChange<RealmSwift.Results<T>>?) {
+        // Update titleView information with subscription, can be
+        // some status changes
+        if let subscription = ChatViewController.shared?.subscription {
+            ChatViewController.shared?.chatTitleView?.subscription = subscription
         }
 
-        groupSubscription()
-
-        updateCurrentUserInformation()
-        SubscriptionManager.updateUnreadApplicationBadge()
-
+        // If side panel is visible, reload the data
         if MainChatViewController.shared?.sidePanelVisible ?? false {
+            if isSearchingLocally || isSearchingRemotely {
+                updateSearched()
+            } else {
+                updateAll()
+            }
+
+            groupSubscription()
             tableView?.reloadData()
         }
     }
@@ -272,16 +297,12 @@ extension SubscriptionsViewController {
         switch user.status {
         case .online:
             viewUserStatus.backgroundColor = .RCOnline()
-            break
         case .busy:
             viewUserStatus.backgroundColor = .RCBusy()
-            break
         case .away:
             viewUserStatus.backgroundColor = .RCAway()
-            break
         case .offline:
             viewUserStatus.backgroundColor = .RCInvisible()
-            break
         }
     }
 
@@ -293,8 +314,12 @@ extension SubscriptionsViewController {
         assigned = true
 
         subscriptions = auth.subscriptions.sorted(byKeyPath: "lastSeen", ascending: false)
-        subscriptionsToken = subscriptions?.addNotificationBlock(handleModelUpdates)
-        usersToken = realm.objects(User.self).addNotificationBlock(handleModelUpdates)
+        subscriptionsToken = subscriptions?.observe(handleSubscriptionUpdates)
+
+        if let currentUserIdentifier = AuthManager.currentUser()?.identifier {
+            let query = realm.objects(User.self).filter("identifier = %@", currentUserIdentifier)
+            currentUserToken = query.observe(handleCurrentUserUpdates)
+        }
 
         groupSubscription()
     }
@@ -357,7 +382,7 @@ extension SubscriptionsViewController {
                 ])
 
                 unreadGroup = unreadGroup.sorted {
-                    return $0.type.rawValue < $1.type.rawValue
+                    return ($0.type.rawValue, $0.name.lowercased()) < ($1.type.rawValue, $1.name.lowercased())
                 }
 
                 groupSubscriptions?.append(unreadGroup)
@@ -370,7 +395,7 @@ extension SubscriptionsViewController {
                 ])
 
                 favoriteGroup = favoriteGroup.sorted {
-                    return $0.type.rawValue < $1.type.rawValue
+                    return ($0.type.rawValue, $0.name.lowercased()) < ($1.type.rawValue, $1.name.lowercased())
                 }
 
                 groupSubscriptions?.append(favoriteGroup)
@@ -508,7 +533,7 @@ extension SubscriptionsViewController: UITextFieldDelegate {
         searchText = (currentText as NSString).replacingCharacters(in: range, with: string)
 
         if string == "\n" {
-            if currentText.characters.count > 0 {
+            if currentText.count > 0 {
                 searchOnSpotlight(currentText)
             }
 
@@ -579,6 +604,10 @@ extension SubscriptionsViewController: SubscriptionUserStatusViewProtocol {
 
     func userDidPressedOption() {
         dismissUserMenu()
+    }
+
+    @IBAction func buttonAddChannelDidTap(sender: Any) {
+        performSegue(withIdentifier: "New Channel", sender: sender)
     }
 
 }

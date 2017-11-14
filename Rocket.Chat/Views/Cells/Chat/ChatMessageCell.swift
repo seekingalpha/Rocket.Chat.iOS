@@ -11,6 +11,7 @@ import UIKit
 protocol ChatMessageCellProtocol: ChatMessageURLViewProtocol, ChatMessageVideoViewProtocol, ChatMessageImageViewProtocol, ChatMessageTextViewProtocol {
     func openURL(url: URL)
     func handleLongPressMessageCell(_ message: Message, view: UIView, recognizer: UIGestureRecognizer)
+    func handleUsernameTapMessageCell(_ message: Message, view: UIView, recognizer: UIGestureRecognizer)
 }
 
 final class ChatMessageCell: UICollectionViewCell {
@@ -19,6 +20,8 @@ final class ChatMessageCell: UICollectionViewCell {
     static let identifier = "ChatMessageCell"
 
     weak var longPressGesture: UILongPressGestureRecognizer?
+    weak var usernameTapGesture: UITapGestureRecognizer?
+    weak var avatarTapGesture: UITapGestureRecognizer?
     weak var delegate: ChatMessageCellProtocol?
     var message: Message! {
         didSet {
@@ -55,8 +58,8 @@ final class ChatMessageCell: UICollectionViewCell {
     @IBOutlet weak var mediaViews: UIStackView!
     @IBOutlet weak var mediaViewsHeightConstraint: NSLayoutConstraint!
 
-    static func cellMediaHeightFor(message: Message, sequential: Bool = true) -> CGFloat {
-        let fullWidth = UIScreen.main.bounds.size.width
+    static func cellMediaHeightFor(message: Message, width: CGFloat, sequential: Bool = true) -> CGFloat {
+        let fullWidth = width
         let attributedString = MessageTextCacheManager.shared.message(for: message)
         let height = attributedString?.heightForView(withWidth: fullWidth - 62)
 
@@ -80,6 +83,10 @@ final class ChatMessageCell: UICollectionViewCell {
 
             if type == .video {
                 total += ChatMessageVideoView.defaultHeight
+            }
+
+            if type == .audio {
+                total += ChatMessageAudioView.defaultHeight
             }
         }
 
@@ -111,18 +118,34 @@ final class ChatMessageCell: UICollectionViewCell {
     }
 
     func insertGesturesIfNeeded() {
-        if self.longPressGesture == nil {
+        if longPressGesture == nil {
             let gesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPressMessageCell(recognizer:)))
             gesture.minimumPressDuration = 0.5
             gesture.delegate = self
-            self.addGestureRecognizer(gesture)
-            self.longPressGesture = gesture
+            addGestureRecognizer(gesture)
+
+            longPressGesture = gesture
+        }
+
+        if usernameTapGesture == nil {
+            let gesture = UITapGestureRecognizer(target: self, action: #selector(handleUsernameTapGestureCell(recognizer:)))
+            gesture.delegate = self
+            labelUsername.addGestureRecognizer(gesture)
+
+            usernameTapGesture = gesture
+        }
+
+        if avatarTapGesture == nil {
+            let gesture = UITapGestureRecognizer(target: self, action: #selector(handleUsernameTapGestureCell(recognizer:)))
+            gesture.delegate = self
+            avatarView.addGestureRecognizer(gesture)
+
+            avatarTapGesture = gesture
         }
     }
 
-    func insertAttachments() {
-        var mediaViewHeight = CGFloat(0)
-
+    func insertURLs() -> CGFloat {
+        var addedHeight = CGFloat(0)
         message.urls.forEach { url in
             guard url.isValid() else { return }
             if let view = ChatMessageURLView.instantiateFromNib() {
@@ -130,9 +153,16 @@ final class ChatMessageCell: UICollectionViewCell {
                 view.delegate = delegate
 
                 mediaViews.addArrangedSubview(view)
-                mediaViewHeight += ChatMessageURLView.defaultHeight
+                addedHeight += ChatMessageURLView.defaultHeight
             }
         }
+        return addedHeight
+    }
+
+    func insertAttachments() {
+        var mediaViewHeight = CGFloat(0)
+
+        mediaViewHeight += insertURLs()
 
         message.attachments.forEach { attachment in
             let type = attachment.type
@@ -147,7 +177,6 @@ final class ChatMessageCell: UICollectionViewCell {
                     mediaViews.addArrangedSubview(view)
                     mediaViewHeight += ChatMessageTextView.heightFor(collapsed: attachment.collapsed, withText: attachment.text)
                 }
-                break
 
             case .image:
                 if let view = ChatMessageImageView.instantiateFromNib() {
@@ -158,7 +187,6 @@ final class ChatMessageCell: UICollectionViewCell {
                     mediaViews.addArrangedSubview(view)
                     mediaViewHeight += ChatMessageImageView.defaultHeight
                 }
-                break
 
             case .video:
                 if let view = ChatMessageVideoView.instantiateFromNib() {
@@ -169,7 +197,15 @@ final class ChatMessageCell: UICollectionViewCell {
                     mediaViews.addArrangedSubview(view)
                     mediaViewHeight += ChatMessageVideoView.defaultHeight
                 }
-                break
+
+            case .audio:
+                if let view = ChatMessageAudioView.instantiateFromNib() {
+                    view.attachment = attachment
+                    view.translatesAutoresizingMaskIntoConstraints = false
+
+                    mediaViews.addArrangedSubview(view)
+                    mediaViewHeight += ChatMessageAudioView.defaultHeight
+                }
 
             default:
                 return
@@ -190,7 +226,7 @@ final class ChatMessageCell: UICollectionViewCell {
         avatarView.imageURL = URL(string: message.avatar)
         avatarView.user = message.user
 
-        if message.alias.characters.count > 0 {
+        if message.alias.count > 0 {
             labelUsername.text = message.alias
         } else {
             labelUsername.text = message.user?.displayName() ?? "Unknown"
@@ -222,6 +258,10 @@ final class ChatMessageCell: UICollectionViewCell {
 
     @objc func handleLongPressMessageCell(recognizer: UIGestureRecognizer) {
         delegate?.handleLongPressMessageCell(message, view: contentView, recognizer: recognizer)
+    }
+
+    @objc func handleUsernameTapGestureCell(recognizer: UIGestureRecognizer) {
+        delegate?.handleUsernameTapMessageCell(message, view: contentView, recognizer: recognizer)
     }
 
 }
