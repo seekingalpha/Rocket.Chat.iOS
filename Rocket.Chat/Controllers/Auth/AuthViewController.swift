@@ -12,22 +12,14 @@ import SafariServices
 import OnePasswordExtension
 import RealmSwift
 
-@objc final class AuthViewController: BaseViewController, URLSessionDelegate {
-    @objc var interactor: AuthInteractor?
-    internal var connecting = false
-    @objc var serverURL: URL?
-    @objc var serverPublicSettings: AuthSettings?
+@objc final class AuthViewController: ConnectServerViewController, URLSessionDelegate {
     @objc var login: String?
     @objc var password: String?
-    @objc var stateMachine: AuthStateMachine?
-    @objc var logEventManager: LogEventManager?
-    @objc var logEvent: LogEvent?
 
     @objc var websocketURL: String?
     @objc var servereAuthURL: String?
     var loginServicesToken: NotificationToken?
     @IBOutlet weak var contentContainer: UIView!
-    @IBOutlet weak var viewFields: UIView!
     @IBOutlet weak var onePasswordButton: UIButton! {
         didSet {
             onePasswordButton.isHidden = !OnePasswordExtension.shared().isAppExtensionAvailable()
@@ -36,8 +28,6 @@ import RealmSwift
 
     @IBOutlet weak var textFieldUsername: UITextField!
     @IBOutlet weak var textFieldPassword: UITextField!
-    @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var textInfoLabel: UILabel!
 
     var customActivityIndicator: LoaderView!
@@ -75,13 +65,10 @@ import RealmSwift
         AuthManager.recoverAuthIfNeeded()
         self.textFieldUsername.text = self.login
         self.textFieldPassword.text = self.password
-        self.stateMachine?.execute()
-        self.logEventManager?.send(event: self.logEvent)
-        title = serverURL?.host
 
-        if let registrationForm = AuthSettingsManager.shared.settings?.registrationForm {
-           buttonRegister.isHidden = registrationForm != .isPublic
-        }
+        //if let registrationForm = AuthSettingsManager.shared.settings?.registrationForm {
+         //  buttonRegister.isHidden = registrationForm != .isPublic
+        //}
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -121,6 +108,54 @@ import RealmSwift
     }
 
     internal func handleAuthenticationResponse(_ response: SocketResponse) {
+        if response.isError() {
+            stopLoading()
+            
+            if let error = response.result["error"].dictionary {
+                // User is using 2FA
+                if error["error"]?.string == "totp-required" {
+                    performSegue(withIdentifier: "TwoFactor", sender: nil)
+                    return
+                }
+                
+                let alert = UIAlertController(
+                    title: localized("error.socket.default_error_title"),
+                    message: error["message"]?.string ?? localized("error.socket.default_error_message"),
+                    preferredStyle: .alert
+                )
+                
+                alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                present(alert, animated: true, completion: nil)
+            }
+            
+            return
+        }
+        
+        API.shared.fetch(MeRequest()) { [weak self] result in
+            self?.stopLoading()
+            if let user = result?.user {
+                if user.username != nil {
+                    
+                    DispatchQueue.main.async {
+                        self?.dismiss(animated: true, completion: nil)
+                        
+                        let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+                        let controller = storyboardChat.instantiateInitialViewController()
+                        let application = UIApplication.shared
+                        
+                        if let window = application.windows.first {
+                            window.rootViewController = controller
+                        }
+                    }
+                } else {
+                    DispatchQueue.main.async {
+                        self?.performSegue(withIdentifier: "RequestUsername", sender: nil)
+                    }
+                }
+            }
+        }
+        
+        
         stopLoading()
         self.stateMachine?.success()
     }
@@ -173,7 +208,7 @@ import RealmSwift
         let params = ["email": email,
                       "password": password]
         let urlSession = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-        AuthManager.auth(urlSession:urlSession, params: params, completion: self.loginResponse, websocketURL: self.websocketURL!, servereAuthURL: self.servereAuthURL!)
+        AuthManager.auth(urlSession:urlSession, params: params, httpCompletion: self.loginResponse, websocketURL: self.websocketURL!, servereAuthURL: self.servereAuthURL!)
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Swift.Void) {        completionHandler(            .useCredential,            URLCredential(trust: challenge.protectionSpace.serverTrust!)        )
@@ -183,29 +218,29 @@ import RealmSwift
     }
 
     @IBAction func buttonTermsDidPressed(_ sender: Any) {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = self.serverURL?.host
-
-        if var newURL = components.url {
-            newURL = newURL.appendingPathComponent("terms-of-service")
-
-            let controller = SFSafariViewController(url: newURL)
-            present(controller, animated: true, completion: nil)
-        }
+//        var components = URLComponents()
+//        components.scheme = "https"
+//        components.host = self.serverURL?.host
+//
+//        if var newURL = components.url {
+//            newURL = newURL.appendingPathComponent("terms-of-service")
+//
+//            let controller = SFSafariViewController(url: newURL)
+//            present(controller, animated: true, completion: nil)
+//        }
     }
 
     @IBAction func buttonPolicyDidPressed(_ sender: Any) {
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = self.serverURL?.host
-
-        if var newURL = components.url {
-            newURL = newURL.appendingPathComponent("privacy-policy")
-
-            let controller = SFSafariViewController(url: newURL)
-            present(controller, animated: true, completion: nil)
-        }
+//        var components = URLComponents()
+//        components.scheme = "https"
+//        components.host = self.serverURL?.host
+//
+//        if var newURL = components.url {
+//            newURL = newURL.appendingPathComponent("privacy-policy")
+//
+//            let controller = SFSafariViewController(url: newURL)
+//            present(controller, animated: true, completion: nil)
+//        }
     }
 
     @IBAction func buttonOnePasswordDidPressed(_ sender: Any) {
@@ -226,26 +261,6 @@ import RealmSwift
          UIApplication.shared.statusBarStyle = .lightContent
     }
 
-    func showChat() {
-        // Open chat
-        let storyboardChat = UIStoryboard(name: "Chat", bundle: Bundle.main)
-        let controller = storyboardChat.instantiateInitialViewController()
-        let application = UIApplication.shared
-        if let window = application.keyWindow {
-            window.rootViewController = controller
-        }
-    }
-
-    func alertInvalidURL() {
-        let alert = UIAlertController(
-            title: localized("alert.connection.invalid_url.title"),
-            message: localized("alert.connection.invalid_url.message"),
-            preferredStyle: .alert
-        )
-
-        alert.addAction(UIAlertAction(title: localized("global.ok"), style: .default, handler: nil))
-        present(alert, animated: true, completion: nil)
-    }
     func alertWrongServerVersion(version: String, minVersion: String) {
         let alert = UIAlertController(
             title: localized("alert.connection.invalid_version.title"),
@@ -265,6 +280,19 @@ import RealmSwift
     }
     @IBAction func signIn() {
         self.stateMachine?.success()
+    }
+    func showMainViewController() {
+        DispatchQueue.main.async {
+            self.dismiss(animated: true, completion: nil)
+            
+            let storyboardChat = UIStoryboard(name: "Main", bundle: Bundle.main)
+            let controller = storyboardChat.instantiateInitialViewController()
+            let application = UIApplication.shared
+            
+            if let window = application.windows.first {
+                window.rootViewController = controller
+            }
+        }
     }
 }
 

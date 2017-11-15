@@ -225,43 +225,44 @@ extension AuthManager {
     /**
         Generic method that authenticates the user.
     */
-    static func auth(urlSession: URLSession, params: [String: Any], completion: @escaping HTTPComplition, websocketURL: String, servereAuthURL: String) {
+    static func auth(urlSession: URLSession, params: [String: Any], httpCompletion: @escaping HTTPComplition, websocketURL: String, servereAuthURL: String) {
         self.post(session: urlSession, params : params, url : servereAuthURL, complition : { result in
-            
+
             var httpResponse = HTTPResponse()
             guard let response = result as? [String: Any] else {
                 return
             }
-            
+
             guard let rc_token = result?["rc_token"] as? String else {
                 httpResponse.isError = true
                 httpResponse.response = response
-                completion(httpResponse)
+                httpCompletion(httpResponse)
                 return
             }
             guard let user_id = result?["user_id"] as? String else {
                 httpResponse.isError = true
-                completion(httpResponse)
+                httpCompletion(httpResponse)
                 return
             }
-            
-            Realm.execute({ (realm) in
+            API.shared.authToken = rc_token
+            API.shared.userId = user_id
+
+            let auth = Auth()
+            auth.lastSubscriptionFetch = nil
+            auth.lastAccess = Date()
+            auth.serverURL = websocketURL
+            auth.token = rc_token
+            auth.userId = user_id
+
+            Realm.executeOnMainThread({ (realm) in
                 // Delete all the Auth objects, since we don't
                 // support multiple-server authentication yet
                 realm.delete(realm.objects(Auth.self))
-                
-                let auth = Auth()
-                auth.lastSubscriptionFetch = nil
-                auth.lastAccess = Date()
-                auth.serverURL = websocketURL
-                auth.token = rc_token
-                auth.userId = user_id
                 PushManager.updatePushToken()
-                
                 realm.add(auth)
-            }, completion: {
-                completion(httpResponse)
             })
+            ServerManager.timestampSync()
+            httpCompletion(httpResponse)
         })
     }
 

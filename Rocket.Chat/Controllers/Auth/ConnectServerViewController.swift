@@ -9,25 +9,24 @@
 import UIKit
 import SwiftyJSON
 import semver
-
-final class ConnectServerViewController: BaseViewController {
-
-    internal let defaultURL = "https://open.rocket.chat"
+class ConnectServerViewController: BaseViewController {
+    @objc var stateMachine: AuthStateMachine?
+    @objc var logEventManager: LogEventManager?
+    @objc var logEvent: LogEvent?
+    @objc var urlText: String?
     internal var connecting = false
     var url: URL? {
-        guard var urlText = textFieldServerURL.text else { return nil }
-        if urlText.isEmpty {
-            urlText = defaultURL
+        guard let urlText = urlText else {
+            return nil
         }
         return  URL(string: urlText, scheme: "https")
     }
 
-    var serverPublicSettings: AuthSettings?
+    @objc var serverPublicSettings: AuthSettings?
 
     @IBOutlet weak var buttonClose: UIBarButtonItem!
 
     @IBOutlet weak var visibleViewBottomConstraint: NSLayoutConstraint!
-    @IBOutlet weak var textFieldServerURL: UITextField!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 
     @IBOutlet weak var viewFields: UIView! {
@@ -53,8 +52,7 @@ final class ConnectServerViewController: BaseViewController {
             navigationItem.leftBarButtonItem = nil
         }
 
-        textFieldServerURL.placeholder = defaultURL
-        labelSSLRequired.text = localized("auth.connect.ssl_required")
+        //labelSSLRequired.text = localized("auth.connect.ssl_required")
 
         if let nav = navigationController as? BaseNavigationController {
             nav.setTransparentTheme()
@@ -67,12 +65,13 @@ final class ConnectServerViewController: BaseViewController {
         SocketManager.sharedInstance.socket?.disconnect()
         DatabaseManager.cleanInvalidDatabases()
 
-        if let applicationServerURL = AppManager.applicationServerURL {
-            textFieldServerURL.isEnabled = false
-            labelSSLRequired.text = localized("auth.connect.connecting")
-            textFieldServerURL.text = applicationServerURL.host
-            connect()
-        }
+        //if let applicationServerURL = AppManager.applicationServerURL {
+//            textFieldServerURL.isEnabled = false
+//            labelSSLRequired.text = localized("auth.connect.connecting")
+//            textFieldServerURL.text = applicationServerURL.host
+            self.stateMachine?.execute()
+            self.logEventManager?.send(event: self.logEvent)
+        //}
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -92,14 +91,13 @@ final class ConnectServerViewController: BaseViewController {
             object: nil
         )
 
-        textFieldServerURL.becomeFirstResponder()
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if let controller = segue.destination as? AuthViewController, segue.identifier == "Auth" {
-            controller.serverURL = url?.socketURL()
-            controller.serverPublicSettings = self.serverPublicSettings
-        }
+//        if let controller = segue.destination as? AuthViewController, segue.identifier == "Auth" {
+//            controller.serverURL = url?.socketURL()
+//            controller.serverPublicSettings = self.serverPublicSettings
+//        }
     }
 
     // MARK: Keyboard Handlers
@@ -138,33 +136,33 @@ final class ConnectServerViewController: BaseViewController {
         present(alert, animated: true, completion: nil)
     }
 
-    func connect() {
+    func connect(success: @escaping (_ isUserLoggedIn: Bool) -> Void, fail: @escaping () -> Void) {
         guard let url = url else { return alertInvalidURL() }
         guard let socketURL = url.socketURL() else { return alertInvalidURL() }
 
         // Check if server already exists and connect to that instead
-        if let servers = DatabaseManager.servers {
-            let sameServerIndex = servers.index(where: {
-                if let stringServerUrl = $0[ServerPersistKeys.serverURL],
-                    let serverUrl = URL(string: stringServerUrl) {
-
-                    return serverUrl == socketURL
-                } else {
-                    return false
-                }
-            })
-
-            if let sameServerIndex = sameServerIndex {
-                MainChatViewController.shared?.changeSelectedServer(index: sameServerIndex)
-                textFieldServerURL.resignFirstResponder()
-                return
-            }
-        }
+//        if let servers = DatabaseManager.servers {
+//            let sameServerIndex = servers.index(where: {
+//                if let stringServerUrl = $0[ServerPersistKeys.serverURL],
+//                    let serverUrl = URL(string: stringServerUrl) {
+//
+//                    return serverUrl == socketURL
+//                } else {
+//                    return false
+//                }
+//            })
+//
+//            if let sameServerIndex = sameServerIndex {
+//                MainChatViewController.shared?.changeSelectedServer(index: sameServerIndex)
+//                textFieldServerURL.resignFirstResponder()
+//                return
+//            }
+//        }
 
         connecting = true
-        textFieldServerURL.alpha = 0.5
-        activityIndicator.startAnimating()
-        textFieldServerURL.resignFirstResponder()
+//        textFieldServerURL.alpha = 0.5
+//        activityIndicator.startAnimating()
+//        textFieldServerURL.resignFirstResponder()
 
         API.shared.host = url
         validate { [weak self] (_, error) in
@@ -173,7 +171,7 @@ final class ConnectServerViewController: BaseViewController {
                     self?.stopConnecting()
                     self?.alertInvalidURL()
                 }
-
+                fail()
                 return
             }
 
@@ -182,6 +180,7 @@ final class ConnectServerViewController: BaseViewController {
                     self?.stopConnecting()
                     self?.alert(title: localized("alert.connection.socket_error.title"),
                                 message: localized("alert.connection.socket_error.message"))
+                    fail()
                     return
                 }
 
@@ -192,7 +191,7 @@ final class ConnectServerViewController: BaseViewController {
                     self?.serverPublicSettings = settings
 
                     if connected {
-                        self?.performSegue(withIdentifier: "Auth", sender: nil)
+                        success(AuthManager.isAuthenticated() != nil)
                     }
 
                     self?.stopConnecting()
@@ -226,20 +225,7 @@ final class ConnectServerViewController: BaseViewController {
 
     func stopConnecting() {
         connecting = false
-        textFieldServerURL.alpha = 1
-        activityIndicator.stopAnimating()
+//        textFieldServerURL.alpha = 1
+//        activityIndicator.stopAnimating()
     }
-}
-
-extension ConnectServerViewController: UITextFieldDelegate {
-
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        return !connecting
-    }
-
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        connect()
-        return true
-    }
-
 }

@@ -15,12 +15,11 @@
     return [TyphoonDefinition
             withClass:[AuthViewController class]
             configuration:^(TyphoonDefinition *definition) {
-                [definition injectProperty:@selector(serverURL) with:TyphoonConfig(@"serverURL")];
+                [definition injectProperty:@selector(urlText) with:TyphoonConfig(@"serverURL")];
 #ifdef DEBUG
                 [definition injectProperty:@selector(login) with:TyphoonConfig(@"login")];
                 [definition injectProperty:@selector(password) with:TyphoonConfig(@"password")];
 #endif
-                [definition injectProperty:@selector(interactor) with:[AuthInteractor new]];
                 [definition injectProperty:@selector(stateMachine) with:[self stateMachine]];
                 [definition injectProperty:@selector(logEventManager) with:[self logEventManager]];
                 [definition injectProperty:@selector(logEvent) with:[self showLoginPageEvent]];
@@ -52,7 +51,7 @@
                                 parameters:^(TyphoonMethod *initializer) {
                                     [initializer injectParameterWith:[self connectServerViewController]];
                                 }];
-                [definition injectProperty:@selector(nextSuccess) with:[self showChatState]];
+                [definition injectProperty:@selector(nextSuccess) with:[self showMainViewControllerState]];
                 [definition injectProperty:@selector(nextFailure) with:[self showLoginState]];
                 [definition injectProperty:@selector(nextFailureWithConnectionError) with:[self validationErrorState]];
             }];
@@ -70,9 +69,9 @@
             }];
 }
 
-- (ShowChatState *)showChatState {
+- (ShowMainState *)showMainViewControllerState {
     return [TyphoonDefinition
-            withClass:[ShowChatState class]
+            withClass:[ShowMainState class]
             configuration:^(TyphoonDefinition *definition) {
                 [definition useInitializer:@selector(initWithAuthViewController:)
                                 parameters:^(TyphoonMethod *initializer) {

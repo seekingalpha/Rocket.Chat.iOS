@@ -176,7 +176,6 @@
 		732DAFF71FBB48580062006C /* Configuration.plist in Resources */ = {isa = PBXBuildFile; fileRef = 732DAFF31FBB48570062006C /* Configuration.plist */; };
 		732DAFF81FBB48580062006C /* ApplicationAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 732DAFF51FBB48570062006C /* ApplicationAssembly.m */; };
 		732DAFF91FBB48580062006C /* CoreComponentsAssembly.m in Sources */ = {isa = PBXBuildFile; fileRef = 732DAFF61FBB48570062006C /* CoreComponentsAssembly.m */; };
-		732DAFFC1FBB48930062006C /* AuthInteractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DAFFB1FBB48930062006C /* AuthInteractor.swift */; };
 		732DB0021FBB48C50062006C /* RCPageKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 732DAFFE1FBB48C40062006C /* RCPageKey.m */; };
 		732DB0031FBB48C50062006C /* LogEventManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DAFFF1FBB48C50062006C /* LogEventManager.swift */; };
 		732DB0041FBB48C50062006C /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DB0011FBB48C50062006C /* LogEvent.swift */; };
@@ -479,7 +478,6 @@
 		732DAFF41FBB48570062006C /* ApplicationAssembly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ApplicationAssembly.h; path = Assembly/ApplicationAssembly.h; sourceTree = "<group>"; };
 		732DAFF51FBB48570062006C /* ApplicationAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ApplicationAssembly.m; path = Assembly/ApplicationAssembly.m; sourceTree = "<group>"; };
 		732DAFF61FBB48570062006C /* CoreComponentsAssembly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CoreComponentsAssembly.m; path = Assembly/CoreComponentsAssembly.m; sourceTree = "<group>"; };
-		732DAFFB1FBB48930062006C /* AuthInteractor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthInteractor.swift; path = Interactors/AuthInteractor.swift; sourceTree = "<group>"; };
 		732DAFFE1FBB48C40062006C /* RCPageKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RCPageKey.m; path = ServerSataistics/RCPageKey.m; sourceTree = "<group>"; };
 		732DAFFF1FBB48C50062006C /* LogEventManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEventManager.swift; path = ServerSataistics/LogEventManager.swift; sourceTree = "<group>"; };
 		732DB0001FBB48C50062006C /* RCPageKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RCPageKey.h; path = ServerSataistics/RCPageKey.h; sourceTree = "<group>"; };
@@ -1076,7 +1074,6 @@
 				732DB0071FBB49E60062006C /* HTTPResponse.swift */,
 				732DB0051FBB49AA0062006C /* AuthStates.swift */,
 				732DAFFD1FBB48A10062006C /* ServerStatistics */,
-				732DAFFA1FBB487E0062006C /* Interactors */,
 				732DAFF11FBB47760062006C /* Assembly */,
 				D1D535EA1F7081E6006625D2 /* API */,
 				4199A9861DABCC2E0035F820 /* External */,
@@ -1188,14 +1185,6 @@
 				732DAFF61FBB48570062006C /* CoreComponentsAssembly.m */,
 			);
 			name = Assembly;
-			sourceTree = "<group>";
-		};
-		732DAFFA1FBB487E0062006C /* Interactors */ = {
-			isa = PBXGroup;
-			children = (
-				732DAFFB1FBB48930062006C /* AuthInteractor.swift */,
-			);
-			name = Interactors;
 			sourceTree = "<group>";
 		};
 		732DAFFD1FBB48A10062006C /* ServerStatistics */ = {
@@ -1998,7 +1987,6 @@
 				41CABFFC1F50515100E0B289 /* ArrayExtensions.swift in Sources */,
 				807371A01F96937100D53ADF /* LoginService.swift in Sources */,
 				802498F51F7ACDB7005477EC /* ChatMessageAudioView.swift in Sources */,
-				732DAFFC1FBB48930062006C /* AuthInteractor.swift in Sources */,
 				41EB22331E5E474200AA3AE7 /* UploadVideoCompression.swift in Sources */,
 				D12D34031F69C76400AED992 /* SubscriptionExtensions.swift in Sources */,
 				41A91AF11E51CD41005C94B1 /* SubscriptionUserStatusView.swift in Sources */,

@@ -28,32 +28,53 @@ class AuthState: NSObject {
 class FirstLoadingState: AuthState {
 
     override func execute() {
-        print(self.authViewController)
+//        print(self.authViewController)
         authViewController.contentContainer.isHidden = true
         authViewController.customActivityIndicator.startAnimating()
         authViewController.textFieldUsername.resignFirstResponder()
         authViewController.textFieldPassword.resignFirstResponder()
-
-        authViewController.interactor?.checkAuth(complition: { [unowned self] result in
-            if result == false {
-                let url = self.authViewController.serverURL
-                self.authViewController.interactor?.validate(URL: url, complition: { (isValid, socketURL) in
-                    if isValid && socketURL != nil {
-                        self.authViewController.interactor?.connect(socketURL: socketURL, complition: { (serverSettings) in
-                            self.authViewController.serverPublicSettings = serverSettings
-                            self.authViewController.finishExecution(nextState: self.nextFailure)
-                        }, failure: {
-                            self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
-                        })
-                    } else {
-                        self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
-                    }
-                })
-            } else {
+        
+//        authViewController.interactor?.checkAuth(complition: { [unowned self] result in
+//            if result == false {
+//                let url = self.authViewController.serverURL
+//                self.authViewController.interactor?.validate(URL1: url, complition: { (isValid, socketURL) in
+//                    if isValid && socketURL != nil {
+//                        self.authViewController.interactor?.connect(socketURL: socketURL, complition: { (serverSettings) in
+//                            self.authViewController.serverPublicSettings = serverSettings
+//                            self.authViewController.finishExecution(nextState: self.nextFailure)
+//                        }, failure: {
+//                            self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
+//                        })
+//                    } else {
+//                        self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
+//                    }
+//                })
+//            } else {
+//                self.authViewController.finishExecution(nextState: self.nextSuccess)
+//            }
+//        })
+        /*
+         ail {
+         self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
+         }
+         */
+        
+        authViewController.connect(success: { isUserLoggedIn in
+            if isUserLoggedIn {
                 self.authViewController.finishExecution(nextState: self.nextSuccess)
+            } else {
+                 self.authViewController.finishExecution(nextState: self.nextFailure)
             }
+        }, fail: {
+             self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
         })
     }
+        /*
+         ) {
+         self.authViewController.finishExecution(nextState: self.nextFailureWithConnectionError)
+         }
+         }
+         */
 }
 
 class ShowLoginState: AuthState {
@@ -64,11 +85,11 @@ class ShowLoginState: AuthState {
     }
 }
 
-class ShowChatState: AuthState {
+class ShowMainState: AuthState {
     override func execute() {
         self.authViewController.contentContainer.isHidden = false
         self.authViewController.customActivityIndicator.stopAnimating()
-        self.authViewController.showChat()
+        self.authViewController.showMainViewController()
         self.authViewController.finishExecution(nextState: nil)
     }
 }
@@ -82,15 +103,10 @@ class LoginInProgressState: AuthState {
 class LoginSuccessState: AuthState {
     override func execute() {
         self.authViewController.startLoading()
-        self.authViewController.interactor?.checkAuth(complition: { [unowned self] (isSuccess) in
-            if isSuccess == true && AuthManager.currentUser()?.username != nil {
-                self.authViewController.stopLoading()
-                AuthManager.currentUser()?.setEmail(email: self.authViewController.textFieldUsername.text)
-                let logEvent = SuccessLoginEvent(login: AuthManager.currentUser()?.email())
-                self.logEventManager?.send(event: logEvent)
-                self.authViewController.showChat()
-            }
-        })
+        AuthManager.currentUser()?.setEmail(email: self.authViewController.textFieldUsername.text)
+        let logEvent = SuccessLoginEvent(login: AuthManager.currentUser()?.email())
+        self.logEventManager?.send(event: logEvent)
+        self.authViewController.showMainViewController()
     }
 }
 

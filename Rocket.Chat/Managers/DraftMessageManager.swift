@@ -65,15 +65,16 @@ struct DraftMessageManager {
          - parameter subscription: The subscription we that we need to retrieve a draft message.
      */
     static func draftMessage(for subscription: Subscription) -> String {
-        guard !selectedServerKey.isEmpty else { return "" }
-        let subscriptionKey = draftMessageKey(for: subscription.rid)
-
-        if let serverDraftMessages = userDefaults.dictionary(forKey: selectedServerKey),
-            let draftMessage = serverDraftMessages[subscriptionKey] as? String {
-            return draftMessage
-        }
-
         return ""
+//        guard !selectedServerKey.isEmpty else { return "" }
+//        let subscriptionKey = draftMessageKey(for: subscription.rid)
+//
+//        if let serverDraftMessages = userDefaults.dictionary(forKey: selectedServerKey),
+//            let draftMessage = serverDraftMessages[subscriptionKey] as? String {
+//            return draftMessage
+//        }
+
+//        return ""
     }
 
 }

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>serverURL</key>
-	<string>NSURL(http://rc.seekingalpha.com)</string>
+	<string>rc.seekingalpha.com</string>
 	<key>login</key>
 	<string>semion@seekingalpha.com</string>
 	<key>password</key>
