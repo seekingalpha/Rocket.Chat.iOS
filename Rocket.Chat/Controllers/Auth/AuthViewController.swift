@@ -110,7 +110,7 @@ import RealmSwift
     internal func handleAuthenticationResponse(_ response: SocketResponse) {
         if response.isError() {
             stopLoading()
-            
+
             if let error = response.result["error"].dictionary {
                 // User is using 2FA
                 if error["error"]?.string == "totp-required" {
@@ -154,8 +154,6 @@ import RealmSwift
                 }
             }
         }
-        
-        
         stopLoading()
         self.stateMachine?.success()
     }
