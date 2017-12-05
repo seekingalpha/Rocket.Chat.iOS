@@ -36,6 +36,7 @@ def shared_pods
     pod '1PasswordExtension'
     pod 'Google/SignIn'
     pod 'Typhoon'
+    pod 'NewRelicAgent'
 end
 
 target 'Rocket.Chat' do

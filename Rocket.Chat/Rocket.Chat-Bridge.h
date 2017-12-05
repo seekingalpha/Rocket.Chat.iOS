@@ -17,4 +17,5 @@
 #import <Typhoon/Typhoon.h>
 #include <ifaddrs.h>
 #import "RCPageKey.h"
+#import "NewRelicAgent/NewRelic.h"
 #endif /* Rocket_Chat_Bridge_h */

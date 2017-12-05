@@ -17,6 +17,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @objc var logEventManager: LogEventManager?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        NewRelic.start(withApplicationToken:"AAe01e58f0af24362b58d87a2990ea513f2d3c1db2")
         Launcher().prepareToLaunch(with: launchOptions)
 
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { (_, _) in }
