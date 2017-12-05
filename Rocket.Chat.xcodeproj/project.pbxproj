@@ -181,7 +181,6 @@
 		732DB0041FBB48C50062006C /* LogEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DB0011FBB48C50062006C /* LogEvent.swift */; };
 		732DB0061FBB49AA0062006C /* AuthStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DB0051FBB49AA0062006C /* AuthStates.swift */; };
 		732DB0081FBB49E60062006C /* HTTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 732DB0071FBB49E60062006C /* HTTPResponse.swift */; };
-		73D9FDD51FD6AD22003C60F1 /* Placeholder.m in Sources */ = {isa = PBXBuildFile; fileRef = 73D9FDD41FD6AD22003C60F1 /* Placeholder.m */; };
 		7758A7641F8FA44400FAA244 /* PickerViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7758A7631F8FA44400FAA244 /* PickerViewDelegate.swift */; };
 		7798B4151F852B720074B2F4 /* SelectField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798B4141F852B720074B2F4 /* SelectField.swift */; };
 		7798B4191F852D670074B2F4 /* CustomField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7798B4181F852D670074B2F4 /* CustomField.swift */; };
@@ -485,7 +484,6 @@
 		732DB0011FBB48C50062006C /* LogEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogEvent.swift; path = ServerSataistics/LogEvent.swift; sourceTree = "<group>"; };
 		732DB0051FBB49AA0062006C /* AuthStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthStates.swift; sourceTree = "<group>"; };
 		732DB0071FBB49E60062006C /* HTTPResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPResponse.swift; sourceTree = "<group>"; };
-		73D9FDD41FD6AD22003C60F1 /* Placeholder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Placeholder.m; sourceTree = "<group>"; };
 		7758A7631F8FA44400FAA244 /* PickerViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PickerViewDelegate.swift; sourceTree = "<group>"; };
 		7798B4141F852B720074B2F4 /* SelectField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectField.swift; sourceTree = "<group>"; };
 		7798B4181F852D670074B2F4 /* CustomField.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomField.swift; sourceTree = "<group>"; };
@@ -1051,7 +1049,6 @@
 		41DF76D61D2C50710028DBF8 = {
 			isa = PBXGroup;
 			children = (
-				73D9FDD41FD6AD22003C60F1 /* Placeholder.m */,
 				41DF76E11D2C50710028DBF8 /* Rocket.Chat */,
 				41DF76F61D2C50720028DBF8 /* Rocket.ChatTests */,
 				41DF77011D2C50720028DBF8 /* Rocket.ChatUITests */,
@@ -2022,7 +2019,6 @@
 				80A63C531F71BD2900FE5AC4 /* UserInfoRequest.swift in Sources */,
 				4162E1531D651A8800AAAE49 /* UserManager.swift in Sources */,
 				4112BEEC1E7971A400E734CB /* MainChatViewController.swift in Sources */,
-				73D9FDD51FD6AD22003C60F1 /* Placeholder.m in Sources */,
 				800FCD4C1F728EC800D9A692 /* ChannelInfoCellProtocol.swift in Sources */,
 				800E22841F8500A200DA84F1 /* MessagesListViewController.swift in Sources */,
 				419ECCA41F3CA21A005F224B /* DownloadManager.swift in Sources */,
